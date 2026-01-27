@@ -6,36 +6,12 @@ import "./globals.css";
 
 const ppNeueMontreal = localFont({
   src: [
-    {
-      path: "../../public/fonts/pp-neue-montreal/ppneuemontreal-thin.otf",
-      weight: "100",
-      style: "normal",
-    },
-    {
-      path: "../../public/fonts/pp-neue-montreal/ppneuemontreal-book.otf",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "../../public/fonts/pp-neue-montreal/ppneuemontreal-italic.otf",
-      weight: "400",
-      style: "italic",
-    },
-    {
-      path: "../../public/fonts/pp-neue-montreal/ppneuemontreal-medium.otf",
-      weight: "500",
-      style: "normal",
-    },
-    {
-      path: "../../public/fonts/pp-neue-montreal/ppneuemontreal-semibolditalic.otf",
-      weight: "600",
-      style: "italic",
-    },
-    {
-      path: "../../public/fonts/pp-neue-montreal/ppneuemontreal-bold.otf",
-      weight: "700",
-      style: "normal",
-    },
+    { path: "../../public/fonts/pp-neue-montreal/ppneuemontreal-thin.otf", weight: "100", style: "normal" },
+    { path: "../../public/fonts/pp-neue-montreal/ppneuemontreal-book.otf", weight: "400", style: "normal" },
+    { path: "../../public/fonts/pp-neue-montreal/ppneuemontreal-italic.otf", weight: "400", style: "italic" },
+    { path: "../../public/fonts/pp-neue-montreal/ppneuemontreal-medium.otf", weight: "500", style: "normal" },
+    { path: "../../public/fonts/pp-neue-montreal/ppneuemontreal-semibolditalic.otf", weight: "600", style: "italic" },
+    { path: "../../public/fonts/pp-neue-montreal/ppneuemontreal-bold.otf", weight: "700", style: "normal" },
   ],
   variable: "--font-sans",
 });
@@ -70,14 +46,27 @@ const pixelifySans = Pixelify_Sans({
   weight: ["400", "500", "600", "700"],
 });
 
+const fontVariables = [
+  ppNeueMontreal.variable,
+  ibmPlexMono.variable,
+  silkscreen.variable,
+  vt323.variable,
+  pressStart2P.variable,
+  pixelifySans.variable,
+].join(" ");
+
+const title = "AARTE: Create Your Personal Moltbot (formerly Clawdbot) AI Agent";
+const description = "Build your personal Moltbot (formerly Clawdbot) AI assistant with AARTE. Integrates with WhatsApp, Telegram, Slack, and more. 100% private, self-hosted, your data never leaves your infrastructure.";
+const shortDescription = "Build your personal Moltbot AI assistant. 100% private, self-hosted.";
+
 export const metadata: Metadata = {
-  title: "AARTE: Applied Artificial Intelligence",
-  description: "Your personal AI assistant that integrates with WhatsApp, Telegram, Slack, and more. 100% private, self-hosted, your data never leaves your infrastructure.",
-  keywords: ["AI assistant", "artificial intelligence", "WhatsApp bot", "Telegram bot", "Slack integration", "private AI", "self-hosted AI"],
+  title,
+  description,
+  keywords: ["Moltbot", "Clawdbot", "AI assistant", "AI agent", "artificial intelligence", "WhatsApp bot", "Telegram bot", "Slack integration", "private AI", "self-hosted AI", "personal AI assistant", "AARTE"],
   authors: [{ name: "AARTE" }],
   openGraph: {
-    title: "AARTE: Applied Artificial Intelligence",
-    description: "Your personal AI assistant. 100% private, self-hosted.",
+    title,
+    description: shortDescription,
     url: "https://aarte.co",
     siteName: "AARTE",
     locale: "en_US",
@@ -85,8 +74,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "AARTE: Applied Artificial Intelligence",
-    description: "Your personal AI assistant. 100% private, self-hosted.",
+    title,
+    description: shortDescription,
   },
   robots: {
     index: true,
@@ -97,45 +86,36 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "AARTE",
-  "applicationCategory": "BusinessApplication",
-  "description": "Your personal AI assistant that integrates with WhatsApp, Telegram, Slack, and more. 100% private, self-hosted.",
-  "operatingSystem": "Web",
-  "offers": {
+  name: "AARTE - Moltbot (Clawdbot) AI Agent Creator",
+  applicationCategory: "BusinessApplication",
+  description,
+  operatingSystem: "Web",
+  alternateName: ["Moltbot", "Clawdbot", "AARTE Agent"],
+  offers: {
     "@type": "Offer",
-    "price": "29.99",
-    "priceCurrency": "USD",
+    price: "29.99",
+    priceCurrency: "USD",
   },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+const GA_ID = "G-90GEC7MMJS";
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-90GEC7MMJS"
-          strategy="afterInteractive"
-        />
+        <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
         <Script id="google-analytics" strategy="afterInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-90GEC7MMJS');
+            gtag('config', '${GA_ID}');
           `}
         </Script>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </head>
-      <body
-        className={`${ppNeueMontreal.variable} ${ibmPlexMono.variable} ${silkscreen.variable} ${vt323.variable} ${pressStart2P.variable} ${pixelifySans.variable} antialiased`}
-      >
+      <body className={`${fontVariables} antialiased`}>
         {children}
       </body>
     </html>

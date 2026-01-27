@@ -4,11 +4,9 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useState } from "react";
 
-const EASE_OUT_EXPO = [0.19, 1, 0.22, 1] as const;
-
+const EASE = [0.19, 1, 0.22, 1] as const;
 const WHOP_CHECKOUT_URL = "https://whop.com/aarte/aarte-agent/";
-
-const features = [
+const FEATURES = [
   "1 AARTE AI Agent",
   "Full API Access",
   "Priority Support",
@@ -36,7 +34,6 @@ export default function SignUpPage() {
     setIsSubmitting(true);
 
     try {
-      // Store signup data before redirecting to checkout
       const response = await fetch("/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -47,11 +44,8 @@ export default function SignUpPage() {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to save signup info");
-      }
+      if (!response.ok) throw new Error("Failed to save signup info");
 
-      // Redirect to Whop checkout
       window.location.href = WHOP_CHECKOUT_URL;
     } catch {
       setError("Something went wrong. Please try again.");
@@ -59,37 +53,28 @@ export default function SignUpPage() {
     }
   };
 
+  const navLinkClass = "font-mono text-xs text-white hover:text-white/60 transition-colors uppercase";
+  const inputClass = "w-full bg-transparent border border-white/20 px-4 py-3 font-mono text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-white/40 transition-colors";
+  const labelClass = "block font-mono text-[10px] text-white/40 uppercase mb-2";
+
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-[#ffb700] selection:text-black">
-      {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-40 px-6 py-4 flex items-center justify-between">
-        <Link
-          href="/"
-          className="font-mono text-xs text-white hover:text-white/60 transition-colors uppercase"
-        >
-          AARTE
-        </Link>
-        <Link
-          href="/"
-          className="font-mono text-xs text-white hover:text-white/60 transition-colors uppercase"
-        >
-          Back [←]
-        </Link>
+        <Link href="/" className={navLinkClass}>AARTE</Link>
+        <Link href="/" className={navLinkClass}>Back [←]</Link>
       </header>
 
-      {/* Main Content */}
       <main className="min-h-screen flex items-center justify-center px-6 py-24">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: EASE_OUT_EXPO }}
+          transition={{ duration: 1, ease: EASE }}
           className="w-full max-w-md"
         >
-          {/* Pricing Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.8, ease: EASE_OUT_EXPO }}
+            transition={{ delay: 0.2, duration: 0.8, ease: EASE }}
             className="text-center mb-10"
           >
             <h1 className="text-[clamp(2rem,6vw,3.5rem)] font-medium leading-[1.1] mb-4">
@@ -100,19 +85,16 @@ export default function SignUpPage() {
             </p>
           </motion.div>
 
-          {/* Pricing Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.8, ease: EASE_OUT_EXPO }}
+            transition={{ delay: 0.4, duration: 0.8, ease: EASE }}
             className="border border-white/20 p-8 relative overflow-hidden"
           >
-            {/* Popular Badge */}
             <div className="absolute top-0 right-0 bg-white text-black font-mono text-[10px] uppercase px-3 py-1">
               Most Popular
             </div>
 
-            {/* Plan Name */}
             <div className="mb-6">
               <h2 className="font-mono text-xs text-white/40 uppercase mb-2">
                 Minimum Plan
@@ -120,18 +102,14 @@ export default function SignUpPage() {
               <div className="flex items-baseline gap-1">
                 <span className="text-5xl font-medium">$29</span>
                 <span className="text-2xl font-medium text-white/60">.99</span>
-                <span className="text-white/40 font-mono text-sm ml-2">
-                  / month
-                </span>
+                <span className="text-white/40 font-mono text-sm ml-2">/ month</span>
               </div>
             </div>
 
-            {/* Divider */}
             <div className="border-t border-white/10 my-6" />
 
-            {/* Features */}
             <ul className="space-y-4 mb-8">
-              {features.map((feature, index) => (
+              {FEATURES.map((feature, index) => (
                 <motion.li
                   key={feature}
                   initial={{ opacity: 0, x: -10 }}
@@ -139,7 +117,7 @@ export default function SignUpPage() {
                   transition={{
                     delay: 0.5 + index * 0.1,
                     duration: 0.5,
-                    ease: EASE_OUT_EXPO,
+                    ease: EASE,
                   }}
                   className="flex items-center gap-3 font-mono text-sm"
                 >
@@ -149,17 +127,15 @@ export default function SignUpPage() {
               ))}
             </ul>
 
-            {/* Divider */}
             <div className="border-t border-white/10 my-6" />
 
-            {/* Signup Form */}
             <form onSubmit={handleCheckout} className="space-y-4 mb-6">
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9, duration: 0.5, ease: EASE_OUT_EXPO }}
+                transition={{ delay: 0.9, duration: 0.5, ease: EASE }}
               >
-                <label className="block font-mono text-[10px] text-white/40 uppercase mb-2">
+                <label className={labelClass}>
                   Email <span className="text-white/60">*</span>
                 </label>
                 <input
@@ -168,16 +144,16 @@ export default function SignUpPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
                   required
-                  className="w-full bg-transparent border border-white/20 px-4 py-3 font-mono text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-white/40 transition-colors"
+                  className={inputClass}
                 />
               </motion.div>
 
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.95, duration: 0.5, ease: EASE_OUT_EXPO }}
+                transition={{ delay: 0.95, duration: 0.5, ease: EASE }}
               >
-                <label className="block font-mono text-[10px] text-white/40 uppercase mb-2">
+                <label className={labelClass}>
                   Telegram <span className="text-white/30">(optional)</span>
                 </label>
                 <input
@@ -185,16 +161,16 @@ export default function SignUpPage() {
                   value={telegram}
                   onChange={(e) => setTelegram(e.target.value)}
                   placeholder="@username"
-                  className="w-full bg-transparent border border-white/20 px-4 py-3 font-mono text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-white/40 transition-colors"
+                  className={inputClass}
                 />
               </motion.div>
 
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1, duration: 0.5, ease: EASE_OUT_EXPO }}
+                transition={{ delay: 1, duration: 0.5, ease: EASE }}
               >
-                <label className="block font-mono text-[10px] text-white/40 uppercase mb-2">
+                <label className={labelClass}>
                   WhatsApp <span className="text-white/30">(optional)</span>
                 </label>
                 <input
@@ -202,21 +178,18 @@ export default function SignUpPage() {
                   value={whatsapp}
                   onChange={(e) => setWhatsapp(e.target.value)}
                   placeholder="+1 234 567 8900"
-                  className="w-full bg-transparent border border-white/20 px-4 py-3 font-mono text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-white/40 transition-colors"
+                  className={inputClass}
                 />
               </motion.div>
 
-              {error && (
-                <p className="text-red-400 font-mono text-xs">{error}</p>
-              )}
+              {error && <p className="text-red-400 font-mono text-xs">{error}</p>}
 
-              {/* CTA Button */}
               <motion.button
                 type="submit"
                 disabled={isSubmitting}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.05, duration: 0.5, ease: EASE_OUT_EXPO }}
+                transition={{ delay: 1.05, duration: 0.5, ease: EASE }}
                 className="w-full bg-white text-black font-mono text-sm uppercase py-4 hover:bg-white/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span>{isSubmitting ? "Processing..." : "Subscribe Now"}</span>
@@ -237,17 +210,15 @@ export default function SignUpPage() {
               </motion.button>
             </form>
 
-            {/* Secure Payment Note */}
             <p className="text-center text-white/30 font-mono text-[10px] mt-4 uppercase">
               Secure payment via Whop
             </p>
           </motion.div>
 
-          {/* Additional Info */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 1.2, duration: 0.8, ease: EASE_OUT_EXPO }}
+            transition={{ delay: 1.2, duration: 0.8, ease: EASE }}
             className="mt-8 text-center"
           >
             <p className="text-white/40 font-mono text-xs">
@@ -263,7 +234,6 @@ export default function SignUpPage() {
         </motion.div>
       </main>
 
-      {/* Footer */}
       <footer className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/10 bg-[#0a0a0a]/90 backdrop-blur-sm py-3 px-6">
         <div className="flex items-center justify-between font-mono text-[10px] text-white/30">
           <span>© AARTE — Applied Artificial Intelligence</span>

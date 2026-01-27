@@ -17,7 +17,7 @@ const EASE_TEXT_REVEAL = [0.23, 0.32, 0.23, 0.2] as const;
 const EASE_BUTTON_HOVER = [0.16, 1, 0.3, 1] as const;
 const EASE_SMOOTH = [0.87, 0, 0.13, 1] as const;
 
-// Shared barcode SVG paths
+// Barcode SVG paths
 const BARCODE_PATHS = [
   "M0 109V0H5.54237V109H0ZM11.0847 109V0H16.6271V109H11.0847ZM22.1695 109V0H38.7966V109H22.1695ZM44.339 109V0H60.9661V109H44.339ZM77.5932 109V0H83.1356V109H77.5932Z",
   "M83.2222 109V0H99.8493V109H83.2222ZM105.392 109V0H110.934V109H105.392ZM116.476 109V0H122.019V109H116.476ZM138.646 109V0H155.273V109H138.646ZM160.815 109V0H166.358V109H160.815Z",
@@ -31,21 +31,6 @@ function BarcodeSVG({ className = "", ...props }: React.SVGProps<SVGSVGElement>)
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 333 109" fill="none" className={className} aria-label="AARTE barcode" {...props}>
       {BARCODE_PATHS.map((d, i) => <path key={i} d={d} fill="currentColor" />)}
     </svg>
-  );
-}
-
-// Shared className constants
-const MONO_XS = "font-mono text-xs";
-const MONO_XS_MUTED = "font-mono text-xs text-white/40";
-const MONO_XS_DIM = "font-mono text-xs text-white/30";
-const MIN_TOUCH = "min-h-[44px]";
-
-// Resource link component
-function ResourceLink({ href, children }: { href: string; children: React.ReactNode }) {
-  return (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="block text-white/40 hover:text-white transition-colors py-1">
-      {children}
-    </a>
   );
 }
 
@@ -120,7 +105,7 @@ function PixelTrailCanvas({ className = "" }: { className?: string }) {
   );
 }
 
-// Scramble text component for menu
+// Scramble text component
 const SCRAMBLE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%&*";
 
 function ScrambleText({ text, isActive, delay = 0 }: { text: string; isActive: boolean; delay?: number }) {
@@ -202,7 +187,6 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
       aria-valuemax={100}
       aria-label="Loading AARTE"
     >
-      {/* Middle vertical line */}
       <div className="absolute inset-0 flex justify-center items-center" aria-hidden="true">
         <motion.div
           className="w-px bg-[#222] h-full origin-top"
@@ -212,7 +196,6 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
         />
       </div>
 
-      {/* Status text */}
       <div className="absolute top-4 sm:top-6 left-1/2 -translate-x-1/2 font-mono text-xs uppercase tracking-wider flex" aria-live="polite">
         {statusText.split("").map((char, i) => (
           <motion.span
@@ -227,7 +210,6 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
         ))}
       </div>
 
-      {/* Dials */}
       <div className="absolute right-4 sm:right-6 top-0 bottom-0 w-[1.4rem] flex flex-col justify-between py-4 sm:py-6 overflow-hidden" aria-hidden="true">
         {dialTypes.map((type, i) => (
           <motion.div
@@ -240,7 +222,6 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
         ))}
       </div>
 
-      {/* Percentage */}
       <motion.div
         className="absolute left-4 sm:left-6 max-w-[90vw]"
         style={{ bottom: `${progress * 0.5}%` }}
@@ -255,7 +236,6 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
         </motion.span>
       </motion.div>
 
-      {/* Details */}
       <motion.div
         className="absolute left-4 sm:left-6 top-[50svh] flex flex-col gap-8 sm:gap-12"
         initial={{ opacity: 0 }}
@@ -302,25 +282,7 @@ function useSmoothScroll(enabled: boolean) {
   }, [enabled]);
 }
 
-// Line reveal animation
-function LineReveal({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-
-  return (
-    <div ref={ref} className={`overflow-hidden ${className}`}>
-      <motion.div
-        initial={{ y: "100%" }}
-        animate={{ y: isInView ? 0 : "100%" }}
-        transition={{ duration: 1.5, delay, ease: EASE_TEXT_REVEAL }}
-      >
-        {children}
-      </motion.div>
-    </div>
-  );
-}
-
-// Split text reveal - generic implementation
+// Split text reveal
 function SplitTextReveal({
   text,
   className = "",
@@ -379,6 +341,24 @@ function FadeIn({ children, className = "", delay = 0 }: { children: React.React
   );
 }
 
+// Line reveal animation
+function LineReveal({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  return (
+    <div ref={ref} className={`overflow-hidden ${className}`}>
+      <motion.div
+        initial={{ y: "100%" }}
+        animate={{ y: isInView ? 0 : "100%" }}
+        transition={{ duration: 1.5, delay, ease: EASE_TEXT_REVEAL }}
+      >
+        {children}
+      </motion.div>
+    </div>
+  );
+}
+
 // Chapter header
 function ChapterHeader({ number, title }: { number: string; title: string }) {
   const ref = useRef(null);
@@ -399,7 +379,7 @@ function ChapterHeader({ number, title }: { number: string; title: string }) {
   );
 }
 
-// Infinite scroll marquee with GSAP
+// Infinite scroll marquee
 function InfiniteMarquee({ children, speed = 50, direction = "left" }: { children: React.ReactNode; speed?: number; direction?: "left" | "right" }) {
   const innerRef = useRef<HTMLDivElement>(null);
 
@@ -436,99 +416,7 @@ function InfiniteMarquee({ children, speed = 50, direction = "left" }: { childre
   );
 }
 
-// Interactive grid demo
-const GRID_LAYOUTS = [
-  [{ span: 4, start: 1 }, { span: 4, start: 5 }, { span: 4, start: 9 }],
-  [{ span: 6, start: 1 }, { span: 6, start: 7 }],
-  [{ span: 3, start: 1 }, { span: 6, start: 4 }, { span: 3, start: 10 }],
-];
-
-function GridDemo({ layout }: { layout: number }) {
-  return (
-    <div className="grid grid-cols-12 gap-2 h-40 bg-white/5 rounded-lg p-4">
-      {GRID_LAYOUTS[layout].map((item, i) => (
-        <motion.div
-          key={`${layout}-${i}`}
-          className="bg-white/10 rounded flex items-center justify-center font-mono text-xs text-white/40 border border-white/10"
-          style={{ gridColumn: `${item.start} / span ${item.span}` }}
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.4, delay: i * 0.1 }}
-        >
-          {item.span} col
-        </motion.div>
-      ))}
-    </div>
-  );
-}
-
-// Hover button with text swap
-function HoverButton({ children }: { children: string }) {
-  const [isHovered, setIsHovered] = useState(false);
-
-  return (
-    <motion.button
-      className="group relative px-6 sm:px-8 py-3 sm:py-4 border border-white/20 rounded overflow-hidden font-mono text-sm min-h-[44px]"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      whileTap={{ scale: 0.98 }}
-      aria-label={children}
-    >
-      <span className="relative block overflow-hidden h-5">
-        <motion.span
-          className="block"
-          animate={{ y: isHovered ? "-100%" : "0%" }}
-          transition={{ duration: 0.45, ease: EASE_BUTTON_HOVER }}
-        >
-          {children}
-        </motion.span>
-        <motion.span
-          className="absolute top-full left-0 block w-full"
-          animate={{ y: isHovered ? "-100%" : "0%" }}
-          transition={{ duration: 0.45, ease: EASE_BUTTON_HOVER }}
-        >
-          {children}
-        </motion.span>
-      </span>
-    </motion.button>
-  );
-}
-
-// Link with arrow
-function CWMLink({ href, children, external = true }: { href: string; children: string; external?: boolean }) {
-  const [isHovered, setIsHovered] = useState(false);
-  const linkProps = external ? { target: "_blank", rel: "noopener noreferrer" } : {};
-
-  return (
-    <motion.a
-      href={href}
-      {...linkProps}
-      className="group flex items-center justify-between py-3 border-b border-white/10 min-h-[44px]"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      aria-label={children}
-    >
-      <motion.span
-        className="text-sm text-white/60"
-        animate={{ color: isHovered ? "rgba(255,255,255,1)" : "rgba(255,255,255,0.6)" }}
-        transition={{ duration: 0.3, ease: EASE_BUTTON_HOVER }}
-      >
-        {children}
-      </motion.span>
-      <motion.span
-        className="text-white/40"
-        animate={{ x: isHovered ? 0 : -5, opacity: isHovered ? 1 : 0 }}
-        transition={{ duration: 0.3, ease: EASE_BUTTON_HOVER }}
-        aria-hidden="true"
-      >
-        ↗
-      </motion.span>
-    </motion.a>
-  );
-}
-
-
-// Scroll-linked horizontal text movement
+// Scroll-linked horizontal text
 function ScrollHorizontalText({
   children,
   direction = "left",
@@ -574,58 +462,16 @@ function ScrollHorizontalText({
   );
 }
 
-// Stagger animation demo
-function StaggerDemo() {
-  const [isHovered, setIsHovered] = useState(false);
-
+// Resource link component
+function ResourceLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
-    <motion.div
-      className="border border-white/10 rounded-lg p-6 sm:p-8 cursor-pointer h-full"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      whileHover={{ borderColor: "rgba(255,255,255,0.2)" }}
-      role="button"
-      tabIndex={0}
-      aria-label="Stagger effect demo"
-    >
-      <div className="text-xs text-white/40 mb-4">Stagger effect</div>
-      <div className="text-2xl font-medium mb-6 overflow-hidden">
-        {"STAGGER".split("").map((letter, i) => (
-          <motion.span
-            key={i}
-            className="inline-block"
-            animate={{ y: isHovered ? [20, 0] : 0, opacity: isHovered ? [0, 1] : 1 }}
-            transition={{ duration: 0.6, delay: i * 0.025, ease: EASE_SMOOTH }}
-          >
-            {letter}
-          </motion.span>
-        ))}
-      </div>
-      <div className="font-mono text-xs text-white/30 space-y-1">
-        <div>Duration: .6 sec</div>
-        <div>Stagger: 0.025 sec</div>
-        <div>Method: per-char delay</div>
-      </div>
-    </motion.div>
+    <a href={href} target="_blank" rel="noopener noreferrer" className="block text-white/40 hover:text-white transition-colors py-1">
+      {children}
+    </a>
   );
 }
 
-// Color swatch grid
-function ColorSwatchGrid({ colors }: { colors: Array<{ color: string; name: string }> }) {
-  return (
-    <div className="grid grid-cols-3 gap-3 sm:gap-4">
-      {colors.map((c) => (
-        <div key={c.color}>
-          <div className="h-20 sm:h-24 rounded-lg mb-2" style={{ backgroundColor: c.color }} />
-          <div className="font-mono text-xs text-white/40">{c.color}</div>
-          <div className="text-xs text-white/30">{c.name}</div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-// About section with GSAP ScrollTrigger pin
+// About section with GSAP
 function AboutSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -731,7 +577,6 @@ function AboutSection() {
           className="relative bg-[#e8e8e8] overflow-hidden rounded-lg"
           style={{ width: "50%", height: "50%" }}
         >
-          {/* Eyebrows */}
           <div className="absolute inset-0 flex flex-col justify-between px-3 sm:px-4 py-2 sm:py-3 pointer-events-none z-10">
             <div className="flex justify-between items-center w-full">
               <p className="font-mono text-[10px] text-black/60 uppercase tracking-wider">chapter 1:</p>
@@ -743,9 +588,7 @@ function AboutSection() {
             </div>
           </div>
 
-          {/* Main content */}
           <div className="absolute inset-0 flex flex-col items-center px-3 sm:px-4 py-6 sm:py-8 z-20">
-            {/* Top text - aligned to bottom */}
             <div className="flex-1 w-full flex flex-col justify-end pb-4">
               <h2
                 ref={(el) => { creativityCharsRef.current[0] = el; }}
@@ -767,7 +610,6 @@ function AboutSection() {
               </p>
             </div>
 
-            {/* Rotating icon */}
             <div className="flex justify-center shrink-0">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -786,7 +628,6 @@ function AboutSection() {
               </svg>
             </div>
 
-            {/* Bottom text - aligned to top */}
             <div className="flex-1 w-full flex justify-center items-start pt-4">
               <p className="text-[clamp(3rem,15vw,10rem)] font-pixel leading-[0.9] tracking-tight text-black">
                 {techText.split("").map((char, i) => (
@@ -808,7 +649,7 @@ function AboutSection() {
   );
 }
 
-// Pixel transition effect
+// Pixel transition
 const PIXEL_CONFIG = { size: 24, gap: 2, cols: 32, rows: 19 };
 const TOTAL_PIXELS = PIXEL_CONFIG.cols * PIXEL_CONFIG.rows;
 
@@ -932,7 +773,7 @@ function BrickBlocks() {
   );
 }
 
-// Color animated title - reuses SplitTextReveal
+// Color animated title
 function ColorAnimatedTitle({ text, className = "" }: { text: string; className?: string }) {
   const getColorClass = (index: number): string => {
     const pattern = [true, false, true, true, false, false];
@@ -941,7 +782,7 @@ function ColorAnimatedTitle({ text, className = "" }: { text: string; className?
   return <SplitTextReveal text={text} className={className} duration={1.2} stagger={0.03} getColorClass={getColorClass} />;
 }
 
-// Design+Dev title - reuses SplitTextReveal
+// Design+Dev title
 function DesignDevTitle({ text, delay = 0 }: { text: string; delay?: number }) {
   const getColorClass = (index: number): string => {
     const pattern = [false, true, false, true, false, true, true, false, true, false];
@@ -1036,7 +877,6 @@ function IntersectionSection() {
       ref={sectionRef}
       className="panel relative min-h-[150vh] bg-[#0a0a0a] flex items-center justify-center overflow-hidden"
     >
-      {/* Radial dashes */}
       <div
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
         aria-hidden="true"
@@ -1054,7 +894,6 @@ function IntersectionSection() {
         </div>
       </div>
 
-      {/* Text content */}
       <div className="relative z-10 text-center px-4 sm:px-6 max-w-5xl">
         <div ref={textRef}>
           <p className="text-[clamp(1rem,3vw,2.2rem)] font-medium leading-[1.2] tracking-[-0.02em] text-white">
@@ -1078,7 +917,6 @@ function IntersectionSection() {
         </div>
       </div>
 
-      {/* Brick blocks overlay - positioned outside text div for proper z-index */}
       <div
         ref={bricksWrapperRef}
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-30"
@@ -1096,7 +934,6 @@ export default function CreativeManual() {
   const [loading, setLoading] = useState(true);
   useSmoothScroll(!loading);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [activeLayout, setActiveLayout] = useState(0);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
@@ -1188,7 +1025,7 @@ export default function CreativeManual() {
       >
         <a
           href="/"
-          className={`${MONO_XS} text-white hover:text-white/60 transition-colors uppercase ${MIN_TOUCH} flex items-center`}
+          className="font-mono text-xs text-white hover:text-white/60 transition-colors uppercase min-h-[44px] flex items-center"
           aria-label="AARTE Home"
         >
           AARTE
@@ -1210,7 +1047,7 @@ export default function CreativeManual() {
           </a>
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className={`${MONO_XS} text-white hover:text-white/60 transition-colors uppercase ${MIN_TOUCH} flex items-center`}
+            className="font-mono text-xs text-white hover:text-white/60 transition-colors uppercase min-h-[44px] flex items-center"
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
           >
@@ -1239,7 +1076,6 @@ export default function CreativeManual() {
             className="fixed inset-y-0 right-0 z-50 w-full lg:w-1/2 bg-[#0a0a0a] flex flex-col border-l border-white/10"
             aria-label="Main navigation"
           >
-            {/* Menu Top */}
             <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4">
               <motion.a
                 href="#home"
@@ -1264,7 +1100,6 @@ export default function CreativeManual() {
               </motion.button>
             </div>
 
-            {/* Menu Links */}
             <div className="flex-1 flex flex-col justify-center px-4 sm:px-6">
               {navItems.map((item, i) => (
                 <div key={item.label} className="group overflow-hidden">
@@ -1303,7 +1138,6 @@ export default function CreativeManual() {
               ))}
             </div>
 
-            {/* Menu Footer */}
             <motion.div
               className="px-4 sm:px-6 py-4 sm:py-6 flex items-end justify-between"
               initial={{ opacity: 0 }}
@@ -1431,9 +1265,8 @@ export default function CreativeManual() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
         >
-          {/* Subtitle & CTA */}
           <p className="text-[clamp(1.25rem,2.5vw,2.5rem)] font-medium text-white leading-[1.25] tracking-[-0.01em] mb-4 sm:mb-6">
-            Create Your Personal AARTE Agent
+            Create Your Personal AARTE Agent to Create Your Personal Moltbot <span className="text-white/60">(formerly Clawdbot)</span>
           </p>
           <div className="flex flex-wrap gap-3 mb-6 sm:mb-8">
             <a
@@ -1459,9 +1292,9 @@ export default function CreativeManual() {
           ].map((section, i) => (
             <div key={i}>
               <div className="flex justify-between items-baseline mb-2">
-                <span className={`${MONO_XS_MUTED} uppercase tracking-wider`}>{section.label}</span>
+                <span className="font-mono text-xs text-white/40 uppercase tracking-wider">{section.label}</span>
                 {typeof section.items[0] === "object" && "href" in section.items[0] && (
-                  <a href={section.items[0].href} {...("external" in section.items[0] && section.items[0].external ? { target: "_blank", rel: "noopener noreferrer" } : {})} className={`${MONO_XS} text-white uppercase tracking-wider hover:text-white/60 transition-colors ${MIN_TOUCH} flex items-center`}>
+                  <a href={section.items[0].href} {...("external" in section.items[0] && section.items[0].external ? { target: "_blank", rel: "noopener noreferrer" } : {})} className="font-mono text-xs text-white uppercase tracking-wider hover:text-white/60 transition-colors min-h-[44px] flex items-center">
                     {section.items[0].text}
                   </a>
                 )}
@@ -1471,9 +1304,9 @@ export default function CreativeManual() {
                 <div key={j}>
                   <div className="flex justify-end mb-2">
                     {typeof item === "string" ? (
-                      <span className={`${MONO_XS} text-white uppercase tracking-wider`}>{item}</span>
+                      <span className="font-mono text-xs text-white uppercase tracking-wider">{item}</span>
                     ) : (
-                      <a href={item.href} className={`${MONO_XS} text-white uppercase tracking-wider hover:text-white/60 transition-colors ${MIN_TOUCH} flex items-center`}>{item.text}</a>
+                      <a href={item.href} className="font-mono text-xs text-white uppercase tracking-wider hover:text-white/60 transition-colors min-h-[44px] flex items-center">{item.text}</a>
                     )}
                   </div>
                   <div className={`border-b border-white/20 ${j === section.items.length - 2 ? `mb-${section.mb}` : "mb-2"}`} />
@@ -1560,7 +1393,7 @@ export default function CreativeManual() {
         </div>
       </section>
 
-      {/* CHAPTER 2.1: HOW IT WORKS - Business Case */}
+      {/* CHAPTER 2.1: HOW IT WORKS */}
       <section id="how-it-works" className="panel py-24 sm:py-32 px-4 sm:px-6 border-t border-white/10 bg-[#0a0a0a]">
         <div className="max-w-7xl mx-auto">
           <ChapterHeader number="2.1" title="how it works" />
@@ -1615,7 +1448,7 @@ export default function CreativeManual() {
         </div>
       </section>
 
-      {/* CHAPTER 2.2: TECH STACK - Architecture */}
+      {/* CHAPTER 2.2: TECH STACK */}
       <section id="tech-stack" className="panel py-24 sm:py-32 border-t border-white/10 bg-[#0a0a0a] overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <ChapterHeader number="2.2" title="tech stack" />
@@ -1797,7 +1630,7 @@ export default function CreativeManual() {
 
           <div className="grid md:grid-cols-2 gap-8 sm:gap-12 mb-16">
             <div>
-              <h3 className="text-[clamp(2rem,6vw,4rem)] font-medium leading-[0.9] tracking-[-0.02em] mb-6 sm:mb-8">
+              <h3 className="text-[clamp(2rem,6vw,4rem)] font-medium leading-[0.9] tracking-[-0.03em] mb-6 sm:mb-8">
                 <LineReveal>Connect</LineReveal>
                 <LineReveal delay={0.15}>Everything</LineReveal>
               </h3>
