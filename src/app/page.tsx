@@ -1125,8 +1125,8 @@ function IntersectionSection() {
           opacity: 0,
           scrollTrigger: {
             trigger: sectionRef.current,
-            start: "top 50%",
-            end: "top 20%",
+            start: "top 20%",
+            end: "center center",
             scrub: 0.3,
           }
         }
@@ -1196,16 +1196,16 @@ function IntersectionSection() {
             and render a live <span className="text-[#ffb700]">Canvas</span> you control.
           </p>
         </div>
+      </div>
 
-        {/* Brick blocks overlay */}
-        <div
-          ref={bricksWrapperRef}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
-          style={{ opacity: 1 }}
-          aria-hidden="true"
-        >
-          <BrickBlocks />
-        </div>
+      {/* Brick blocks overlay - positioned outside text div for proper z-index */}
+      <div
+        ref={bricksWrapperRef}
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-30"
+        style={{ opacity: 1 }}
+        aria-hidden="true"
+      >
+        <BrickBlocks />
       </div>
     </section>
   );
