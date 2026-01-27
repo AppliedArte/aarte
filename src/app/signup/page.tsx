@@ -96,7 +96,7 @@ export default function SignUpPage() {
               Get AARTE
             </h1>
             <p className="text-white/60 font-mono text-sm">
-              Transform possibilities into reality with Applied AI
+              Create Your Personal AARTE Agent to Create your Moltbot (Formerly Clawdbot) assistant
             </p>
           </motion.div>
 
