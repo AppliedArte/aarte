@@ -71,7 +71,40 @@ const pixelifySans = Pixelify_Sans({
 
 export const metadata: Metadata = {
   title: "AARTE: Applied Artificial Intelligence",
-  description: "Applied Artificial Intelligence - Transforming possibilities into reality",
+  description: "Your personal AI assistant that integrates with WhatsApp, Telegram, Slack, and more. 100% private, self-hosted, your data never leaves your infrastructure.",
+  keywords: ["AI assistant", "artificial intelligence", "WhatsApp bot", "Telegram bot", "Slack integration", "private AI", "self-hosted AI"],
+  authors: [{ name: "AARTE" }],
+  openGraph: {
+    title: "AARTE: Applied Artificial Intelligence",
+    description: "Your personal AI assistant. 100% private, self-hosted.",
+    url: "https://aarte.co",
+    siteName: "AARTE",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AARTE: Applied Artificial Intelligence",
+    description: "Your personal AI assistant. 100% private, self-hosted.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "AARTE",
+  "applicationCategory": "BusinessApplication",
+  "description": "Your personal AI assistant that integrates with WhatsApp, Telegram, Slack, and more. 100% private, self-hosted.",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "49.99",
+    "priceCurrency": "USD",
+  },
 };
 
 export default function RootLayout({
@@ -81,6 +114,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body
         className={`${ppNeueMontreal.variable} ${ibmPlexMono.variable} ${silkscreen.variable} ${vt323.variable} ${pressStart2P.variable} ${pixelifySans.variable} antialiased`}
       >

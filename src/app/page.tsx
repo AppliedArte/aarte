@@ -10,14 +10,46 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-// CWM exact easing functions
+// Easing functions
 const EASE_OUT_EXPO = [0.19, 1, 0.22, 1] as const;
 const EASE_IN_DROP = [0.6, 0, 0.4, 1] as const;
 const EASE_TEXT_REVEAL = [0.23, 0.32, 0.23, 0.2] as const;
 const EASE_BUTTON_HOVER = [0.16, 1, 0.3, 1] as const;
 const EASE_SMOOTH = [0.87, 0, 0.13, 1] as const;
 
-// Pixelated cursor trail canvas - CWM style effect with inverse blend
+// Shared barcode SVG paths
+const BARCODE_PATHS = [
+  "M0 109V0H5.54237V109H0ZM11.0847 109V0H16.6271V109H11.0847ZM22.1695 109V0H38.7966V109H22.1695ZM44.339 109V0H60.9661V109H44.339ZM77.5932 109V0H83.1356V109H77.5932Z",
+  "M83.2222 109V0H99.8493V109H83.2222ZM105.392 109V0H110.934V109H105.392ZM116.476 109V0H122.019V109H116.476ZM138.646 109V0H155.273V109H138.646ZM160.815 109V0H166.358V109H160.815Z",
+  "M166.444 109V0H183.072V109H166.444ZM188.614 109V0H194.156V109H188.614ZM199.699 109V0H216.326V109H199.699ZM232.953 109V0H238.495V109H232.953ZM244.038 109V0H249.58V109H244.038Z",
+  "M249.667 109V0H255.209V109H249.667ZM271.836 109V0H288.463V109H271.836ZM294.006 109V0H299.548V109H294.006ZM305.09 109V0H321.717V109H305.09ZM327.26 109V0H332.802V109H327.26Z",
+] as const;
+
+// Barcode SVG component
+function BarcodeSVG({ className = "", ...props }: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 333 109" fill="none" className={className} aria-label="AARTE barcode" {...props}>
+      {BARCODE_PATHS.map((d, i) => <path key={i} d={d} fill="currentColor" />)}
+    </svg>
+  );
+}
+
+// Shared className constants
+const MONO_XS = "font-mono text-xs";
+const MONO_XS_MUTED = "font-mono text-xs text-white/40";
+const MONO_XS_DIM = "font-mono text-xs text-white/30";
+const MIN_TOUCH = "min-h-[44px]";
+
+// Resource link component
+function ResourceLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <a href={href} target="_blank" rel="noopener noreferrer" className="block text-white/40 hover:text-white transition-colors py-1">
+      {children}
+    </a>
+  );
+}
+
+// Pixelated cursor trail canvas
 function PixelTrailCanvas({ className = "" }: { className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pixelsRef = useRef<{ x: number; y: number; opacity: number; size: number }[]>([]);
@@ -25,20 +57,16 @@ function PixelTrailCanvas({ className = "" }: { className?: string }) {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    const ctx = canvas?.getContext("2d");
+    if (!canvas || !ctx) return;
 
     const updateSize = () => {
-      const parent = canvas.parentElement;
-      if (!parent) return;
-      const rect = parent.getBoundingClientRect();
+      const rect = canvas.parentElement?.getBoundingClientRect();
+      if (!rect) return;
       canvas.width = rect.width;
       canvas.height = rect.height;
     };
     updateSize();
-    window.addEventListener("resize", updateSize);
 
     const pixelSize = 20;
     const maxPixels = 100;
@@ -60,7 +88,6 @@ function PixelTrailCanvas({ className = "" }: { className?: string }) {
       }
     };
 
-    let animationId: number;
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       pixelsRef.current = pixelsRef.current.filter((pixel) => {
@@ -70,10 +97,11 @@ function PixelTrailCanvas({ className = "" }: { className?: string }) {
         ctx.fillRect(pixel.x, pixel.y, pixel.size, pixel.size);
         return true;
       });
-      animationId = requestAnimationFrame(animate);
+      requestAnimationFrame(animate);
     };
-    animate();
+    const animationId = requestAnimationFrame(animate);
 
+    window.addEventListener("resize", updateSize);
     window.addEventListener("mousemove", handleMouseMove);
 
     return () => {
@@ -93,9 +121,10 @@ function PixelTrailCanvas({ className = "" }: { className?: string }) {
 }
 
 // Scramble text component for menu
+const SCRAMBLE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%&*";
+
 function ScrambleText({ text, isActive, delay = 0 }: { text: string; isActive: boolean; delay?: number }) {
   const [displayText, setDisplayText] = useState(text);
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%&*";
 
   useEffect(() => {
     if (!isActive) {
@@ -104,20 +133,17 @@ function ScrambleText({ text, isActive, delay = 0 }: { text: string; isActive: b
     }
 
     let iteration = 0;
-    const totalIterations = text.length * 4;
+    const totalIterations = text.length * 2;
     let interval: NodeJS.Timeout;
 
     const timeout = setTimeout(() => {
       interval = setInterval(() => {
         setDisplayText(
-          text
-            .split("")
-            .map((char, index) => {
-              if (char === " ") return " ";
-              if (index < iteration / 4) return text[index];
-              return chars[Math.floor(Math.random() * chars.length)];
-            })
-            .join("")
+          text.split("").map((char, index) => {
+            if (char === " ") return " ";
+            if (index < iteration / 2) return text[index];
+            return SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
+          }).join("")
         );
 
         iteration++;
@@ -125,26 +151,25 @@ function ScrambleText({ text, isActive, delay = 0 }: { text: string; isActive: b
           clearInterval(interval);
           setDisplayText(text);
         }
-      }, 50);
+      }, 25);
     }, delay);
 
     return () => {
       clearTimeout(timeout);
       clearInterval(interval);
     };
-  }, [text, isActive, delay, chars]);
+  }, [text, isActive, delay]);
 
   return <span>{displayText}</span>;
 }
 
-// Preloader - exact CWM style
+// Preloader
 function Preloader({ onComplete }: { onComplete: () => void }) {
   const [progress, setProgress] = useState(0);
   const [showChars, setShowChars] = useState(false);
 
   useEffect(() => {
     const charTimer = setTimeout(() => setShowChars(true), 300);
-
     const interval = setInterval(() => {
       setProgress(prev => {
         if (prev >= 100) {
@@ -161,7 +186,7 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
     };
   }, [onComplete]);
 
-  const dialTypes = ["y", "white", "white", "white", "gray", "gray", "gray", "dark", "dark", "dark", "white"];
+  const dialTypes = ["y", ...Array(3).fill("white"), ...Array(3).fill("gray"), ...Array(3).fill("dark"), "white"];
   const dialColors = { y: "bg-[#ffb700]", white: "bg-[#999]", gray: "bg-[#444]", dark: "bg-[#222]" };
   const statusText = "[status:active]";
   const statusChars = new Set(["s", "t", "a", "u"]);
@@ -295,19 +320,21 @@ function LineReveal({ children, className = "", delay = 0 }: { children: React.R
   );
 }
 
-// Split text reveal
+// Split text reveal - generic implementation
 function SplitTextReveal({
   text,
   className = "",
   delay = 0,
   stagger = 0.025,
-  duration = 1.5
+  duration = 1.5,
+  getColorClass
 }: {
   text: string;
   className?: string;
   delay?: number;
   stagger?: number;
   duration?: number;
+  getColorClass?: (index: number) => string;
 }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-50px" });
@@ -317,7 +344,7 @@ function SplitTextReveal({
       {text.split("").map((char, i) => (
         <motion.span
           key={i}
-          className="inline-block"
+          className={`inline-block ${getColorClass?.(i) || ""}`}
           style={{ whiteSpace: char === " " ? "pre" : "normal" }}
           initial={{ y: "100%", opacity: 0 }}
           animate={isInView ? { y: 0, opacity: 1 } : { y: "100%", opacity: 0 }}
@@ -374,18 +401,14 @@ function ChapterHeader({ number, title }: { number: string; title: string }) {
 
 // Infinite scroll marquee with GSAP
 function InfiniteMarquee({ children, speed = 50, direction = "left" }: { children: React.ReactNode; speed?: number; direction?: "left" | "right" }) {
-  const containerRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!containerRef.current || !innerRef.current) return undefined;
-
     const inner = innerRef.current;
-    const totalWidth = inner.scrollWidth / 2;
+    if (!inner) return undefined;
 
-    if (direction === "right") {
-      gsap.set(inner, { x: -totalWidth });
-    }
+    const totalWidth = inner.scrollWidth / 2;
+    if (direction === "right") gsap.set(inner, { x: -totalWidth });
 
     const tween = gsap.to(inner, {
       x: direction === "left" ? -totalWidth : 0,
@@ -404,7 +427,7 @@ function InfiniteMarquee({ children, speed = 50, direction = "left" }: { childre
   }, [speed, direction]);
 
   return (
-    <div ref={containerRef} className="overflow-hidden whitespace-nowrap">
+    <div className="overflow-hidden whitespace-nowrap">
       <div ref={innerRef} className="inline-flex">
         {children}
         {children}
@@ -414,17 +437,16 @@ function InfiniteMarquee({ children, speed = 50, direction = "left" }: { childre
 }
 
 // Interactive grid demo
-function GridDemo({ layout }: { layout: number }) {
-  const layouts = [
-    [{ span: 4, start: 1 }, { span: 4, start: 5 }, { span: 4, start: 9 }],
-    [{ span: 6, start: 1 }, { span: 6, start: 7 }],
-    [{ span: 3, start: 1 }, { span: 6, start: 4 }, { span: 3, start: 10 }],
-  ];
-  const currentLayout = layouts[layout];
+const GRID_LAYOUTS = [
+  [{ span: 4, start: 1 }, { span: 4, start: 5 }, { span: 4, start: 9 }],
+  [{ span: 6, start: 1 }, { span: 6, start: 7 }],
+  [{ span: 3, start: 1 }, { span: 6, start: 4 }, { span: 3, start: 10 }],
+];
 
+function GridDemo({ layout }: { layout: number }) {
   return (
     <div className="grid grid-cols-12 gap-2 h-40 bg-white/5 rounded-lg p-4">
-      {currentLayout.map((item, i) => (
+      {GRID_LAYOUTS[layout].map((item, i) => (
         <motion.div
           key={`${layout}-${i}`}
           className="bg-white/10 rounded flex items-center justify-center font-mono text-xs text-white/40 border border-white/10"
@@ -472,23 +494,15 @@ function HoverButton({ children }: { children: string }) {
   );
 }
 
-// CWM-style link with arrow
-function CWMLink({
-  href,
-  children,
-  external = true
-}: {
-  href: string;
-  children: string;
-  external?: boolean;
-}) {
+// Link with arrow
+function CWMLink({ href, children, external = true }: { href: string; children: string; external?: boolean }) {
   const [isHovered, setIsHovered] = useState(false);
+  const linkProps = external ? { target: "_blank", rel: "noopener noreferrer" } : {};
 
   return (
     <motion.a
       href={href}
-      target={external ? "_blank" : undefined}
-      rel={external ? "noopener noreferrer" : undefined}
+      {...linkProps}
       className="group flex items-center justify-between py-3 border-b border-white/10 min-h-[44px]"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -503,10 +517,7 @@ function CWMLink({
       </motion.span>
       <motion.span
         className="text-white/40"
-        animate={{
-          x: isHovered ? 0 : -5,
-          opacity: isHovered ? 1 : 0
-        }}
+        animate={{ x: isHovered ? 0 : -5, opacity: isHovered ? 1 : 0 }}
         transition={{ duration: 0.3, ease: EASE_BUTTON_HOVER }}
         aria-hidden="true"
       >
@@ -516,10 +527,6 @@ function CWMLink({
   );
 }
 
-// Resource link
-function ResourceLink({ href, children }: { href: string; children: string }) {
-  return <CWMLink href={href}>{children}</CWMLink>;
-}
 
 // Scroll-linked horizontal text movement
 function ScrollHorizontalText({
@@ -537,31 +544,25 @@ function ScrollHorizontalText({
   const innerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!containerRef.current || !innerRef.current) return;
+    const container = containerRef.current;
+    const inner = innerRef.current;
+    if (!container || !inner) return;
 
     const xValue = direction === "left" ? `-${speed}%` : `${speed}%`;
     const fromX = direction === "left" ? "0%" : `-${speed}%`;
 
-    gsap.fromTo(
-      innerRef.current,
-      { x: fromX },
-      {
-        x: xValue,
-        ease: "none",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: 0.5,
-        },
-      }
-    );
+    gsap.fromTo(inner, { x: fromX }, {
+      x: xValue,
+      ease: "none",
+      scrollTrigger: {
+        trigger: container,
+        start: "top bottom",
+        end: "bottom top",
+        scrub: 0.5,
+      },
+    });
 
-    return () => {
-      ScrollTrigger.getAll().forEach(t => {
-        if (t.trigger === containerRef.current) t.kill();
-      });
-    };
+    return () => ScrollTrigger.getAll().forEach(t => t.trigger === container && t.kill());
   }, [direction, speed]);
 
   return (
@@ -576,7 +577,6 @@ function ScrollHorizontalText({
 // Stagger animation demo
 function StaggerDemo() {
   const [isHovered, setIsHovered] = useState(false);
-  const letters = "STAGGER".split("");
 
   return (
     <motion.div
@@ -590,19 +590,12 @@ function StaggerDemo() {
     >
       <div className="text-xs text-white/40 mb-4">Stagger effect</div>
       <div className="text-2xl font-medium mb-6 overflow-hidden">
-        {letters.map((letter, i) => (
+        {"STAGGER".split("").map((letter, i) => (
           <motion.span
             key={i}
             className="inline-block"
-            animate={{
-              y: isHovered ? [20, 0] : 0,
-              opacity: isHovered ? [0, 1] : 1
-            }}
-            transition={{
-              duration: 0.6,
-              delay: i * 0.025,
-              ease: EASE_SMOOTH
-            }}
+            animate={{ y: isHovered ? [20, 0] : 0, opacity: isHovered ? [0, 1] : 1 }}
+            transition={{ duration: 0.6, delay: i * 0.025, ease: EASE_SMOOTH }}
           >
             {letter}
           </motion.span>
@@ -673,53 +666,21 @@ function AboutSection() {
         }
       );
 
-      if (creativityCharsRef.current[0]) {
-        gsap.fromTo(
-          creativityCharsRef.current[0],
-          { opacity: 0, x: -50 },
-          {
-            opacity: 1,
-            x: 0,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: "top 80%",
-              end: "top 20%",
-              scrub: true,
-            },
-          }
-        );
-      }
+      const textConfigs = [
+        { index: 0, from: { opacity: 0, x: -50 }, start: "top 80%", end: "top 20%" },
+        { index: 1, from: { opacity: 0, y: 30 }, start: "top -60%", end: "top -80%" },
+        { index: 2, from: { opacity: 0, y: 30 }, start: "top -65%", end: "top -85%" },
+      ];
 
-      if (creativityCharsRef.current[1]) {
-        gsap.set(creativityCharsRef.current[1], { opacity: 0, y: 30 });
-        gsap.to(creativityCharsRef.current[1], {
-          opacity: 1,
-          y: 0,
+      textConfigs.forEach(({ index, from, start, end }) => {
+        const el = creativityCharsRef.current[index];
+        if (!el) return;
+        gsap.fromTo(el, from, {
+          opacity: 1, x: 0, y: 0,
           ease: "power2.out",
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top -60%",
-            end: "top -80%",
-            scrub: true,
-          },
+          scrollTrigger: { trigger: sectionRef.current, start, end, scrub: true },
         });
-      }
-
-      if (creativityCharsRef.current[2]) {
-        gsap.set(creativityCharsRef.current[2], { opacity: 0, y: 30 });
-        gsap.to(creativityCharsRef.current[2], {
-          opacity: 1,
-          y: 0,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top -65%",
-            end: "top -85%",
-            scrub: true,
-          },
-        });
-      }
+      });
 
       gsap.to(iconPathRef.current, {
         rotation: 360,
@@ -847,65 +808,48 @@ function AboutSection() {
 }
 
 // Pixel transition effect
+const PIXEL_CONFIG = { size: 24, gap: 2, cols: 32, rows: 19 };
+const TOTAL_PIXELS = PIXEL_CONFIG.cols * PIXEL_CONFIG.rows;
+
 function PixelTransition() {
   const containerRef = useRef<HTMLDivElement>(null);
   const pixelsRef = useRef<(HTMLDivElement | null)[]>([]);
 
-  const pixelSize = 24;
-  const gap = 2;
-  const cols = 32;
-  const rows = 19;
-  const totalPixels = cols * rows;
-
-  const pixelData = useMemo(() => {
-    return Array.from({ length: totalPixels }, () => ({
+  const pixelData = useMemo(() =>
+    Array.from({ length: TOTAL_PIXELS }, () => ({
       delay: Math.random(),
       instant: Math.random() < 0.3,
-    }));
-  }, [totalPixels]);
+    })), []);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    const container = containerRef.current;
+    if (!container) return;
 
     const ctx = gsap.context(() => {
       pixelsRef.current.forEach((pixel, i) => {
         if (!pixel) return;
-
         const data = pixelData[i];
-
-        if (data.instant) {
-          gsap.fromTo(
-            pixel,
-            { backgroundColor: "#0a0a0a" },
-            {
+        const config = data.instant
+          ? {
               backgroundColor: "#e8e8e8",
               duration: 0.1,
               scrollTrigger: {
-                trigger: containerRef.current,
+                trigger: container,
                 start: `top ${50 - data.delay * 40}%`,
                 toggleActions: "play none none reverse",
               },
             }
-          );
-        } else {
-          const startPoint = 70 - data.delay * 20;
-          const endPoint = -20 + data.delay * 40;
-
-          gsap.fromTo(
-            pixel,
-            { backgroundColor: "#0a0a0a" },
-            {
+          : {
               backgroundColor: "#e8e8e8",
               ease: "none",
               scrollTrigger: {
-                trigger: containerRef.current,
-                start: `top ${startPoint}%`,
-                end: `bottom ${endPoint}%`,
+                trigger: container,
+                start: `top ${70 - data.delay * 20}%`,
+                end: `bottom ${-20 + data.delay * 40}%`,
                 scrub: true,
               },
-            }
-          );
-        }
+            };
+        gsap.fromTo(pixel, { backgroundColor: "#0a0a0a" }, config);
       });
     }, containerRef);
 
@@ -913,19 +857,9 @@ function PixelTransition() {
   }, [pixelData]);
 
   return (
-    <div
-      ref={containerRef}
-      className="w-full pt-12 pb-0 bg-[#0a0a0a] overflow-hidden"
-      aria-hidden="true"
-    >
-      <div
-        className="grid w-full"
-        style={{
-          gridTemplateColumns: `repeat(${cols}, 1fr)`,
-          gap: `${gap}px`,
-        }}
-      >
-        {Array.from({ length: totalPixels }, (_, i) => (
+    <div ref={containerRef} className="w-full pt-12 pb-0 bg-[#0a0a0a] overflow-hidden" aria-hidden="true">
+      <div className="grid w-full" style={{ gridTemplateColumns: `repeat(${PIXEL_CONFIG.cols}, 1fr)`, gap: `${PIXEL_CONFIG.gap}px` }}>
+        {Array.from({ length: TOTAL_PIXELS }, (_, i) => (
           <div
             key={i}
             ref={(el) => { pixelsRef.current[i] = el; }}
@@ -939,47 +873,44 @@ function PixelTransition() {
 }
 
 // Brick blocks
+const BRICK_ROWS = [
+  [
+    { w: 70, h: 45, color: "#3a3a3a" },
+    { w: 220, h: 45, color: "#4a4a4a" },
+    { w: 35, h: 45, color: "#2a2a2a" },
+    { w: 90, h: 45, color: "#3a3a3a" },
+  ],
+  [
+    { w: 160, h: 55, color: "#4a4a4a" },
+    { w: 100, h: 55, color: "#3a3a3a" },
+    { w: 260, h: 55, color: "#505050" },
+  ],
+  [
+    { w: 80, h: 50, color: "#3a3a3a" },
+    { w: 130, h: 50, color: "#4a4a4a" },
+    { w: 180, h: 50, color: "#3a3a3a" },
+  ],
+];
+
 function BrickBlocks() {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const brickRows = [
-    [
-      { w: 70, h: 45, color: "#3a3a3a" },
-      { w: 220, h: 45, color: "#4a4a4a" },
-      { w: 35, h: 45, color: "#2a2a2a" },
-      { w: 90, h: 45, color: "#3a3a3a" },
-    ],
-    [
-      { w: 160, h: 55, color: "#4a4a4a" },
-      { w: 100, h: 55, color: "#3a3a3a" },
-      { w: 260, h: 55, color: "#505050" },
-    ],
-    [
-      { w: 80, h: 50, color: "#3a3a3a" },
-      { w: 130, h: 50, color: "#4a4a4a" },
-      { w: 180, h: 50, color: "#3a3a3a" },
-    ],
-  ];
-
   useEffect(() => {
-    if (!containerRef.current) return;
+    const container = containerRef.current;
+    if (!container) return;
 
-    gsap.to(containerRef.current, {
+    gsap.to(container, {
       y: "-20%",
       ease: "none",
       scrollTrigger: {
-        trigger: containerRef.current,
+        trigger: container,
         start: "top bottom",
         end: "bottom top",
         scrub: 0.3,
       },
     });
 
-    return () => {
-      ScrollTrigger.getAll().forEach(t => {
-        if (t.trigger === containerRef.current) t.kill();
-      });
-    };
+    return () => ScrollTrigger.getAll().forEach(t => t.trigger === container && t.kill());
   }, []);
 
   return (
@@ -989,17 +920,10 @@ function BrickBlocks() {
       style={{ transform: "translateY(20%)" }}
       aria-hidden="true"
     >
-      {brickRows.map((row, rowIndex) => (
+      {BRICK_ROWS.map((row, rowIndex) => (
         <div key={rowIndex} className="flex gap-[3px] justify-center">
           {row.map((brick, brickIndex) => (
-            <div
-              key={brickIndex}
-              style={{
-                width: brick.w,
-                height: brick.h,
-                backgroundColor: brick.color,
-              }}
-            />
+            <div key={brickIndex} style={{ width: brick.w, height: brick.h, backgroundColor: brick.color }} />
           ))}
         </div>
       ))}
@@ -1007,68 +931,22 @@ function BrickBlocks() {
   );
 }
 
-// Color animated title
+// Color animated title - reuses SplitTextReveal
 function ColorAnimatedTitle({ text, className = "" }: { text: string; className?: string }) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-
   const getColorClass = (index: number): string => {
     const pattern = [true, false, true, true, false, false];
     return pattern[index % pattern.length] ? "text-white" : "text-white/40";
   };
-
-  return (
-    <span ref={ref} className={className}>
-      {text.split("").map((char, i) => (
-        <motion.span
-          key={i}
-          className={`inline-block ${getColorClass(i)}`}
-          initial={{ y: 100, opacity: 0 }}
-          animate={isInView ? { y: 0, opacity: 1 } : { y: 100, opacity: 0 }}
-          transition={{
-            duration: 1.2,
-            delay: i * 0.03,
-            ease: EASE_TEXT_REVEAL
-          }}
-          style={{ whiteSpace: char === " " ? "pre" : "normal" }}
-        >
-          {char === " " ? "\u00A0" : char}
-        </motion.span>
-      ))}
-    </span>
-  );
+  return <SplitTextReveal text={text} className={className} duration={1.2} stagger={0.03} getColorClass={getColorClass} />;
 }
 
-// Design+Dev title
+// Design+Dev title - reuses SplitTextReveal
 function DesignDevTitle({ text, delay = 0 }: { text: string; delay?: number }) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-
   const getColorClass = (index: number): string => {
     const pattern = [false, true, false, true, false, true, true, false, true, false];
     return pattern[index % pattern.length] ? "text-black" : "text-black/40";
   };
-
-  return (
-    <span ref={ref}>
-      {text.split("").map((char, i) => (
-        <motion.span
-          key={i}
-          className={`inline-block ${getColorClass(i)}`}
-          initial={{ y: 80, opacity: 0 }}
-          animate={isInView ? { y: 0, opacity: 1 } : { y: 80, opacity: 0 }}
-          transition={{
-            duration: 1.2,
-            delay: delay + i * 0.04,
-            ease: EASE_TEXT_REVEAL
-          }}
-          style={{ whiteSpace: char === " " ? "pre" : "normal" }}
-        >
-          {char === " " ? "\u00A0" : char}
-        </motion.span>
-      ))}
-    </span>
-  );
+  return <SplitTextReveal text={text} delay={delay} duration={1.2} stagger={0.04} getColorClass={getColorClass} />;
 }
 
 // Intersection section
@@ -1220,27 +1098,20 @@ export default function CreativeManual() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-    let rafId: number;
-    let lastX = 0;
-    let lastY = 0;
+    let lastX = 0, lastY = 0;
+
+    const updateMousePos = () => {
+      setMousePos(prev => prev.x !== lastX || prev.y !== lastY ? { x: lastX, y: lastY } : prev);
+      requestAnimationFrame(updateMousePos);
+    };
 
     const handleMouseMove = (e: MouseEvent) => {
       lastX = e.clientX;
       lastY = e.clientY;
     };
 
-    const updateMousePos = () => {
-      setMousePos(prev => {
-        if (prev.x !== lastX || prev.y !== lastY) {
-          return { x: lastX, y: lastY };
-        }
-        return prev;
-      });
-      rafId = requestAnimationFrame(updateMousePos);
-    };
-
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
-    rafId = requestAnimationFrame(updateMousePos);
+    const rafId = requestAnimationFrame(updateMousePos);
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
@@ -1254,63 +1125,41 @@ export default function CreativeManual() {
     const content = document.querySelector('.scroll-content') as HTMLElement;
     if (!content) return;
 
-    const getContentHeight = () => content.scrollHeight / 2;
-
-    let contentHeight = getContentHeight();
     let isAdjusting = false;
-    let lastScrollY = window.scrollY;
-
     window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
 
     const handleScroll = () => {
       if (isAdjusting) return;
 
       const currentScrollY = window.scrollY;
-      lastScrollY = currentScrollY;
-
-      contentHeight = getContentHeight();
       const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
 
       if (currentScrollY >= maxScroll - 5) {
         isAdjusting = true;
         window.scrollTo({ top: 1, behavior: 'instant' as ScrollBehavior });
-        lastScrollY = 1;
         requestAnimationFrame(() => { isAdjusting = false; });
       } else if (currentScrollY <= 5) {
         isAdjusting = true;
-        const jumpTo = maxScroll - 1;
-        window.scrollTo({ top: jumpTo, behavior: 'instant' as ScrollBehavior });
-        lastScrollY = jumpTo;
+        window.scrollTo({ top: maxScroll - 1, behavior: 'instant' as ScrollBehavior });
         requestAnimationFrame(() => { isAdjusting = false; });
       }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-
-    const handleResize = () => {
-      contentHeight = getContentHeight();
-    };
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleResize);
-    };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [loading]);
 
   const navItems = [
     { label: "About", href: "#about" },
     {
-      label: "Design + Dev",
+      label: "AARTE",
       href: "#design-dev",
-      subItems: [
-        { label: "2.1 How it works", href: "#how-it-works" },
-        { label: "2.2 Tech Stack", href: "#tech-stack" },
-        { label: "2.3 Skills", href: "#skills" },
-        { label: "2.4 Integrations", href: "#integrations" },
-      ]
+      subItems: ["How it works", "Tech Stack", "Skills", "Integrations"].map((title, i) => ({
+        label: `2.${i + 1} ${title}`,
+        href: `#${title.toLowerCase().replace(/\s+/g, "-")}`
+      }))
     },
-    { label: "Resources", href: "#resources" },
+    { label: "Get Started", href: "#resources" },
   ];
 
   return (
@@ -1327,7 +1176,7 @@ export default function CreativeManual() {
       >
         <a
           href="/"
-          className="font-mono text-xs text-white hover:text-white/60 transition-colors uppercase min-h-[44px] flex items-center"
+          className={`${MONO_XS} text-white hover:text-white/60 transition-colors uppercase ${MIN_TOUCH} flex items-center`}
           aria-label="AARTE Home"
         >
           AARTE
@@ -1342,7 +1191,7 @@ export default function CreativeManual() {
           </a>
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="font-mono text-xs text-white hover:text-white/60 transition-colors uppercase min-h-[44px] flex items-center"
+            className={`${MONO_XS} text-white hover:text-white/60 transition-colors uppercase ${MIN_TOUCH} flex items-center`}
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
           >
@@ -1407,10 +1256,10 @@ export default function CreativeManual() {
                     initial={{ opacity: 0, y: -60 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -30 }}
-                    transition={{ delay: 0.15 + i * 0.12, duration: 0.8, ease: EASE_IN_DROP }}
+                    transition={{ delay: 0.08 + i * 0.06, duration: 0.5, ease: EASE_IN_DROP }}
                     aria-label={item.label}
                   >
-                    <ScrambleText text={item.label} isActive={menuOpen} delay={150 + i * 120} />
+                    <ScrambleText text={item.label} isActive={menuOpen} delay={80 + i * 60} />
                   </motion.a>
                   {"subItems" in item && item.subItems && (
                     <div className="pl-4 mt-2 mb-4 space-y-1 overflow-hidden">
@@ -1423,10 +1272,10 @@ export default function CreativeManual() {
                           initial={{ opacity: 0, y: -30 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -15 }}
-                          transition={{ delay: 0.4 + i * 0.12 + j * 0.06, duration: 0.6, ease: EASE_IN_DROP }}
+                          transition={{ delay: 0.2 + i * 0.06 + j * 0.03, duration: 0.4, ease: EASE_IN_DROP }}
                           aria-label={subItem.label}
                         >
-                          <ScrambleText text={subItem.label} isActive={menuOpen} delay={400 + i * 120 + j * 60} />
+                          <ScrambleText text={subItem.label} isActive={menuOpen} delay={200 + i * 60 + j * 30} />
                         </motion.a>
                       ))}
                     </div>
@@ -1448,12 +1297,7 @@ export default function CreativeManual() {
                   <span className="font-mono text-xs text-white/60">AARTE</span>
                 </div>
               </div>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 333 109" fill="none" className="h-12 w-auto text-white/20" aria-hidden="true">
-                <path d="M0 109V0H5.54237V109H0ZM11.0847 109V0H16.6271V109H11.0847ZM22.1695 109V0H38.7966V109H22.1695ZM44.339 109V0H60.9661V109H44.339ZM77.5932 109V0H83.1356V109H77.5932Z" fill="currentColor" />
-                <path d="M83.2222 109V0H99.8493V109H83.2222ZM105.392 109V0H110.934V109H105.392ZM116.476 109V0H122.019V109H116.476ZM138.646 109V0H155.273V109H138.646ZM160.815 109V0H166.358V109H160.815Z" fill="currentColor" />
-                <path d="M166.444 109V0H183.072V109H166.444ZM188.614 109V0H194.156V109H188.614ZM199.699 109V0H216.326V109H199.699ZM232.953 109V0H238.495V109H232.953ZM244.038 109V0H249.58V109H244.038Z" fill="currentColor" />
-                <path d="M249.667 109V0H255.209V109H249.667ZM271.836 109V0H288.463V109H271.836ZM294.006 109V0H299.548V109H294.006ZM305.09 109V0H321.717V109H305.09ZM327.26 109V0H332.802V109H327.26Z" fill="currentColor" />
-              </svg>
+              <BarcodeSVG className="h-12 w-auto text-white/20" aria-hidden="true" />
             </motion.div>
           </motion.nav>
         )}
@@ -1532,12 +1376,7 @@ export default function CreativeManual() {
           <div className="flex items-center gap-2 mb-4">
             <span className="font-mono text-xs text-white/60 uppercase">AARTE</span>
           </div>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 333 109" fill="none" className="h-16 sm:h-20 w-auto text-white" aria-label="AARTE barcode">
-            <path d="M0 109V0H5.54237V109H0ZM11.0847 109V0H16.6271V109H11.0847ZM22.1695 109V0H38.7966V109H22.1695ZM44.339 109V0H60.9661V109H44.339ZM77.5932 109V0H83.1356V109H77.5932Z" fill="currentColor" />
-            <path d="M83.2222 109V0H99.8493V109H83.2222ZM105.392 109V0H110.934V109H105.392ZM116.476 109V0H122.019V109H116.476ZM138.646 109V0H155.273V109H138.646ZM160.815 109V0H166.358V109H160.815Z" fill="currentColor" />
-            <path d="M166.444 109V0H183.072V109H166.444ZM188.614 109V0H194.156V109H188.614ZM199.699 109V0H216.326V109H199.699ZM232.953 109V0H238.495V109H232.953ZM244.038 109V0H249.58V109H244.038Z" fill="currentColor" />
-            <path d="M249.667 109V0H255.209V109H249.667ZM271.836 109V0H288.463V109H271.836ZM294.006 109V0H299.548V109H294.006ZM305.09 109V0H321.717V109H305.09ZM327.26 109V0H332.802V109H327.26Z" fill="currentColor" />
-          </svg>
+          <BarcodeSVG className="h-16 sm:h-20 w-auto text-white" />
         </motion.div>
 
         {/* Corner brackets */}
@@ -1592,32 +1431,34 @@ export default function CreativeManual() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.1 }}
         >
-          <div className="flex justify-between items-baseline mb-2">
-            <span className="font-mono text-xs text-white/40 uppercase tracking-wider">active ingredients</span>
-            <a href="https://clawd.bot/" target="_blank" rel="noopener noreferrer" className="font-mono text-xs text-white uppercase tracking-wider hover:text-white/60 transition-colors min-h-[44px] flex items-center">Clawd.bot</a>
-          </div>
-          <div className="border-b border-white/20 mb-2" />
-
-          <div className="flex justify-end mb-2">
-            <span className="font-mono text-xs text-white uppercase tracking-wider">n8n</span>
-          </div>
-          <div className="border-b border-white/20 mb-2" />
-
-          <div className="flex justify-end mb-2">
-            <span className="font-mono text-xs text-white uppercase tracking-wider">VPS</span>
-          </div>
-          <div className="border-b border-white/20 mb-4" />
-
-          <div className="flex justify-between items-baseline mb-2">
-            <span className="font-mono text-xs text-white/40 uppercase tracking-wider">chapters</span>
-            <a href="#about" className="font-mono text-xs text-white uppercase tracking-wider hover:text-white/60 transition-colors min-h-[44px] flex items-center">01. What is AARTE?</a>
-          </div>
-          <div className="border-b border-white/20 mb-2" />
-
-          <div className="flex justify-end mb-2">
-            <a href="#design" className="font-mono text-xs text-white uppercase tracking-wider hover:text-white/60 transition-colors min-h-[44px] flex items-center">02. design + dev</a>
-          </div>
-          <div className="border-b border-white/20" />
+          {[
+            { label: "active ingredients", items: [{ text: "Clawd.bot", href: "https://clawd.bot/", external: true }, "n8n", "VPS"], mb: 4 },
+            { label: "chapters", items: [{ text: "01. What is AARTE?", href: "#about", external: false }, { text: "02. design + dev", href: "#design", external: false }], mb: 0 }
+          ].map((section, i) => (
+            <div key={i}>
+              <div className="flex justify-between items-baseline mb-2">
+                <span className={`${MONO_XS_MUTED} uppercase tracking-wider`}>{section.label}</span>
+                {typeof section.items[0] === "object" && "href" in section.items[0] && (
+                  <a href={section.items[0].href} {...("external" in section.items[0] && section.items[0].external ? { target: "_blank", rel: "noopener noreferrer" } : {})} className={`${MONO_XS} text-white uppercase tracking-wider hover:text-white/60 transition-colors ${MIN_TOUCH} flex items-center`}>
+                    {section.items[0].text}
+                  </a>
+                )}
+              </div>
+              <div className="border-b border-white/20 mb-2" />
+              {section.items.slice(1).map((item, j) => (
+                <div key={j}>
+                  <div className="flex justify-end mb-2">
+                    {typeof item === "string" ? (
+                      <span className={`${MONO_XS} text-white uppercase tracking-wider`}>{item}</span>
+                    ) : (
+                      <a href={item.href} className={`${MONO_XS} text-white uppercase tracking-wider hover:text-white/60 transition-colors ${MIN_TOUCH} flex items-center`}>{item.text}</a>
+                    )}
+                  </div>
+                  <div className={`border-b border-white/20 ${j === section.items.length - 2 ? `mb-${section.mb}` : "mb-2"}`} />
+                </div>
+              ))}
+            </div>
+          ))}
         </motion.div>
 
       </section>
@@ -1676,12 +1517,9 @@ export default function CreativeManual() {
               <h3 className="text-sm font-medium text-black mb-2 uppercase tracking-wider">Chapters</h3>
             </FadeIn>
             <div>
-              {[
-                { num: "2.1", title: "HOW IT WORKS", href: "#how-it-works" },
-                { num: "2.2", title: "TECH STACK", href: "#tech-stack" },
-                { num: "2.3", title: "SKILLS", href: "#skills" },
-                { num: "2.4", title: "INTEGRATIONS", href: "#integrations" }
-              ].map((item, i) => (
+              {["HOW IT WORKS", "TECH STACK", "SKILLS", "INTEGRATIONS"].map((title, i) => {
+                const item = { num: `2.${i + 1}`, title, href: `#${title.toLowerCase().replace(/\s+/g, "-")}` };
+                return (
                 <FadeIn key={item.num} delay={i * 0.1}>
                   <a
                     href={item.href}
@@ -1692,7 +1530,8 @@ export default function CreativeManual() {
                     <span className="font-mono text-sm text-black uppercase tracking-wider ml-8 sm:ml-32 md:ml-56">{item.title}</span>
                   </a>
                 </FadeIn>
-              ))}
+              );
+              })}
               <div className="border-t border-black/20" />
             </div>
           </div>
@@ -1713,6 +1552,9 @@ export default function CreativeManual() {
               <FadeIn delay={0.2}>
                 <p className="text-lg sm:text-xl text-white/60 leading-relaxed mb-6">
                   AARTE connects to the apps you already use. Send a message on WhatsApp, get a reply from your AI. No new apps to learn. No complicated setup.
+                </p>
+                <p className="text-lg sm:text-xl text-white/60 leading-relaxed mb-6">
+                  Your data stays yours. AARTE runs in your own environment — your conversations, your keys, your privacy.
                 </p>
               </FadeIn>
             </div>
@@ -1744,7 +1586,8 @@ export default function CreativeManual() {
           <FadeIn>
             <div className="bg-white/5 rounded-lg p-6 sm:p-8 text-center">
               <p className="text-xl sm:text-2xl font-medium mb-4">No coding required. No IT department needed.</p>
-              <p className="text-white/50">AARTE works out of the box. Just connect your accounts and start chatting.</p>
+              <p className="text-white/50 mb-4">AARTE works out of the box. Just connect your accounts and start chatting.</p>
+              <p className="text-white/40 text-sm font-mono">100% private · Self-hosted · Your data never leaves your infrastructure</p>
             </div>
           </FadeIn>
         </div>
@@ -2016,8 +1859,8 @@ export default function CreativeManual() {
           <FadeIn delay={0.4}>
             <div className="bg-white/5 rounded-lg p-6 text-center">
               <p className="text-white/50 text-sm">
-                Need a custom integration? AARTE&apos;s plugin system lets you connect to any API.
-                <a href="https://docs.molt.bot" target="_blank" rel="noopener noreferrer" className="text-[#ffb700] hover:underline ml-1">View documentation →</a>
+                Need a custom integration?
+                <a href="mailto:support@aarte.ai" className="text-[#ffb700] hover:underline ml-1">Contact us →</a>
               </p>
             </div>
           </FadeIn>
@@ -2032,7 +1875,7 @@ export default function CreativeManual() {
 
         <div className="mb-16 sm:mb-24">
           <FadeIn>
-            <p className="text-white/40 mb-8 text-center">And last but not least, it is important for you to constantly...</p>
+            <p className="text-white/40 mb-8 text-center">Everyone will have their own Applied Artificial Intelligence. Welcome to the future.</p>
           </FadeIn>
 
           <ScrollHorizontalText direction="right" speed={20}>
@@ -2101,21 +1944,10 @@ export default function CreativeManual() {
               </div>
             </div>
 
-            <motion.svg
+            <BarcodeSVG
               className="h-12 sm:h-16 w-auto text-white/20"
-              viewBox="0 0 333 109"
-              fill="none"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              aria-label="AARTE barcode"
-            >
-              <path d="M0 109V0H5.54237V109H0ZM11.0847 109V0H16.6271V109H11.0847ZM22.1695 109V0H38.7966V109H22.1695ZM44.339 109V0H60.9661V109H44.339ZM77.5932 109V0H83.1356V109H77.5932Z" fill="currentColor" />
-              <path d="M83.2222 109V0H99.8493V109H83.2222ZM105.392 109V0H110.934V109H105.392ZM116.476 109V0H122.019V109H116.476ZM138.646 109V0H155.273V109H138.646ZM160.815 109V0H166.358V109H160.815Z" fill="currentColor" />
-              <path d="M166.444 109V0H183.072V109H166.444ZM188.614 109V0H194.156V109H188.614ZM199.699 109V0H216.326V109H199.699ZM232.953 109V0H238.495V109H232.953ZM244.038 109V0H249.58V109H244.038Z" fill="currentColor" />
-              <path d="M249.667 109V0H255.209V109H249.667ZM271.836 109V0H288.463V109H271.836ZM294.006 109V0H299.548V109H294.006ZM305.09 109V0H321.717V109H305.09ZM327.26 109V0H332.802V109H327.26Z" fill="currentColor" />
-            </motion.svg>
+              {...{ initial: { opacity: 0 }, whileInView: { opacity: 1 }, viewport: { once: true }, transition: { duration: 0.8, delay: 0.4 } } as any}
+            />
           </div>
 
           <motion.div
@@ -2129,7 +1961,7 @@ export default function CreativeManual() {
               // site.loaded · initLenis(); initNav(); initLoader();
             </div>
             <div className="font-mono text-[10px] text-white/30">
-              [l] vn.us · [active].status
+              [0] aarte.co · [active].status
             </div>
           </motion.div>
         </div>
