@@ -113,7 +113,7 @@ function PixelTrailCanvas({ className = "" }: { className?: string }) {
   return (
     <canvas
       ref={canvasRef}
-      className={`absolute inset-0 z-30 mix-blend-difference ${className}`}
+      className={`absolute inset-0 z-30 mix-blend-difference pointer-events-none ${className}`}
     />
   );
 }
@@ -549,26 +549,24 @@ function CWMLink({
       href={href}
       target={external ? "_blank" : undefined}
       rel={external ? "noopener noreferrer" : undefined}
-      className="group flex items-center justify-between py-3 border-b border-white/10 overflow-hidden"
+      className="group flex items-center justify-between py-3 border-b border-white/10"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <span className="relative block overflow-hidden">
-        <motion.span
-          className="block text-sm text-white/60"
-          animate={{ x: isHovered ? 10 : 0, color: isHovered ? "rgba(255,255,255,1)" : "rgba(255,255,255,0.6)" }}
-          transition={{ duration: 0.45, ease: EASE_BUTTON_HOVER }}
-        >
-          {children}
-        </motion.span>
-      </span>
+      <motion.span
+        className="text-sm text-white/60"
+        animate={{ color: isHovered ? "rgba(255,255,255,1)" : "rgba(255,255,255,0.6)" }}
+        transition={{ duration: 0.3, ease: EASE_BUTTON_HOVER }}
+      >
+        {children}
+      </motion.span>
       <motion.span
         className="text-white/40"
         animate={{
-          x: isHovered ? 0 : -10,
+          x: isHovered ? 0 : -5,
           opacity: isHovered ? 1 : 0
         }}
-        transition={{ duration: 0.45, ease: EASE_BUTTON_HOVER }}
+        transition={{ duration: 0.3, ease: EASE_BUTTON_HOVER }}
       >
         ↗
       </motion.span>
@@ -716,8 +714,10 @@ function AboutSection() {
   const iconPathRef = useRef<SVGPathElement>(null);
   const creativityCharsRef = useRef<(HTMLDivElement | null)[]>([]);
   const techCharsRef = useRef<(HTMLSpanElement | null)[]>([]);
-  const creativityText = "CREATIVITY";
-  const techText = "</TECHNICALITY>";
+  const creativityTextLine1 = "AARTE is your personal AI Agent.";
+const creativityTextLine2 = "It reads your email, learns your workflow, texts you, and calls your clients.";
+const creativityTextLine3 = "It even learns new skills!";
+  const techText = "</AARTE>";
 
   useEffect(() => {
     if (!sectionRef.current || !cardRef.current || !containerRef.current || !iconPathRef.current) return;
@@ -749,45 +749,73 @@ function AboutSection() {
         }
       );
 
-      // CREATIVITY letters drop down from above (Y from -100% to 0%)
-      creativityCharsRef.current.forEach((char, i) => {
-        if (!char) return;
+      // First line fades in and slides from left
+      if (creativityCharsRef.current[0]) {
         gsap.fromTo(
-          char,
-          { yPercent: -100 },
+          creativityCharsRef.current[0],
+          { opacity: 0, x: -50 },
           {
-            yPercent: 0,
-            ease: "none",
+            opacity: 1,
+            x: 0,
+            ease: "power2.out",
             scrollTrigger: {
               trigger: sectionRef.current,
-              start: `top+=${5 + i * 3}% top`,
-              end: `top+=${15 + i * 3}% top`,
+              start: "top 80%",
+              end: "top 20%",
               scrub: true,
             },
           }
         );
-      });
+      }
 
-      // Rotate the + path to × (45 degrees)
+      // Second line appears later when rectangle is near fully opened (60-80% of expansion)
+      if (creativityCharsRef.current[1]) {
+        gsap.set(creativityCharsRef.current[1], { opacity: 0, y: 30 });
+        gsap.to(creativityCharsRef.current[1], {
+          opacity: 1,
+          y: 0,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top -60%",
+            end: "top -80%",
+            scrub: true,
+          },
+        });
+      }
+
+      // Third line appears with the second line
+      if (creativityCharsRef.current[2]) {
+        gsap.set(creativityCharsRef.current[2], { opacity: 0, y: 30 });
+        gsap.to(creativityCharsRef.current[2], {
+          opacity: 1,
+          y: 0,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top -65%",
+            end: "top -85%",
+            scrub: true,
+          },
+        });
+      }
+
+      // Rotate the + path to × (360 degrees over shorter scroll - 4x faster)
       gsap.to(iconPathRef.current, {
-        rotation: 45,
+        rotation: 360,
         transformOrigin: "center center",
         ease: "none",
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
-          end: "+=150%",
+          end: "+=75%",
           scrub: true,
         },
       });
 
-      // Character reveal animation for </TECHNICALITY> - CWM style
+      // Bottom text typewriter effect - each character appears sequentially
       techCharsRef.current.forEach((char, i) => {
         if (!char) return;
-        // Skip < / space > characters - they're always visible
-        const alwaysVisible = [0, 1, 2, 14]; // <, /, space, >
-        if (alwaysVisible.includes(i)) return;
-
         gsap.fromTo(
           char,
           { opacity: 0 },
@@ -796,8 +824,8 @@ function AboutSection() {
             ease: "none",
             scrollTrigger: {
               trigger: sectionRef.current,
-              start: `top+=${40 + (i * 4)}% top`,
-              end: `top+=${50 + (i * 4)}% top`,
+              start: `top+=${30 + i * 5}% top`,
+              end: `top+=${35 + i * 5}% top`,
               scrub: true,
             },
           }
@@ -834,27 +862,33 @@ function AboutSection() {
             </div>
             {/* Bottom eyebrow row */}
             <div className="flex justify-between items-center w-full">
-              <p className="font-mono text-[10px] text-black/60 uppercase tracking-wider">Why creative websites?</p>
+              <p className="font-mono text-[10px] text-black/60 uppercase tracking-wider">What is AARTE?</p>
               <p className="font-mono text-[10px] text-black/60">←</p>
             </div>
           </div>
 
-          {/* Main content - CWM style: CREATIVITY at top, × icon center, </TECHNICALITY> at bottom */}
-          <div className="absolute inset-0 flex flex-col items-center justify-between px-4 py-12 overflow-hidden">
-            {/* CREATIVITY text - letters drop from above */}
-            <div className="w-full overflow-hidden">
-              <h2 className="text-[clamp(1.5rem,5vw,4rem)] font-medium leading-[0.9] tracking-[-0.03em] text-black flex">
-                {creativityText.split("").map((char, i) => (
-                  <div
-                    key={i}
-                    ref={(el) => { creativityCharsRef.current[i] = el; }}
-                    className="inline-block"
-                    style={{ transform: "translateY(-100%)" }}
-                  >
-                    {char}
-                  </div>
-                ))}
+          {/* Main content - Top text, × icon center, bottom text */}
+          <div className="absolute inset-0 flex flex-col items-center justify-between px-4 py-8 z-20">
+            {/* Top text - three lines with different timing */}
+            <div className="w-full">
+              <h2
+                ref={(el) => { creativityCharsRef.current[0] = el; }}
+                className="text-[clamp(2rem,5vw,4rem)] font-medium leading-[1.2] tracking-[-0.02em] text-black max-w-[90%]"
+              >
+                {creativityTextLine1}
               </h2>
+              <p
+                ref={(el) => { creativityCharsRef.current[1] = el; }}
+                className="text-[clamp(2rem,5vw,4rem)] font-medium leading-[1.2] tracking-[-0.02em] text-black max-w-[90%] mt-4 relative z-30"
+              >
+                {creativityTextLine2}
+              </p>
+              <p
+                ref={(el) => { creativityCharsRef.current[2] = el; }}
+                className="text-[clamp(2rem,5vw,4rem)] font-medium leading-[1.2] tracking-[-0.02em] text-black max-w-[90%] mt-4 relative z-30"
+              >
+                {creativityTextLine3}
+              </p>
             </div>
 
             {/* Rotating +/X icon - CWM exact SVG */}
@@ -863,7 +897,7 @@ function AboutSection() {
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 95 95"
                 fill="none"
-                className="w-12 h-12 md:w-16 md:h-16"
+                className="w-16 h-16 md:w-24 md:h-24"
               >
                 <rect width="95" height="95" rx="47.5" fill="black" />
                 <path
@@ -875,24 +909,20 @@ function AboutSection() {
               </svg>
             </div>
 
-            {/* </TECHNICALITY> - CWM pixel style with scroll-based character reveal */}
-            <div className="w-full flex justify-center overflow-hidden">
-              <span className="text-[clamp(1rem,3vw,2.5rem)] font-pixel leading-none tracking-tight text-black whitespace-nowrap">
-                {techText.split("").map((char, i) => {
-                  // < / space > are always visible
-                  const alwaysVisible = [0, 1, 2, 14];
-                  return (
-                    <span
-                      key={i}
-                      ref={(el) => { techCharsRef.current[i] = el; }}
-                      className="inline-block"
-                      style={{ opacity: alwaysVisible.includes(i) ? 1 : 0 }}
-                    >
-                      {char}
-                    </span>
-                  );
-                })}
-              </span>
+            {/* Bottom text - centered with pixel font, typewriter effect */}
+            <div className="w-full flex justify-center">
+              <p className="text-[clamp(5rem,15vw,10rem)] font-pixel leading-[0.9] tracking-tight text-black">
+                {techText.split("").map((char, i) => (
+                  <span
+                    key={i}
+                    ref={(el) => { techCharsRef.current[i] = el; }}
+                    className="inline-block"
+                    style={{ opacity: 0 }}
+                  >
+                    {char}
+                  </span>
+                ))}
+              </p>
             </div>
           </div>
         </div>
@@ -1176,6 +1206,20 @@ function IntersectionSection() {
         }
       );
 
+      // Bricks fade out on scroll - start fading later in scroll
+      gsap.fromTo(bricksWrapperRef.current,
+        { opacity: 1 },
+        {
+          opacity: 0,
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 50%",
+            end: "top 20%",
+            scrub: 0.3,
+          }
+        }
+      );
+
       // Dashes scale animation
       gsap.fromTo(dashesRef.current,
         { scale: 0.8 },
@@ -1219,26 +1263,27 @@ function IntersectionSection() {
       <div className="relative z-10 text-center px-6 max-w-5xl">
         <div ref={textRef}>
           <p className="text-[clamp(1.5rem,4vw,3rem)] font-medium leading-[1.15] tracking-[-0.02em] text-white">
-            Creative websites are the
+            AARTE integrates with <span className="text-white/50">GMail</span>,
           </p>
           <p className="text-[clamp(1.5rem,4vw,3rem)] font-medium leading-[1.15] tracking-[-0.02em] text-white">
-            intersection of <span className="text-white/50">creativity</span>
+            <span className="text-white/50">Whatsapp</span>, <span className="text-white/50">Telegram</span>
           </p>
           <p className="text-[clamp(1.5rem,4vw,3rem)] font-medium leading-[1.15] tracking-[-0.02em] text-white">
-            and <span className="text-white/50">technicality</span> to form
+            out of the box.
           </p>
           <p className="text-[clamp(1.5rem,4vw,3rem)] font-medium leading-[1.15] tracking-[-0.02em] text-white">
-            bespoke digital experiences
+            Train your <span className="text-[#ffb700]">AARTE</span> on your
           </p>
           <p className="text-[clamp(1.5rem,4vw,3rem)] font-medium leading-[1.15] tracking-[-0.02em] text-white">
-            that spark <span className="text-[#ffb700]">emotion</span>.
+            workflow skills.
           </p>
         </div>
 
         {/* Brick blocks overlay */}
         <div
           ref={bricksWrapperRef}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+          style={{ opacity: 1 }}
         >
           <BrickBlocks />
         </div>
@@ -1501,6 +1546,9 @@ export default function CreativeManual() {
       {/* ==================== HERO ==================== */}
       <section id="home" className="panel relative min-h-screen overflow-hidden bg-black">
 
+        {/* Pixelated cursor trail overlay - covers entire hero */}
+        <PixelTrailCanvas className="!h-screen" />
+
         {/* Ghost/outline title behind main text - CWM style */}
         <div className="absolute top-0 left-0 right-0 px-6 pt-4 pointer-events-none">
           <div
@@ -1510,24 +1558,25 @@ export default function CreativeManual() {
             }}
           >
             AARTE:<br />
-            Applied Artificial Intelligence
+            <span className="opacity-0">Applied ARTificial intelligencE</span>
           </div>
         </div>
 
-        {/* Hero Main Title - AARTE with pixel trail */}
+        {/* Hero Main Title - AARTE with hover reveal */}
         <div className="absolute top-0 left-0 right-0 px-6 pt-4 h-[45vh]">
           <div className="relative w-full h-full">
             <motion.h1
-              className="text-[clamp(3rem,12vw,9rem)] font-medium leading-[0.95] tracking-[-0.03em] text-white"
+              className="text-[clamp(3rem,12vw,9rem)] font-medium leading-[0.95] tracking-[-0.03em] text-white cursor-pointer group"
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.3, ease: EASE_OUT_EXPO }}
             >
-              AARTE:<br />
-              Applied Artificial Intelligence
+              <span className="inline-block">AARTE:</span>
+              <br />
+              <span className="inline-block opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-out">
+                Applied ARTificial intelligencE
+              </span>
             </motion.h1>
-            {/* Pixelated cursor trail overlay - covers title area with inverse blend */}
-            <PixelTrailCanvas />
           </div>
         </div>
 
@@ -1605,7 +1654,7 @@ export default function CreativeManual() {
           transition={{ duration: 0.8, delay: 0.6 }}
         >
           <p className="text-[clamp(1.5rem,2.5vw,2.5rem)] font-medium text-white leading-[1.25] tracking-[-0.01em] mb-6">
-            Create Your Personal AARTE
+            Create Your Personal AARTE Agent
           </p>
           <a
             href="/signup"
@@ -1644,13 +1693,13 @@ export default function CreativeManual() {
           {/* Chapters row */}
           <div className="flex justify-between items-baseline mb-2">
             <span className="font-mono text-xs text-white/40 uppercase tracking-wider">chapters</span>
-            <span className="font-mono text-xs text-white uppercase tracking-wider">01. about</span>
+            <a href="#about" className="font-mono text-xs text-white uppercase tracking-wider hover:text-white/60 transition-colors">01. What is AARTE?</a>
           </div>
           <div className="border-b border-white/20 mb-2" />
 
           {/* Design + Dev row */}
           <div className="flex justify-end mb-2">
-            <span className="font-mono text-xs text-white uppercase tracking-wider">02. design + dev</span>
+            <a href="#design" className="font-mono text-xs text-white uppercase tracking-wider hover:text-white/60 transition-colors">02. design + dev</a>
           </div>
           <div className="border-b border-white/20" />
         </motion.div>
@@ -1672,7 +1721,7 @@ export default function CreativeManual() {
           </div>
           <FadeIn>
             <p className="text-[clamp(1.5rem,5vw,4rem)] font-medium leading-[1.1] tracking-[-0.02em] text-white">
-              This project is dedicated to the methodology behind crafting websites that pushes boundaries. Our process values curiosity iteration, and experimentation. View some of our techniques on creating projects that leave a lasting impression.
+              AI Agents are hard to build. Harder to keep running. AARTE handles the infrastructure so you can focus on what you actually do. When something breaks, we pick up the phone.
             </p>
           </FadeIn>
         </div>
@@ -2076,38 +2125,28 @@ export default function CreativeManual() {
           </FadeIn>
 
           <div className="grid md:grid-cols-2 gap-12">
-            {/* Books */}
+            {/* Inspiration */}
             <FadeIn>
               <div>
-                <h4 className="text-sm text-white/60 mb-6">Books</h4>
+                <h4 className="text-sm text-white/60 mb-6">Inspiration</h4>
                 <div className="space-y-1">
-                  <ResourceLink href="#">SANS-in-USE</ResourceLink>
-                  <ResourceLink href="#">display-in-use</ResourceLink>
-                  <ResourceLink href="#">Serif-in-use</ResourceLink>
-                  <ResourceLink href="#">Grid Systems in Graphic Design</ResourceLink>
-                  <ResourceLink href="#">New Utilitarian</ResourceLink>
-                  <ResourceLink href="#">Thinking with Type</ResourceLink>
-                  <ResourceLink href="#">The Design of Everyday Things</ResourceLink>
-                  <ResourceLink href="#">Don't Make Me Think</ResourceLink>
+                  <ResourceLink href="https://clawd.bot">Clawd.bot</ResourceLink>
+                  <ResourceLink href="https://anthropic.com">Anthropic</ResourceLink>
+                  <ResourceLink href="https://claude.ai">Claude.ai</ResourceLink>
                 </div>
               </div>
             </FadeIn>
 
-            {/* Inspiration */}
+            {/* Resources */}
             <FadeIn delay={0.1}>
               <div>
-                <h4 className="text-sm text-white/60 mb-6">Inspiration</h4>
+                <h4 className="text-sm text-white/60 mb-6">Resources</h4>
                 <div className="space-y-1">
-                  <ResourceLink href="#">INSPO.page</ResourceLink>
-                  <ResourceLink href="#">AWWWARDS.com</ResourceLink>
-                  <ResourceLink href="#">FOOTER.DESIGN</ResourceLink>
-                  <ResourceLink href="#">minimal.gallery</ResourceLink>
-                  <ResourceLink href="#">maxibestof.one</ResourceLink>
-                  <ResourceLink href="#">muzli.me</ResourceLink>
-                  <ResourceLink href="#">fontsinuse.com</ResourceLink>
-                  <ResourceLink href="#">Grids by obys agency</ResourceLink>
-                  <ResourceLink href="#">Motion by Zajno</ResourceLink>
-                  <ResourceLink href="#">savee.com</ResourceLink>
+                  <ResourceLink href="https://docs.anthropic.com/en/docs/build-with-claude/tool-use">Claude Skills Documentation</ResourceLink>
+                  <ResourceLink href="https://clawd.bot/docs">Clawd.bot Docs</ResourceLink>
+                  <ResourceLink href="https://docs.anthropic.com">Anthropic API Docs</ResourceLink>
+                  <ResourceLink href="https://github.com/anthropics/anthropic-cookbook">Anthropic Cookbook</ResourceLink>
+                  <ResourceLink href="https://console.anthropic.com">Anthropic Console</ResourceLink>
                 </div>
               </div>
             </FadeIn>
@@ -2188,7 +2227,7 @@ export default function CreativeManual() {
           </div>
           <div className="absolute top-[56%] left-[48%] text-left">
             <p className="text-[clamp(1.5rem,2.5vw,2.5rem)] font-medium text-white leading-[1.25] tracking-[-0.01em] mb-6">
-              Create Your Personal AARTE
+              Create Your Personal AARTE Agent
             </p>
             <a
               href="/signup"

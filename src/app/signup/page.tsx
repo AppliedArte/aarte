@@ -5,7 +5,7 @@ import Link from "next/link";
 
 const EASE_OUT_EXPO = [0.19, 1, 0.22, 1] as const;
 
-const WHOP_CHECKOUT_URL = "https://whop.com/checkout/prod_zUzaUsTJ32Fkq";
+const WHOP_CHECKOUT_URL = "https://whop.com/aarte/aarte-agent/";
 
 const features = [
   "1 AARTE AI Agent",
