@@ -1170,6 +1170,7 @@ export default function CreativeManual() {
         { label: "2.4 Integrations", href: "#integrations" },
       ]
     },
+    { label: "Chat with AARTE", href: "/chat" },
     { label: "Get Started", href: "/signup" },
   ];
 
@@ -1193,6 +1194,13 @@ export default function CreativeManual() {
           AARTE
         </a>
         <div className="flex items-center gap-3 sm:gap-6">
+          <a
+            href="/chat"
+            className="font-mono text-xs text-white border border-white px-3 sm:px-4 py-2 hover:bg-white hover:text-black transition-colors uppercase min-h-[44px] flex items-center"
+            aria-label="Chat with AARTE"
+          >
+            Chat with AARTE
+          </a>
           <a
             href="/signup"
             className="font-mono text-xs text-black bg-white px-3 sm:px-4 py-2 hover:bg-white/90 transition-colors uppercase min-h-[44px] flex items-center"
@@ -1427,13 +1435,22 @@ export default function CreativeManual() {
           <p className="text-[clamp(1.25rem,2.5vw,2.5rem)] font-medium text-white leading-[1.25] tracking-[-0.01em] mb-4 sm:mb-6">
             Create Your Personal AARTE Agent
           </p>
-          <a
-            href="/signup"
-            className="inline-block font-mono text-sm text-black bg-white px-4 sm:px-6 py-3 hover:bg-white/90 transition-colors uppercase min-h-[44px] mb-6 sm:mb-8"
-            aria-label="Get Started with AARTE"
-          >
-            Get Started →
-          </a>
+          <div className="flex flex-wrap gap-3 mb-6 sm:mb-8">
+            <a
+              href="/signup"
+              className="inline-block font-mono text-sm text-black bg-white px-4 sm:px-6 py-3 hover:bg-white/90 transition-colors uppercase min-h-[44px]"
+              aria-label="Get Started with AARTE"
+            >
+              Get Started →
+            </a>
+            <a
+              href="/chat"
+              className="inline-block font-mono text-sm text-white border border-white/40 px-4 sm:px-6 py-3 hover:bg-white/10 transition-colors uppercase min-h-[44px]"
+              aria-label="Chat with AARTE"
+            >
+              Chat with AARTE
+            </a>
+          </div>
 
           {/* Info Lists */}
           {[
