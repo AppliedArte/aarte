@@ -1125,8 +1125,8 @@ function IntersectionSection() {
           opacity: 0,
           scrollTrigger: {
             trigger: sectionRef.current,
-            start: "top 20%",
-            end: "center center",
+            start: "top 80%",
+            end: "top 50%",
             scrub: 0.3,
           }
         }
@@ -2037,12 +2037,12 @@ export default function CreativeManual() {
 
           <ScrollHorizontalText direction="right" speed={20}>
             <h3 className="text-[clamp(3rem,15vw,12rem)] font-medium leading-[0.9] tracking-[-0.04em] text-white/10">
-              Put in the reps. Put in the reps. Put in the reps.&nbsp;
+              Applied Artificial Intelligence. Applied Artificial Intelligence.&nbsp;
             </h3>
           </ScrollHorizontalText>
           <ScrollHorizontalText direction="left" speed={25} className="mt-2">
             <h3 className="text-[clamp(2.5rem,12vw,10rem)] font-medium leading-[0.9] tracking-[-0.04em]">
-              Put in the reps. Put in the reps. Put in the reps.&nbsp;
+              Applied Artificial Intelligence. Applied Artificial Intelligence.&nbsp;
             </h3>
           </ScrollHorizontalText>
         </div>
@@ -2051,9 +2051,9 @@ export default function CreativeManual() {
           <div className="text-center mb-16 sm:mb-24">
             <FadeIn delay={0.2}>
               <p className="text-white/50 max-w-2xl mx-auto leading-relaxed">
-                Create passion projects, experiment with animations, and explore new design ideas.
-                The more you build, break, and refine, the sharper your creative instincts get.
-                Make connections, refine your taste, and have fun making websites.
+                Build custom workflows, teach AARTE new skills, and watch your productivity multiply.
+                The more you train it, the smarter it gets. Connect your tools, automate the boring stuff,
+                and focus on what matters.
               </p>
             </FadeIn>
           </div>
