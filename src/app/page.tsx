@@ -12,10 +12,10 @@ if (typeof window !== "undefined") {
 
 // CWM exact easing functions
 const EASE_OUT_EXPO = [0.19, 1, 0.22, 1] as const;
-const EASE_IN_DROP = [0.6, 0, 0.4, 1] as const; // For menu drop-in animation
-const EASE_TEXT_REVEAL = [0.23, 0.32, 0.23, 0.2] as const; // CWM text animation easing
-const EASE_BUTTON_HOVER = [0.16, 1, 0.3, 1] as const; // CWM button hover easing
-const EASE_SMOOTH = [0.87, 0, 0.13, 1] as const; // CWM micro-interactions
+const EASE_IN_DROP = [0.6, 0, 0.4, 1] as const;
+const EASE_TEXT_REVEAL = [0.23, 0.32, 0.23, 0.2] as const;
+const EASE_BUTTON_HOVER = [0.16, 1, 0.3, 1] as const;
+const EASE_SMOOTH = [0.87, 0, 0.13, 1] as const;
 
 // Pixelated cursor trail canvas - CWM style effect with inverse blend
 function PixelTrailCanvas({ className = "" }: { className?: string }) {
@@ -30,77 +30,50 @@ function PixelTrailCanvas({ className = "" }: { className?: string }) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Set canvas size to match parent
     const updateSize = () => {
       const parent = canvas.parentElement;
-      if (parent) {
-        const rect = parent.getBoundingClientRect();
-        canvas.width = rect.width;
-        canvas.height = rect.height;
-      }
+      if (!parent) return;
+      const rect = parent.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
     };
     updateSize();
     window.addEventListener("resize", updateSize);
 
-    // Larger pixel size for CWM effect
     const pixelSize = 20;
     const maxPixels = 100;
 
-    // Use window-level mouse tracking
     const handleMouseMove = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
-
-      // Check if mouse is within canvas bounds
       const mouseX = e.clientX - rect.left;
       const mouseY = e.clientY - rect.top;
 
-      if (mouseX < 0 || mouseX > rect.width || mouseY < 0 || mouseY > rect.height) {
-        return;
-      }
+      if (mouseX < 0 || mouseX > rect.width || mouseY < 0 || mouseY > rect.height) return;
 
       const x = Math.floor(mouseX / pixelSize) * pixelSize;
       const y = Math.floor(mouseY / pixelSize) * pixelSize;
 
-      // Only add pixel if position changed
       if (!lastPosRef.current || lastPosRef.current.x !== x || lastPosRef.current.y !== y) {
         lastPosRef.current = { x, y };
-
-        // Add new pixel
-        pixelsRef.current.push({
-          x,
-          y,
-          opacity: 1,
-          size: pixelSize
-        });
-
-        // Keep max pixels
-        if (pixelsRef.current.length > maxPixels) {
-          pixelsRef.current.shift();
-        }
+        pixelsRef.current.push({ x, y, opacity: 1, size: pixelSize });
+        if (pixelsRef.current.length > maxPixels) pixelsRef.current.shift();
       }
     };
 
-    // Animation loop
     let animationId: number;
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Draw and fade pixels
       pixelsRef.current = pixelsRef.current.filter((pixel) => {
         pixel.opacity -= 0.02;
         if (pixel.opacity <= 0) return false;
-
-        // Solid white squares that fade out
         ctx.fillStyle = `rgba(255, 255, 255, ${pixel.opacity})`;
         ctx.fillRect(pixel.x, pixel.y, pixel.size, pixel.size);
         return true;
       });
-
       animationId = requestAnimationFrame(animate);
     };
     animate();
 
-    // Listen on window for reliable mouse tracking
     window.addEventListener("mousemove", handleMouseMove);
 
     return () => {
@@ -114,6 +87,7 @@ function PixelTrailCanvas({ className = "" }: { className?: string }) {
     <canvas
       ref={canvasRef}
       className={`absolute inset-0 z-30 mix-blend-difference pointer-events-none ${className}`}
+      aria-hidden="true"
     />
   );
 }
@@ -158,7 +132,7 @@ function ScrambleText({ text, isActive, delay = 0 }: { text: string; isActive: b
       clearTimeout(timeout);
       clearInterval(interval);
     };
-  }, [text, isActive, delay]);
+  }, [text, isActive, delay, chars]);
 
   return <span>{displayText}</span>;
 }
@@ -194,12 +168,17 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-60 bg-[#0a0a0a] p-6"
+      className="fixed inset-0 z-60 bg-[#0a0a0a] p-4 sm:p-6"
       exit={{ y: "-100%" }}
       transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
+      role="progressbar"
+      aria-valuenow={Math.round(progress)}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-label="Loading AARTE"
     >
-      {/* Middle vertical line - loader-midline */}
-      <div className="absolute inset-0 flex justify-center items-center">
+      {/* Middle vertical line */}
+      <div className="absolute inset-0 flex justify-center items-center" aria-hidden="true">
         <motion.div
           className="w-px bg-[#222] h-full origin-top"
           initial={{ scaleY: 0 }}
@@ -208,8 +187,8 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
         />
       </div>
 
-      {/* Status text - loader_text with character blink */}
-      <div className="absolute top-6 left-1/2 -translate-x-1/2 font-mono text-xs uppercase tracking-wider flex">
+      {/* Status text */}
+      <div className="absolute top-4 sm:top-6 left-1/2 -translate-x-1/2 font-mono text-xs uppercase tracking-wider flex" aria-live="polite">
         {statusText.split("").map((char, i) => (
           <motion.span
             key={i}
@@ -223,8 +202,8 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
         ))}
       </div>
 
-      {/* Dials - loader-dials: right side, 1.4rem wide */}
-      <div className="absolute right-6 top-0 bottom-0 w-[1.4rem] flex flex-col justify-between py-6 overflow-hidden">
+      {/* Dials */}
+      <div className="absolute right-4 sm:right-6 top-0 bottom-0 w-[1.4rem] flex flex-col justify-between py-4 sm:py-6 overflow-hidden" aria-hidden="true">
         {dialTypes.map((type, i) => (
           <motion.div
             key={i}
@@ -236,15 +215,14 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
         ))}
       </div>
 
-      {/* Percentage - moves from bottom to center, left of midline */}
+      {/* Percentage */}
       <motion.div
         className="absolute right-[52%] flex items-end gap-1"
-        style={{
-          bottom: `${progress * 0.5}%`, // 0% -> bottom, 100% -> 50% (center)
-        }}
+        style={{ bottom: `${progress * 0.5}%` }}
+        aria-hidden="true"
       >
         <motion.span
-          className="font-mono loader-percent font-medium text-white"
+          className="font-mono text-2xl sm:text-3xl font-medium text-white"
           animate={{ opacity: [0.85, 1, 0.85] }}
           transition={{ duration: 0.8, repeat: Infinity }}
         >
@@ -252,15 +230,14 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
         </motion.span>
       </motion.div>
 
-      {/* Details - loader-details-wrap: left side at 50% from top */}
+      {/* Details */}
       <motion.div
-        className="absolute left-6 top-[50svh] flex flex-col gap-12"
+        className="absolute left-4 sm:left-6 top-[50svh] flex flex-col gap-8 sm:gap-12"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4, duration: 0.6 }}
       >
-        {/* Blocks - loader-details-blocks */}
-        <div className="flex gap-1">
+        <div className="flex gap-1" aria-hidden="true">
           <motion.div
             className="w-[0.8rem] h-[0.8rem] bg-[#ffb700]"
             animate={{ opacity: [1, 0.2, 1] }}
@@ -269,16 +246,13 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
           <div className="w-[0.8rem] h-[0.8rem] border border-[#444] bg-transparent" />
         </div>
 
-        {/* Copyright */}
         <p className="font-mono text-xs text-white/40">©AARTE — 2025</p>
 
-        {/* Credits */}
         <div className="font-mono text-xs text-white/30 space-y-0.5">
           <p className="text-white/40">prjct by</p>
           <p className="text-white/60">AARTE</p>
         </div>
 
-        {/* Code */}
         <div className="font-mono text-[10px] text-white/30 space-y-0.5">
           <p className="text-white/40">// site.loading</p>
           <p>[f] Scripts() {"{"}</p>
@@ -292,21 +266,18 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
   );
 }
 
-// Native smooth scroll - Lenis removed for performance
+// Native smooth scroll
 function useSmoothScroll(enabled: boolean) {
   useEffect(() => {
     if (!enabled) return;
-
-    // Use native CSS smooth scroll instead of JS-based solution
     document.documentElement.style.scrollBehavior = "smooth";
-
     return () => {
       document.documentElement.style.scrollBehavior = "auto";
     };
   }, [enabled]);
 }
 
-// Line reveal animation - CWM style with 1.5s duration
+// Line reveal animation
 function LineReveal({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
@@ -324,7 +295,7 @@ function LineReveal({ children, className = "", delay = 0 }: { children: React.R
   );
 }
 
-// Split text reveal - CWM style with staggered character animation
+// Split text reveal
 function SplitTextReveal({
   text,
   className = "",
@@ -381,31 +352,6 @@ function FadeIn({ children, className = "", delay = 0 }: { children: React.React
   );
 }
 
-// Corner bracket SVG helper
-function CornerBracket({ position, className = "", delay = 0 }: { position: "tl" | "tr" | "bl" | "br"; className?: string; delay?: number }) {
-  const paths = {
-    tl: "M8 4H4v4M4 4v16",
-    tr: "M16 4h4v4M20 4v16",
-    bl: "M4 20V4M4 20h4",
-    br: "M20 20V4M20 20h-4"
-  };
-
-  return (
-    <motion.svg
-      className={`absolute w-8 h-8 text-white/20 ${className}`}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.8, delay }}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1"
-    >
-      <path d={paths[position]} />
-    </motion.svg>
-  );
-}
-
 // Chapter header
 function ChapterHeader({ number, title }: { number: string; title: string }) {
   const ref = useRef(null);
@@ -417,7 +363,7 @@ function ChapterHeader({ number, title }: { number: string; title: string }) {
       initial={{ opacity: 0 }}
       animate={isInView ? { opacity: 1 } : { opacity: 0 }}
       transition={{ duration: 0.8 }}
-      className="flex items-center gap-4 mb-16"
+      className="flex items-center gap-4 mb-12 sm:mb-16"
     >
       <span className="font-mono text-xs text-white/40">{number}</span>
       <div className="flex-1 h-px bg-white/10" />
@@ -432,12 +378,11 @@ function InfiniteMarquee({ children, speed = 50, direction = "left" }: { childre
   const innerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!containerRef.current || !innerRef.current) return;
+    if (!containerRef.current || !innerRef.current) return undefined;
 
     const inner = innerRef.current;
     const totalWidth = inner.scrollWidth / 2;
 
-    // Set initial position based on direction
     if (direction === "right") {
       gsap.set(inner, { x: -totalWidth });
     }
@@ -450,18 +395,12 @@ function InfiniteMarquee({ children, speed = 50, direction = "left" }: { childre
       modifiers: {
         x: gsap.utils.unitize((x) => {
           const val = parseFloat(x);
-          if (direction === "left") {
-            return val % totalWidth;
-          } else {
-            return (val % totalWidth) - totalWidth;
-          }
+          return direction === "left" ? val % totalWidth : (val % totalWidth) - totalWidth;
         })
       }
     });
 
-    return () => {
-      tween.kill();
-    };
+    return () => { tween.kill(); };
   }, [speed, direction]);
 
   return (
@@ -501,16 +440,17 @@ function GridDemo({ layout }: { layout: number }) {
   );
 }
 
-// Hover button with text swap - CWM exact styling
+// Hover button with text swap
 function HoverButton({ children }: { children: string }) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
     <motion.button
-      className="group relative px-8 py-4 border border-white/20 rounded overflow-hidden font-mono text-sm"
+      className="group relative px-6 sm:px-8 py-3 sm:py-4 border border-white/20 rounded overflow-hidden font-mono text-sm min-h-[44px]"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       whileTap={{ scale: 0.98 }}
+      aria-label={children}
     >
       <span className="relative block overflow-hidden h-5">
         <motion.span
@@ -532,7 +472,7 @@ function HoverButton({ children }: { children: string }) {
   );
 }
 
-// CWM-style link with arrow and text slide
+// CWM-style link with arrow
 function CWMLink({
   href,
   children,
@@ -549,9 +489,10 @@ function CWMLink({
       href={href}
       target={external ? "_blank" : undefined}
       rel={external ? "noopener noreferrer" : undefined}
-      className="group flex items-center justify-between py-3 border-b border-white/10"
+      className="group flex items-center justify-between py-3 border-b border-white/10 min-h-[44px]"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      aria-label={children}
     >
       <motion.span
         className="text-sm text-white/60"
@@ -567,6 +508,7 @@ function CWMLink({
           opacity: isHovered ? 1 : 0
         }}
         transition={{ duration: 0.3, ease: EASE_BUTTON_HOVER }}
+        aria-hidden="true"
       >
         ↗
       </motion.span>
@@ -574,13 +516,12 @@ function CWMLink({
   );
 }
 
-// Resource link with arrow - uses CWMLink
+// Resource link
 function ResourceLink({ href, children }: { href: string; children: string }) {
   return <CWMLink href={href}>{children}</CWMLink>;
 }
 
-
-// Scroll-linked horizontal text movement component - GSAP version
+// Scroll-linked horizontal text movement
 function ScrollHorizontalText({
   children,
   direction = "left",
@@ -632,17 +573,20 @@ function ScrollHorizontalText({
   );
 }
 
-// Stagger animation demo component
+// Stagger animation demo
 function StaggerDemo() {
   const [isHovered, setIsHovered] = useState(false);
   const letters = "STAGGER".split("");
 
   return (
     <motion.div
-      className="border border-white/10 rounded-lg p-8 cursor-pointer h-full"
+      className="border border-white/10 rounded-lg p-6 sm:p-8 cursor-pointer h-full"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       whileHover={{ borderColor: "rgba(255,255,255,0.2)" }}
+      role="button"
+      tabIndex={0}
+      aria-label="Stagger effect demo"
     >
       <div className="text-xs text-white/40 mb-4">Stagger effect</div>
       <div className="text-2xl font-medium mb-6 overflow-hidden">
@@ -676,10 +620,10 @@ function StaggerDemo() {
 // Color swatch grid
 function ColorSwatchGrid({ colors }: { colors: Array<{ color: string; name: string }> }) {
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className="grid grid-cols-3 gap-3 sm:gap-4">
       {colors.map((c) => (
         <div key={c.color}>
-          <div className="h-24 rounded-lg mb-2" style={{ backgroundColor: c.color }} />
+          <div className="h-20 sm:h-24 rounded-lg mb-2" style={{ backgroundColor: c.color }} />
           <div className="font-mono text-xs text-white/40">{c.color}</div>
           <div className="text-xs text-white/30">{c.name}</div>
         </div>
@@ -688,25 +632,7 @@ function ColorSwatchGrid({ colors }: { colors: Array<{ color: string; name: stri
   );
 }
 
-// Pixelated text component - CWM style dithered effect
-function PixelatedText({ text, className = "" }: { text: string; className?: string }) {
-  return (
-    <span
-      className={`inline-block ${className}`}
-      style={{
-        fontFamily: "var(--font-mono), monospace",
-        letterSpacing: "-0.02em",
-        textRendering: "geometricPrecision",
-        WebkitFontSmoothing: "none",
-        filter: "contrast(1.1)",
-      }}
-    >
-      {text}
-    </span>
-  );
-}
-
-// About section with GSAP ScrollTrigger pin - CWM exact style
+// About section with GSAP ScrollTrigger pin
 function AboutSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -715,15 +641,14 @@ function AboutSection() {
   const creativityCharsRef = useRef<(HTMLDivElement | null)[]>([]);
   const techCharsRef = useRef<(HTMLSpanElement | null)[]>([]);
   const creativityTextLine1 = "AARTE is your personal AI Assistant.";
-const creativityTextLine2 = "It reads your email, learns your workflow, texts you, and calls your clients.";
-const creativityTextLine3 = "It even learns new skills!";
+  const creativityTextLine2 = "It reads your email, learns your workflow, texts you, and calls your clients.";
+  const creativityTextLine3 = "It even learns new skills!";
   const techText = "</AARTE>";
 
   useEffect(() => {
     if (!sectionRef.current || !cardRef.current || !containerRef.current || !iconPathRef.current) return;
 
     const ctx = gsap.context(() => {
-      // Pin the card section like CWM does
       ScrollTrigger.create({
         trigger: sectionRef.current,
         start: "top top",
@@ -732,7 +657,6 @@ const creativityTextLine3 = "It even learns new skills!";
         pinSpacing: true,
       });
 
-      // Animate container from 30% width/50% height to 100%/100%
       gsap.fromTo(
         containerRef.current,
         { width: "30%", height: "50%" },
@@ -749,7 +673,6 @@ const creativityTextLine3 = "It even learns new skills!";
         }
       );
 
-      // First line fades in and slides from left
       if (creativityCharsRef.current[0]) {
         gsap.fromTo(
           creativityCharsRef.current[0],
@@ -768,7 +691,6 @@ const creativityTextLine3 = "It even learns new skills!";
         );
       }
 
-      // Second line appears later when rectangle is near fully opened (60-80% of expansion)
       if (creativityCharsRef.current[1]) {
         gsap.set(creativityCharsRef.current[1], { opacity: 0, y: 30 });
         gsap.to(creativityCharsRef.current[1], {
@@ -784,7 +706,6 @@ const creativityTextLine3 = "It even learns new skills!";
         });
       }
 
-      // Third line appears with the second line
       if (creativityCharsRef.current[2]) {
         gsap.set(creativityCharsRef.current[2], { opacity: 0, y: 30 });
         gsap.to(creativityCharsRef.current[2], {
@@ -800,7 +721,6 @@ const creativityTextLine3 = "It even learns new skills!";
         });
       }
 
-      // Rotate the + path to × (360 degrees over shorter scroll - 4x faster)
       gsap.to(iconPathRef.current, {
         rotation: 360,
         transformOrigin: "center center",
@@ -813,7 +733,6 @@ const creativityTextLine3 = "It even learns new skills!";
         },
       });
 
-      // Bottom text typewriter effect - each character appears sequentially
       techCharsRef.current.forEach((char, i) => {
         if (!char) return;
         gsap.fromTo(
@@ -842,62 +761,58 @@ const creativityTextLine3 = "It even learns new skills!";
       id="about"
       className="panel min-h-[250vh] bg-[#0a0a0a]"
     >
-      {/* Card wrapper - this gets pinned */}
       <div
         ref={cardRef}
         className="h-screen w-full flex items-center justify-center"
       >
-        {/* Inner container - starts small (30% x 50%) and scales to full */}
         <div
           ref={containerRef}
           className="relative bg-[#e8e8e8] overflow-hidden rounded-lg"
           style={{ width: "30%", height: "50%" }}
         >
-          {/* Eyebrows container - full height, vertical flex with justify-between */}
-          <div className="absolute inset-0 flex flex-col justify-between px-4 py-3 pointer-events-none z-10">
-            {/* Top eyebrow row */}
+          {/* Eyebrows */}
+          <div className="absolute inset-0 flex flex-col justify-between px-3 sm:px-4 py-2 sm:py-3 pointer-events-none z-10">
             <div className="flex justify-between items-center w-full">
               <p className="font-mono text-[10px] text-black/60 uppercase tracking-wider">chapter 1:</p>
               <p className="font-mono text-[10px] text-black/60 uppercase tracking-wider">about</p>
             </div>
-            {/* Bottom eyebrow row */}
             <div className="flex justify-between items-center w-full">
               <p className="font-mono text-[10px] text-black/60 uppercase tracking-wider">What is AARTE?</p>
-              <p className="font-mono text-[10px] text-black/60">←</p>
+              <p className="font-mono text-[10px] text-black/60" aria-label="Previous">←</p>
             </div>
           </div>
 
-          {/* Main content - Top text, × icon center, bottom text */}
-          <div className="absolute inset-0 flex flex-col items-center justify-between px-4 py-8 z-20">
-            {/* Top text - three lines with different timing */}
+          {/* Main content */}
+          <div className="absolute inset-0 flex flex-col items-center justify-between px-3 sm:px-4 py-6 sm:py-8 z-20">
             <div className="w-full">
               <h2
                 ref={(el) => { creativityCharsRef.current[0] = el; }}
-                className="text-[clamp(2rem,5vw,4rem)] font-medium leading-[1.2] tracking-[-0.02em] text-black max-w-[90%]"
+                className="text-[clamp(1.5rem,5vw,4rem)] font-medium leading-[1.2] tracking-[-0.02em] text-black max-w-[90%]"
               >
                 {creativityTextLine1}
               </h2>
               <p
                 ref={(el) => { creativityCharsRef.current[1] = el; }}
-                className="text-[clamp(2rem,5vw,4rem)] font-medium leading-[1.2] tracking-[-0.02em] text-black max-w-[90%] mt-4 relative z-30"
+                className="text-[clamp(1.5rem,5vw,4rem)] font-medium leading-[1.2] tracking-[-0.02em] text-black max-w-[90%] mt-4 relative z-30"
               >
                 {creativityTextLine2}
               </p>
               <p
                 ref={(el) => { creativityCharsRef.current[2] = el; }}
-                className="text-[clamp(2rem,5vw,4rem)] font-medium leading-[1.2] tracking-[-0.02em] text-black max-w-[90%] mt-4 relative z-30"
+                className="text-[clamp(1.5rem,5vw,4rem)] font-medium leading-[1.2] tracking-[-0.02em] text-black max-w-[90%] mt-4 relative z-30"
               >
                 {creativityTextLine3}
               </p>
             </div>
 
-            {/* Rotating +/X icon - CWM exact SVG */}
+            {/* Rotating icon */}
             <div className="flex justify-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 95 95"
                 fill="none"
-                className="w-16 h-16 md:w-24 md:h-24"
+                className="w-12 h-12 sm:w-16 sm:h-16 md:w-24 md:h-24"
+                aria-label="AARTE icon"
               >
                 <rect width="95" height="95" rx="47.5" fill="black" />
                 <path
@@ -909,9 +824,9 @@ const creativityTextLine3 = "It even learns new skills!";
               </svg>
             </div>
 
-            {/* Bottom text - centered with pixel font, typewriter effect */}
+            {/* Bottom text */}
             <div className="w-full flex justify-center">
-              <p className="text-[clamp(5rem,15vw,10rem)] font-pixel leading-[0.9] tracking-tight text-black">
+              <p className="text-[clamp(3rem,15vw,10rem)] font-pixel leading-[0.9] tracking-tight text-black">
                 {techText.split("").map((char, i) => (
                   <span
                     key={i}
@@ -931,23 +846,21 @@ const creativityTextLine3 = "It even learns new skills!";
   );
 }
 
-// Pixel transition effect - grid of squares that light up on scroll
+// Pixel transition effect
 function PixelTransition() {
   const containerRef = useRef<HTMLDivElement>(null);
   const pixelsRef = useRef<(HTMLDivElement | null)[]>([]);
 
-  // Grid dimensions - fixed size squares
-  const pixelSize = 24; // Fixed square size in pixels
+  const pixelSize = 24;
   const gap = 2;
   const cols = 32;
-  const rows = 19; // Added 3 more rows to reach section 02
+  const rows = 19;
   const totalPixels = cols * rows;
 
-  // Pre-calculate random values for each pixel
   const pixelData = useMemo(() => {
     return Array.from({ length: totalPixels }, () => ({
       delay: Math.random(),
-      instant: Math.random() < 0.3, // 30% light up instantly
+      instant: Math.random() < 0.3,
     }));
   }, [totalPixels]);
 
@@ -961,7 +874,6 @@ function PixelTransition() {
         const data = pixelData[i];
 
         if (data.instant) {
-          // Instant pixels - light up quickly at random points
           gsap.fromTo(
             pixel,
             { backgroundColor: "#0a0a0a" },
@@ -970,15 +882,14 @@ function PixelTransition() {
               duration: 0.1,
               scrollTrigger: {
                 trigger: containerRef.current,
-                start: `top ${80 - data.delay * 60}%`,
+                start: `top ${50 - data.delay * 40}%`,
                 toggleActions: "play none none reverse",
               },
             }
           );
         } else {
-          // Gradual pixels - fade from black to white over scroll
-          const startPoint = 90 - data.delay * 40; // Start between 50-90%
-          const endPoint = 20 + data.delay * 30; // End between 20-50%
+          const startPoint = 70 - data.delay * 20;
+          const endPoint = -20 + data.delay * 40;
 
           gsap.fromTo(
             pixel,
@@ -1005,21 +916,21 @@ function PixelTransition() {
     <div
       ref={containerRef}
       className="w-full pt-12 pb-0 bg-[#0a0a0a] overflow-hidden"
+      aria-hidden="true"
     >
       <div
-        className="flex flex-wrap justify-center"
-        style={{ gap: `${gap}px` }}
+        className="grid w-full"
+        style={{
+          gridTemplateColumns: `repeat(${cols}, 1fr)`,
+          gap: `${gap}px`,
+        }}
       >
         {Array.from({ length: totalPixels }, (_, i) => (
           <div
             key={i}
             ref={(el) => { pixelsRef.current[i] = el; }}
-            style={{
-              width: pixelSize,
-              height: pixelSize,
-              backgroundColor: "#0a0a0a",
-              flexShrink: 0,
-            }}
+            className="aspect-square w-full"
+            style={{ backgroundColor: "#0a0a0a" }}
           />
         ))}
       </div>
@@ -1027,27 +938,10 @@ function PixelTransition() {
   );
 }
 
-// Radial dashed lines decoration - CWM style
-function RadialDashes({ className = "" }: { className?: string }) {
-  const dashes = Array.from({ length: 36 }, (_, i) => i * 10);
-  return (
-    <div className={`absolute inset-0 flex items-center justify-center pointer-events-none ${className}`}>
-      {dashes.map((angle) => (
-        <div
-          key={angle}
-          className="absolute w-px h-24 bg-gradient-to-t from-white/20 to-transparent origin-bottom"
-          style={{ transform: `rotate(${angle}deg) translateY(-150px)` }}
-        />
-      ))}
-    </div>
-  );
-}
-
-// Brick blocks - CWM style grid pattern - GSAP version
+// Brick blocks
 function BrickBlocks() {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // CWM-style brick wall pattern
   const brickRows = [
     [
       { w: 70, h: 45, color: "#3a3a3a" },
@@ -1093,6 +987,7 @@ function BrickBlocks() {
       ref={containerRef}
       className="relative flex flex-col items-center gap-[3px] z-20"
       style={{ transform: "translateY(20%)" }}
+      aria-hidden="true"
     >
       {brickRows.map((row, rowIndex) => (
         <div key={rowIndex} className="flex gap-[3px] justify-center">
@@ -1112,14 +1007,12 @@ function BrickBlocks() {
   );
 }
 
-// Letter-by-letter color animation title - CWM style
+// Color animated title
 function ColorAnimatedTitle({ text, className = "" }: { text: string; className?: string }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
-  // Deterministic pattern based on character index (alternating with variation)
   const getColorClass = (index: number): string => {
-    // Pattern: white, gray, white, white, gray, gray (repeating)
     const pattern = [true, false, true, true, false, false];
     return pattern[index % pattern.length] ? "text-white" : "text-white/40";
   };
@@ -1146,13 +1039,11 @@ function ColorAnimatedTitle({ text, className = "" }: { text: string; className?
   );
 }
 
-// Design+Dev title with letter color animation - CWM style (black/gray on light bg)
+// Design+Dev title
 function DesignDevTitle({ text, delay = 0 }: { text: string; delay?: number }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
-  // CWM pattern: some letters are darker (black), some lighter (gray)
-  // Pattern observed: D(gray), e(black), s(gray), i(black), g(gray), n(black), etc.
   const getColorClass = (index: number): string => {
     const pattern = [false, true, false, true, false, true, true, false, true, false];
     return pattern[index % pattern.length] ? "text-black" : "text-black/40";
@@ -1180,7 +1071,7 @@ function DesignDevTitle({ text, delay = 0 }: { text: string; delay?: number }) {
   );
 }
 
-// Intersection text section with brick blocks overlay - GSAP version
+// Intersection section
 function IntersectionSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
@@ -1191,7 +1082,6 @@ function IntersectionSection() {
     if (!sectionRef.current || !textRef.current || !bricksWrapperRef.current || !dashesRef.current) return;
 
     const ctx = gsap.context(() => {
-      // Text opacity animation
       gsap.fromTo(textRef.current,
         { opacity: 0 },
         {
@@ -1205,7 +1095,6 @@ function IntersectionSection() {
         }
       );
 
-      // Fade out text at end
       gsap.to(textRef.current, {
         opacity: 0,
         scrollTrigger: {
@@ -1216,7 +1105,6 @@ function IntersectionSection() {
         }
       });
 
-      // Bricks Y animation
       gsap.fromTo(bricksWrapperRef.current,
         { y: 100 },
         {
@@ -1231,7 +1119,6 @@ function IntersectionSection() {
         }
       );
 
-      // Bricks fade out on scroll - start fading later in scroll
       gsap.fromTo(bricksWrapperRef.current,
         { opacity: 1 },
         {
@@ -1245,7 +1132,6 @@ function IntersectionSection() {
         }
       );
 
-      // Dashes scale animation
       gsap.fromTo(dashesRef.current,
         { scale: 0.8 },
         {
@@ -1268,10 +1154,11 @@ function IntersectionSection() {
       ref={sectionRef}
       className="panel relative min-h-[150vh] bg-[#0a0a0a] flex items-center justify-center overflow-hidden"
     >
-      {/* Radial dashes circle */}
+      {/* Radial dashes */}
       <div
         ref={dashesRef}
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+        aria-hidden="true"
       >
         {Array.from({ length: 48 }, (_, i) => (
           <div
@@ -1285,27 +1172,27 @@ function IntersectionSection() {
       </div>
 
       {/* Text content */}
-      <div className="relative z-10 text-center px-6 max-w-5xl">
+      <div className="relative z-10 text-center px-4 sm:px-6 max-w-5xl">
         <div ref={textRef}>
-          <p className="text-[clamp(1.2rem,3vw,2.2rem)] font-medium leading-[1.2] tracking-[-0.02em] text-white">
+          <p className="text-[clamp(1rem,3vw,2.2rem)] font-medium leading-[1.2] tracking-[-0.02em] text-white">
             <span className="text-[#ffb700]">AARTE</span> is your personal AI assistant.
           </p>
-          <p className="text-[clamp(1.2rem,3vw,2.2rem)] font-medium leading-[1.2] tracking-[-0.02em] text-white mt-2">
+          <p className="text-[clamp(1rem,3vw,2.2rem)] font-medium leading-[1.2] tracking-[-0.02em] text-white mt-2">
             It answers you on the channels you already use
           </p>
-          <p className="text-[clamp(1rem,2.5vw,1.8rem)] font-medium leading-[1.2] tracking-[-0.02em] text-white/50 mt-2">
+          <p className="text-[clamp(0.875rem,2.5vw,1.8rem)] font-medium leading-[1.2] tracking-[-0.02em] text-white/50 mt-2">
             WhatsApp, Telegram, Slack, Discord, Google Chat, Signal, iMessage, Microsoft Teams, WebChat
           </p>
-          <p className="text-[clamp(1.2rem,3vw,2.2rem)] font-medium leading-[1.2] tracking-[-0.02em] text-white mt-4">
+          <p className="text-[clamp(1rem,3vw,2.2rem)] font-medium leading-[1.2] tracking-[-0.02em] text-white mt-4">
             plus extension channels like
           </p>
-          <p className="text-[clamp(1rem,2.5vw,1.8rem)] font-medium leading-[1.2] tracking-[-0.02em] text-white/50 mt-2">
+          <p className="text-[clamp(0.875rem,2.5vw,1.8rem)] font-medium leading-[1.2] tracking-[-0.02em] text-white/50 mt-2">
             BlueBubbles, Matrix, Zalo, and Zalo Personal
           </p>
-          <p className="text-[clamp(1.2rem,3vw,2.2rem)] font-medium leading-[1.2] tracking-[-0.02em] text-white mt-4">
+          <p className="text-[clamp(1rem,3vw,2.2rem)] font-medium leading-[1.2] tracking-[-0.02em] text-white mt-4">
             It can speak and listen on <span className="text-white/50">macOS/iOS/Android</span>
           </p>
-          <p className="text-[clamp(1.2rem,3vw,2.2rem)] font-medium leading-[1.2] tracking-[-0.02em] text-white mt-2">
+          <p className="text-[clamp(1rem,3vw,2.2rem)] font-medium leading-[1.2] tracking-[-0.02em] text-white mt-2">
             and render a live <span className="text-[#ffb700]">Canvas</span> you control.
           </p>
         </div>
@@ -1315,6 +1202,7 @@ function IntersectionSection() {
           ref={bricksWrapperRef}
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
           style={{ opacity: 1 }}
+          aria-hidden="true"
         >
           <BrickBlocks />
         </div>
@@ -1341,7 +1229,6 @@ export default function CreativeManual() {
       lastY = e.clientY;
     };
 
-    // Update state at 30fps max to reduce re-renders
     const updateMousePos = () => {
       setMousePos(prev => {
         if (prev.x !== lastX || prev.y !== lastY) {
@@ -1361,21 +1248,18 @@ export default function CreativeManual() {
     };
   }, []);
 
-  // GSAP Infinite vertical scroll - seamless loop
   useEffect(() => {
     if (loading) return;
 
     const content = document.querySelector('.scroll-content') as HTMLElement;
     if (!content) return;
 
-    // Get the original content height
-    const getContentHeight = () => content.scrollHeight / 2; // Divided by 2 because content is duplicated
+    const getContentHeight = () => content.scrollHeight / 2;
 
     let contentHeight = getContentHeight();
     let isAdjusting = false;
     let lastScrollY = window.scrollY;
 
-    // Start at the hero (top of page)
     window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
 
     const handleScroll = () => {
@@ -1387,15 +1271,12 @@ export default function CreativeManual() {
       contentHeight = getContentHeight();
       const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
 
-      // Scrolling down - near the end, jump back to top
       if (currentScrollY >= maxScroll - 5) {
         isAdjusting = true;
         window.scrollTo({ top: 1, behavior: 'instant' as ScrollBehavior });
         lastScrollY = 1;
         requestAnimationFrame(() => { isAdjusting = false; });
-      }
-      // Scrolling up - at the very top, jump to end of content
-      else if (currentScrollY <= 5) {
+      } else if (currentScrollY <= 5) {
         isAdjusting = true;
         const jumpTo = maxScroll - 1;
         window.scrollTo({ top: jumpTo, behavior: 'instant' as ScrollBehavior });
@@ -1406,7 +1287,6 @@ export default function CreativeManual() {
 
     window.addEventListener('scroll', handleScroll, { passive: true });
 
-    // Refresh on resize
     const handleResize = () => {
       contentHeight = getContentHeight();
     };
@@ -1424,10 +1304,10 @@ export default function CreativeManual() {
       label: "Design + Dev",
       href: "#design-dev",
       subItems: [
-        { label: "2.1 Grids & layouts", href: "#grids" },
-        { label: "2.2 typography", href: "#typography" },
-        { label: "2.3 color", href: "#color" },
-        { label: "2.4 motion", href: "#motion" },
+        { label: "2.1 How it works", href: "#how-it-works" },
+        { label: "2.2 Tech Stack", href: "#tech-stack" },
+        { label: "2.3 Skills", href: "#skills" },
+        { label: "2.4 Integrations", href: "#integrations" },
       ]
     },
     { label: "Resources", href: "#resources" },
@@ -1440,34 +1320,39 @@ export default function CreativeManual() {
       </AnimatePresence>
 
       <div className="min-h-screen bg-black text-white selection:bg-[#ffb700] selection:text-black">
-      {/* Header - CWM exact style */}
+      {/* Header */}
       <header
-        className="fixed top-0 left-0 right-0 z-40 px-6 py-4 flex items-center justify-between mix-blend-difference"
+        className="fixed top-0 left-0 right-0 z-40 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between mix-blend-difference"
+        role="banner"
       >
         <a
           href="/"
-          className="font-mono text-xs text-white hover:text-white/60 transition-colors uppercase"
+          className="font-mono text-xs text-white hover:text-white/60 transition-colors uppercase min-h-[44px] flex items-center"
+          aria-label="AARTE Home"
         >
           AARTE
         </a>
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-3 sm:gap-6">
           <a
             href="/signup"
-            className="font-mono text-xs text-black bg-white px-4 py-2 hover:bg-white/90 transition-colors uppercase"
+            className="font-mono text-xs text-black bg-white px-3 sm:px-4 py-2 hover:bg-white/90 transition-colors uppercase min-h-[44px] flex items-center"
+            aria-label="Get Started with AARTE"
           >
             Get Started
           </a>
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="font-mono text-xs text-white hover:text-white/60 transition-colors uppercase"
+            className="font-mono text-xs text-white hover:text-white/60 transition-colors uppercase min-h-[44px] flex items-center"
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
           >
             {menuOpen ? "Close [×]" : "Menu [+]"}
           </button>
         </div>
       </header>
 
-      {/* Fixed bottom status bar - CWM style with infinite marquee */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/10 bg-[#0a0a0a]/90 backdrop-blur-sm py-2">
+      {/* Fixed bottom status bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/10 bg-[#0a0a0a]/90 backdrop-blur-sm py-2" role="contentinfo">
         <InfiniteMarquee speed={40} direction="left">
           <span className="font-mono text-[10px] text-white/30 px-8">
             ©AARTE — 2025 · Applied Artificial Intelligence · // site.loaded · [X].{mousePos.x.toFixed(0)}px [Y].{mousePos.y.toFixed(0)}px ·
@@ -1475,7 +1360,7 @@ export default function CreativeManual() {
         </InfiniteMarquee>
       </div>
 
-      {/* Navigation overlay - CWM Style */}
+      {/* Navigation overlay */}
       <AnimatePresence>
         {menuOpen && (
           <motion.nav
@@ -1484,46 +1369,49 @@ export default function CreativeManual() {
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.5, ease: EASE_OUT_EXPO }}
             className="fixed inset-y-0 right-0 z-50 w-full lg:w-1/2 bg-[#0a0a0a] flex flex-col border-l border-white/10"
+            aria-label="Main navigation"
           >
-            {/* Menu Top - Home & Close */}
-            <div className="flex items-center justify-between px-6 py-4">
+            {/* Menu Top */}
+            <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4">
               <motion.a
                 href="#home"
                 onClick={() => setMenuOpen(false)}
-                className="font-mono text-xs text-white hover:text-white/60 transition-colors"
+                className="font-mono text-xs text-white hover:text-white/60 transition-colors min-h-[44px] flex items-center"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.1 }}
+                aria-label="AARTE Home"
               >
                 AARTE
               </motion.a>
               <motion.button
                 onClick={() => setMenuOpen(false)}
-                className="font-mono text-xs text-white hover:text-white/60 transition-colors"
+                className="font-mono text-xs text-white hover:text-white/60 transition-colors min-h-[44px] flex items-center"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.1 }}
+                aria-label="Close menu"
               >
                 Close [<span className="inline-block">x</span>]
               </motion.button>
             </div>
 
-            {/* Menu Links - Drop-in animation with text scramble */}
-            <div className="flex-1 flex flex-col justify-center px-6">
+            {/* Menu Links */}
+            <div className="flex-1 flex flex-col justify-center px-4 sm:px-6">
               {navItems.map((item, i) => (
                 <div key={item.label} className="group overflow-hidden">
                   <motion.a
                     href={item.href}
                     onClick={() => setMenuOpen(false)}
-                    className="block text-[clamp(2rem,8vw,4rem)] font-medium leading-[1.1] hover:text-white/40 transition-colors py-2"
+                    className="block text-[clamp(2rem,8vw,4rem)] font-medium leading-[1.1] hover:text-white/40 transition-colors py-2 min-h-[44px]"
                     initial={{ opacity: 0, y: -60 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -30 }}
                     transition={{ delay: 0.15 + i * 0.12, duration: 0.8, ease: EASE_IN_DROP }}
+                    aria-label={item.label}
                   >
                     <ScrambleText text={item.label} isActive={menuOpen} delay={150 + i * 120} />
                   </motion.a>
-                  {/* Sub-items for Design + Dev */}
                   {"subItems" in item && item.subItems && (
                     <div className="pl-4 mt-2 mb-4 space-y-1 overflow-hidden">
                       {item.subItems.map((subItem, j) => (
@@ -1531,11 +1419,12 @@ export default function CreativeManual() {
                           key={subItem.label}
                           href={subItem.href}
                           onClick={() => setMenuOpen(false)}
-                          className="block font-mono text-sm text-white/50 hover:text-white transition-colors py-1"
+                          className="block font-mono text-sm text-white/50 hover:text-white transition-colors py-1 min-h-[44px] flex items-center"
                           initial={{ opacity: 0, y: -30 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -15 }}
                           transition={{ delay: 0.4 + i * 0.12 + j * 0.06, duration: 0.6, ease: EASE_IN_DROP }}
+                          aria-label={subItem.label}
                         >
                           <ScrambleText text={subItem.label} isActive={menuOpen} delay={400 + i * 120 + j * 60} />
                         </motion.a>
@@ -1546,9 +1435,9 @@ export default function CreativeManual() {
               ))}
             </div>
 
-            {/* Menu Footer - Credits & Barcode */}
+            {/* Menu Footer */}
             <motion.div
-              className="px-6 py-6 flex items-end justify-between"
+              className="px-4 sm:px-6 py-4 sm:py-6 flex items-end justify-between"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
@@ -1559,8 +1448,7 @@ export default function CreativeManual() {
                   <span className="font-mono text-xs text-white/60">AARTE</span>
                 </div>
               </div>
-              {/* Barcode SVG */}
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 333 109" fill="none" className="h-12 w-auto text-white/20">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 333 109" fill="none" className="h-12 w-auto text-white/20" aria-hidden="true">
                 <path d="M0 109V0H5.54237V109H0ZM11.0847 109V0H16.6271V109H11.0847ZM22.1695 109V0H38.7966V109H22.1695ZM44.339 109V0H60.9661V109H44.339ZM77.5932 109V0H83.1356V109H77.5932Z" fill="currentColor" />
                 <path d="M83.2222 109V0H99.8493V109H83.2222ZM105.392 109V0H110.934V109H105.392ZM116.476 109V0H122.019V109H116.476ZM138.646 109V0H155.273V109H138.646ZM160.815 109V0H166.358V109H160.815Z" fill="currentColor" />
                 <path d="M166.444 109V0H183.072V109H166.444ZM188.614 109V0H194.156V109H188.614ZM199.699 109V0H216.326V109H199.699ZM232.953 109V0H238.495V109H232.953ZM244.038 109V0H249.58V109H244.038Z" fill="currentColor" />
@@ -1571,19 +1459,18 @@ export default function CreativeManual() {
         )}
       </AnimatePresence>
 
-      {/* Scroll content wrapper for infinite loop */}
+      {/* Scroll content wrapper */}
       <div className="scroll-content">
 
-      {/* ==================== HERO ==================== */}
+      {/* HERO */}
       <section id="home" className="panel relative min-h-screen overflow-hidden bg-black">
 
-        {/* Pixelated cursor trail overlay - covers entire hero */}
         <PixelTrailCanvas className="!h-screen" />
 
-        {/* Ghost/outline title behind main text - CWM style */}
-        <div className="absolute top-0 left-0 right-0 px-6 pt-4 pointer-events-none">
+        {/* Ghost title */}
+        <div className="absolute top-0 left-0 right-0 px-4 sm:px-6 pt-3 sm:pt-4 pointer-events-none" aria-hidden="true">
           <div
-            className="text-[clamp(3rem,12vw,9rem)] font-medium leading-[0.95] tracking-[-0.03em] text-transparent"
+            className="text-[clamp(2rem,12vw,9rem)] font-medium leading-[0.95] tracking-[-0.03em] text-transparent"
             style={{
               WebkitTextStroke: '1px rgba(255,255,255,0.06)',
             }}
@@ -1593,11 +1480,11 @@ export default function CreativeManual() {
           </div>
         </div>
 
-        {/* Hero Main Title - AARTE with hover text swap */}
-        <div className="absolute top-0 left-0 right-0 px-6 pt-4 h-[45vh]">
+        {/* Hero Title */}
+        <div className="absolute top-0 left-0 right-0 px-4 sm:px-6 pt-3 sm:pt-4 h-[45vh]">
           <div className="relative w-full h-full">
             <motion.h1
-              className="text-[clamp(3rem,12vw,9rem)] font-medium leading-[0.95] tracking-[-0.03em] text-white cursor-pointer group"
+              className="text-[clamp(2rem,12vw,9rem)] font-medium leading-[0.95] tracking-[-0.03em] text-white cursor-pointer group"
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.3, ease: EASE_OUT_EXPO }}
@@ -1605,11 +1492,9 @@ export default function CreativeManual() {
               <span className="inline-block">AARTE:</span>
               <br />
               <span className="relative inline-block">
-                {/* Default text - visible when not hovered */}
                 <span className="inline-block group-hover:opacity-0 transition-opacity duration-300 ease-out">
                   Applied Artificial Intelligence
                 </span>
-                {/* Hover text - visible on hover */}
                 <span className="absolute left-0 top-0 inline-block opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out">
                   Applied ARTificial intelligencE
                 </span>
@@ -1618,12 +1503,13 @@ export default function CreativeManual() {
           </div>
         </div>
 
-        {/* Left side - Coordinates */}
+        {/* Coordinates */}
         <motion.div
-          className="absolute left-6 top-[45%] font-mono text-xs text-white/40 uppercase"
+          className="absolute left-4 sm:left-6 top-[45%] font-mono text-xs text-white/40 uppercase"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.8 }}
+          aria-label={`Mouse position X: ${mousePos.x} pixels, Y: ${mousePos.y} pixels`}
         >
           <div className="flex items-center gap-1">
             <span className="text-white/30">[X]</span>
@@ -1635,9 +1521,9 @@ export default function CreativeManual() {
           </div>
         </motion.div>
 
-        {/* Left bottom - Project Credits with Barcode */}
+        {/* Credits with Barcode */}
         <motion.div
-          className="absolute bottom-6 left-6"
+          className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1 }}
@@ -1646,8 +1532,7 @@ export default function CreativeManual() {
           <div className="flex items-center gap-2 mb-4">
             <span className="font-mono text-xs text-white/60 uppercase">AARTE</span>
           </div>
-          {/* Barcode SVG - CWM exact style */}
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 333 109" fill="none" className="h-20 w-auto text-white">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 333 109" fill="none" className="h-16 sm:h-20 w-auto text-white" aria-label="AARTE barcode">
             <path d="M0 109V0H5.54237V109H0ZM11.0847 109V0H16.6271V109H11.0847ZM22.1695 109V0H38.7966V109H22.1695ZM44.339 109V0H60.9661V109H44.339ZM77.5932 109V0H83.1356V109H77.5932Z" fill="currentColor" />
             <path d="M83.2222 109V0H99.8493V109H83.2222ZM105.392 109V0H110.934V109H105.392ZM116.476 109V0H122.019V109H116.476ZM138.646 109V0H155.273V109H138.646ZM160.815 109V0H166.358V109H160.815Z" fill="currentColor" />
             <path d="M166.444 109V0H183.072V109H166.444ZM188.614 109V0H194.156V109H188.614ZM199.699 109V0H216.326V109H199.699ZM232.953 109V0H238.495V109H232.953ZM244.038 109V0H249.58V109H244.038Z" fill="currentColor" />
@@ -1655,127 +1540,118 @@ export default function CreativeManual() {
           </svg>
         </motion.div>
 
-        {/* CWM-style corner brackets - positioned around right content area (subtitle + info) */}
+        {/* Corner brackets */}
         <motion.div
           className="absolute inset-0 pointer-events-none"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.8 }}
+          aria-hidden="true"
         >
-          {/* Top left bracket - marks left edge of subtitle area */}
           <svg className="absolute top-[54%] left-[48%] w-3 h-3 text-white/30" viewBox="0 0 14 14" fill="none">
             <rect width="14" height="1" fill="currentColor"/>
             <rect width="1" height="14" fill="currentColor"/>
           </svg>
-          {/* Top right bracket - right edge near screen edge */}
-          <svg className="absolute top-[54%] right-6 w-3 h-3 text-white/30" viewBox="0 0 14 14" fill="none">
+          <svg className="absolute top-[54%] right-4 sm:right-6 w-3 h-3 text-white/30" viewBox="0 0 14 14" fill="none">
             <rect width="14" height="1" fill="currentColor"/>
             <rect x="13" width="1" height="14" fill="currentColor"/>
           </svg>
-          {/* Bottom left bracket */}
-          <svg className="absolute bottom-6 left-[48%] w-3 h-3 text-white/30" viewBox="0 0 14 14" fill="none">
+          <svg className="absolute bottom-4 sm:bottom-6 left-[48%] w-3 h-3 text-white/30" viewBox="0 0 14 14" fill="none">
             <rect y="13" width="14" height="1" fill="currentColor"/>
             <rect width="1" height="14" fill="currentColor"/>
           </svg>
-          {/* Bottom right bracket */}
-          <svg className="absolute bottom-6 right-6 w-3 h-3 text-white/30" viewBox="0 0 14 14" fill="none">
+          <svg className="absolute bottom-4 sm:bottom-6 right-4 sm:right-6 w-3 h-3 text-white/30" viewBox="0 0 14 14" fill="none">
             <rect y="13" width="14" height="1" fill="currentColor"/>
             <rect x="13" width="1" height="14" fill="currentColor"/>
           </svg>
         </motion.div>
 
-        {/* Right side - Subtitle - CWM style (inside bracket area) */}
+        {/* Subtitle */}
         <motion.div
-          className="absolute top-[56%] left-[48%] text-left"
+          className="absolute top-[56%] left-[48%] text-left pr-4 sm:pr-6"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
         >
-          <p className="text-[clamp(1.5rem,2.5vw,2.5rem)] font-medium text-white leading-[1.25] tracking-[-0.01em] mb-6">
+          <p className="text-[clamp(1.25rem,2.5vw,2.5rem)] font-medium text-white leading-[1.25] tracking-[-0.01em] mb-4 sm:mb-6">
             Create Your Personal AARTE Agent
           </p>
           <a
             href="/signup"
-            className="inline-block font-mono text-sm text-black bg-white px-6 py-3 hover:bg-white/90 transition-colors uppercase"
+            className="inline-block font-mono text-sm text-black bg-white px-4 sm:px-6 py-3 hover:bg-white/90 transition-colors uppercase min-h-[44px]"
+            aria-label="Get Started with AARTE"
           >
             Get Started →
           </a>
         </motion.div>
 
-        {/* Right side - Info Section - CWM exact layout */}
+        {/* Info Section */}
         <motion.div
-          className="absolute bottom-8 left-[48%] right-6"
+          className="absolute bottom-6 sm:bottom-8 left-[48%] right-4 sm:right-6"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.1 }}
         >
-          {/* Active Ingredients row */}
           <div className="flex justify-between items-baseline mb-2">
             <span className="font-mono text-xs text-white/40 uppercase tracking-wider">active ingredients</span>
-            <a href="https://clawd.bot/" target="_blank" rel="noopener noreferrer" className="font-mono text-xs text-white uppercase tracking-wider hover:text-white/60 transition-colors">Clawd.bot</a>
+            <a href="https://clawd.bot/" target="_blank" rel="noopener noreferrer" className="font-mono text-xs text-white uppercase tracking-wider hover:text-white/60 transition-colors min-h-[44px] flex items-center">Clawd.bot</a>
           </div>
           <div className="border-b border-white/20 mb-2" />
 
-          {/* n8n row */}
           <div className="flex justify-end mb-2">
             <span className="font-mono text-xs text-white uppercase tracking-wider">n8n</span>
           </div>
           <div className="border-b border-white/20 mb-2" />
 
-          {/* VPS row */}
           <div className="flex justify-end mb-2">
             <span className="font-mono text-xs text-white uppercase tracking-wider">VPS</span>
           </div>
           <div className="border-b border-white/20 mb-4" />
 
-          {/* Chapters row */}
           <div className="flex justify-between items-baseline mb-2">
             <span className="font-mono text-xs text-white/40 uppercase tracking-wider">chapters</span>
-            <a href="#about" className="font-mono text-xs text-white uppercase tracking-wider hover:text-white/60 transition-colors">01. What is AARTE?</a>
+            <a href="#about" className="font-mono text-xs text-white uppercase tracking-wider hover:text-white/60 transition-colors min-h-[44px] flex items-center">01. What is AARTE?</a>
           </div>
           <div className="border-b border-white/20 mb-2" />
 
-          {/* Design + Dev row */}
           <div className="flex justify-end mb-2">
-            <a href="#design" className="font-mono text-xs text-white uppercase tracking-wider hover:text-white/60 transition-colors">02. design + dev</a>
+            <a href="#design" className="font-mono text-xs text-white uppercase tracking-wider hover:text-white/60 transition-colors min-h-[44px] flex items-center">02. design + dev</a>
           </div>
           <div className="border-b border-white/20" />
         </motion.div>
 
       </section>
 
-      {/* ==================== CHAPTER 1: ABOUT ==================== */}
+      {/* CHAPTER 1: ABOUT */}
       <AboutSection />
 
-      {/* ==================== INTERSECTION TEXT WITH BRICK BLOCKS ==================== */}
+      {/* INTERSECTION TEXT */}
       <IntersectionSection />
 
-      {/* ==================== ABOUT DESCRIPTION SECTION ==================== */}
-      <section className="panel py-32 px-6 bg-[#0a0a0a]">
+      {/* ABOUT DESCRIPTION */}
+      <section className="panel py-24 sm:py-32 px-4 sm:px-6 bg-[#0a0a0a]">
         <div className="w-full">
           <div className="flex items-center gap-3 mb-8 px-2">
             <div className="w-2 h-2 rounded-full bg-white" />
             <span className="font-mono text-xs text-white/60 uppercase tracking-wider">About</span>
           </div>
           <FadeIn>
-            <p className="text-[clamp(1.5rem,5vw,4rem)] font-medium leading-[1.1] tracking-[-0.02em] text-white">
+            <p className="text-[clamp(1.25rem,5vw,4rem)] font-medium leading-[1.1] tracking-[-0.02em] text-white">
               AI Agents are hard to build. Harder to keep running. AARTE handles the infrastructure so you can focus on what you actually do. When something breaks, we pick up the phone.
             </p>
           </FadeIn>
         </div>
       </section>
 
-      {/* ==================== PIXEL TRANSITION TO CHAPTER 2 ==================== */}
+      {/* PIXEL TRANSITION */}
       <PixelTransition />
 
-      {/* ==================== CHAPTER 2: DESIGN + DEV ==================== */}
+      {/* CHAPTER 2: DESIGN + DEV */}
       <section id="design" className="panel min-h-screen py-6 px-4 md:px-6 bg-[#e8e8e8]">
         <div className="w-full">
-          {/* Main header area - CWM layout: title left, chapter number right */}
-          <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-6 mb-16 md:mb-24">
-            {/* Left side - Title - CWM uses massive text with letter color animation */}
+          <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-6 mb-12 md:mb-16 lg:mb-24">
             <div className="md:flex-1">
-              <h2 className="text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-medium leading-[0.9] tracking-[-0.03em]">
+              <h2 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-medium leading-[0.9] tracking-[-0.03em]">
                 <span className="block">
                   <DesignDevTitle text="Design &" />
                 </span>
@@ -1785,36 +1661,35 @@ export default function CreativeManual() {
               </h2>
             </div>
 
-            {/* Right side - Chapter number - CWM style with line above */}
             <div className="md:w-[280px] lg:w-[360px] md:flex-shrink-0">
               <div className="border-t border-black pt-2">
                 <span className="font-mono text-[10px] text-black uppercase tracking-wider">Chapter:</span>
-                <div className="text-6xl md:text-8xl lg:text-9xl font-medium leading-[0.78] tracking-[-0.04em] text-black md:text-right">
+                <div className="text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-medium leading-[0.78] tracking-[-0.04em] text-black md:text-right">
                   02
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Chapters list - CWM style with horizontal lines - number left, title middle */}
           <div className="max-w-[700px]">
             <FadeIn>
               <h3 className="text-sm font-medium text-black mb-2 uppercase tracking-wider">Chapters</h3>
             </FadeIn>
             <div>
               {[
-                { num: "2.1", title: "GRIDS & LAYOUTS", href: "#grids" },
-                { num: "2.2", title: "TYPOGRAPHY", href: "#typography" },
-                { num: "2.3", title: "COLOR", href: "#color" },
-                { num: "2.4", title: "ANIMATION", href: "#motion" }
+                { num: "2.1", title: "HOW IT WORKS", href: "#how-it-works" },
+                { num: "2.2", title: "TECH STACK", href: "#tech-stack" },
+                { num: "2.3", title: "SKILLS", href: "#skills" },
+                { num: "2.4", title: "INTEGRATIONS", href: "#integrations" }
               ].map((item, i) => (
                 <FadeIn key={item.num} delay={i * 0.1}>
                   <a
                     href={item.href}
-                    className="group flex items-center py-3 border-t border-black/20 hover:bg-black/5 transition-colors"
+                    className="group flex items-center py-3 border-t border-black/20 hover:bg-black/5 transition-colors min-h-[44px]"
+                    aria-label={`Chapter ${item.num}: ${item.title}`}
                   >
                     <span className="font-mono text-sm text-black/50 w-12 flex-shrink-0">{item.num}</span>
-                    <span className="font-mono text-sm text-black uppercase tracking-wider ml-32 md:ml-56">{item.title}</span>
+                    <span className="font-mono text-sm text-black uppercase tracking-wider ml-8 sm:ml-32 md:ml-56">{item.title}</span>
                   </a>
                 </FadeIn>
               ))}
@@ -1824,90 +1699,129 @@ export default function CreativeManual() {
         </div>
       </section>
 
-      {/* ==================== CHAPTER 2.1: GRIDS ==================== */}
-      <section id="grids" className="panel py-32 px-6 border-t border-white/10 bg-[#0a0a0a]">
+      {/* CHAPTER 2.1: HOW IT WORKS */}
+      <section id="how-it-works" className="panel py-24 sm:py-32 px-4 sm:px-6 border-t border-white/10 bg-[#0a0a0a]">
         <div className="max-w-7xl mx-auto">
-          <ChapterHeader number="2.1" title="grids & layouts" />
+          <ChapterHeader number="2.1" title="how it works" />
 
-          <div className="grid md:grid-cols-12 gap-12 mb-16">
-            <div className="md:col-span-5">
-              <h3 className="text-4xl md:text-5xl font-medium leading-[1.1] tracking-[-0.02em] mb-8 overflow-hidden">
-                <SplitTextReveal text="Grids &" className="block" />
-                <SplitTextReveal text="Layouts" className="block" delay={0.3} />
+          <div className="grid md:grid-cols-12 gap-8 sm:gap-12 mb-12 sm:mb-16">
+            <div className="md:col-span-6">
+              <h3 className="text-3xl sm:text-4xl md:text-5xl font-medium leading-[1.1] tracking-[-0.02em] mb-6 sm:mb-8 overflow-hidden">
+                <SplitTextReveal text="The" className="block" />
+                <SplitTextReveal text="Architecture" className="block" delay={0.3} />
               </h3>
               <FadeIn delay={0.2}>
-                <p className="text-white/50 leading-relaxed mb-8">
-                  Using a grid can assist in creative cohesive, precise and satisfying layouts by
-                  aligning and grouping elements within the grid.
+                <p className="text-white/50 leading-relaxed mb-6">
+                  AARTE runs on a Gateway process that owns all your channel connections. Messages from WhatsApp, Telegram, Discord, Slack, and more flow into a central WebSocket control plane.
                 </p>
-              </FadeIn>
-              <FadeIn delay={0.3}>
-                <div className="font-mono text-xs text-white/40 space-y-1">
-                  <div>columns: 12</div>
-                  <div>rows: auto</div>
-                  <div>gutter / gap: 1rem / 16px</div>
-                </div>
+                <p className="text-white/50 leading-relaxed mb-6">
+                  The Gateway routes messages to AI agents running in RPC mode, maintaining isolated workspaces per conversation. Direct chats share context; groups stay isolated.
+                </p>
               </FadeIn>
             </div>
 
-            <div className="md:col-span-7">
-              <FadeIn delay={0.2}>
-                <div className="border border-white/10 rounded-lg p-6">
-                  <div className="font-mono text-xs text-white/40 mb-4">try these different layouts</div>
-                  <div className="flex gap-2 mb-6">
-                    {[0, 1, 2].map((i) => (
-                      <button
-                        key={i}
-                        onClick={() => setActiveLayout(i)}
-                        className={`px-4 py-2 border rounded font-mono text-xs transition-all ${
-                          activeLayout === i
-                            ? "border-white bg-white text-black"
-                            : "border-white/20 hover:border-white/40"
-                        }`}
-                      >
-                        Layout {i + 1}
-                      </button>
-                    ))}
+            <div className="md:col-span-6">
+              <FadeIn delay={0.3}>
+                <div className="border border-white/10 rounded-lg p-4 sm:p-6">
+                  <div className="font-mono text-xs text-white/40 mb-6">message flow</div>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-20 sm:w-24 text-right font-mono text-xs text-white/60">Channels</div>
+                      <div className="flex-1 h-px bg-white/20" />
+                      <div className="font-mono text-xs text-white text-right sm:text-left">WhatsApp, Telegram, Discord, Slack, iMessage</div>
+                    </div>
+                    <div className="flex items-center justify-center" aria-hidden="true">
+                      <span className="font-mono text-xs text-white/40">↓</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="w-20 sm:w-24 text-right font-mono text-xs text-white/60">Gateway</div>
+                      <div className="flex-1 h-px bg-white/20" />
+                      <div className="font-mono text-xs text-white text-right sm:text-left">WebSocket control plane @ :18789</div>
+                    </div>
+                    <div className="flex items-center justify-center" aria-hidden="true">
+                      <span className="font-mono text-xs text-white/40">↓</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="w-20 sm:w-24 text-right font-mono text-xs text-white/60">AI Agent</div>
+                      <div className="flex-1 h-px bg-white/20" />
+                      <div className="font-mono text-xs text-white text-right sm:text-left">Claude / GPT in RPC mode</div>
+                    </div>
+                    <div className="flex items-center justify-center" aria-hidden="true">
+                      <span className="font-mono text-xs text-white/40">↓</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="w-20 sm:w-24 text-right font-mono text-xs text-white/60">Canvas</div>
+                      <div className="flex-1 h-px bg-white/20" />
+                      <div className="font-mono text-xs text-white text-right sm:text-left">HTTP file server @ :18793</div>
+                    </div>
                   </div>
-                  <GridDemo layout={activeLayout} />
                 </div>
               </FadeIn>
             </div>
           </div>
 
           <FadeIn>
-            <p className="text-white/40 text-center max-w-2xl mx-auto text-sm">
-              However, grids are just guidelines—breaking out of a grid can form completely different and interesting designs.
-            </p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-12">
+              {[
+                { label: "Runtime", value: "Node.js ≥ 22" },
+                { label: "Config", value: "~/.clawdbot/clawdbot.json" },
+                { label: "Service", value: "launchd / systemd" },
+                { label: "Network", value: "Loopback + Tailscale" },
+              ].map((item) => (
+                <div key={item.label} className="border border-white/10 p-3 sm:p-4 rounded">
+                  <div className="font-mono text-[10px] text-white/40 uppercase mb-1">{item.label}</div>
+                  <div className="font-mono text-xs sm:text-sm text-white">{item.value}</div>
+                </div>
+              ))}
+            </div>
+          </FadeIn>
+
+          <FadeIn delay={0.4}>
+            <div className="border-t border-white/10 pt-8 text-center">
+              <p className="text-white/40 text-sm mb-4">
+                AARTE is powered by <a href="https://clawd.bot" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#ffb700] transition-colors">Clawdbot</a> — the open-source AI assistant framework.
+              </p>
+              <a
+                href="https://github.com/clawdbot/clawdbot"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 font-mono text-xs text-white/60 hover:text-white transition-colors min-h-[44px]"
+                aria-label="View Clawdbot on GitHub"
+              >
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
+                </svg>
+                View on GitHub
+              </a>
+            </div>
           </FadeIn>
         </div>
       </section>
 
-      {/* ==================== CHAPTER 2.2: TYPOGRAPHY ==================== */}
-      <section id="typography" className="panel py-32 border-t border-white/10 bg-[#0a0a0a] overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6">
-          <ChapterHeader number="2.2" title="type fundamentals" />
+      {/* CHAPTER 2.2: TECH STACK */}
+      <section id="tech-stack" className="panel py-24 sm:py-32 border-t border-white/10 bg-[#0a0a0a] overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <ChapterHeader number="2.2" title="tech stack" />
         </div>
 
-        {/* CWM-style Large Typography marquee - scrolls on scroll */}
-        <div className="mb-24">
+        <div className="mb-16 sm:mb-24">
           <ScrollHorizontalText direction="left" speed={30}>
-            <h3 className="text-[clamp(6rem,20vw,16rem)] font-medium leading-[0.85] tracking-[-0.04em] text-white/10">
+            <h3 className="text-[clamp(4rem,20vw,16rem)] font-medium leading-[0.85] tracking-[-0.04em] text-white/10">
               Typography. Typography. Typography. Typography.&nbsp;
             </h3>
           </ScrollHorizontalText>
           <ScrollHorizontalText direction="right" speed={25} className="mt-4">
-            <h3 className="text-[clamp(4rem,15vw,12rem)] font-medium leading-[0.85] tracking-[-0.04em]">
+            <h3 className="text-[clamp(3rem,15vw,12rem)] font-medium leading-[0.85] tracking-[-0.04em]">
               Typography. Typography. Typography. Typography.&nbsp;
             </h3>
           </ScrollHorizontalText>
         </div>
 
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-12 gap-12 mb-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="grid md:grid-cols-12 gap-8 sm:gap-12 mb-16 sm:mb-24">
             <div className="md:col-span-6">
               <FadeIn>
-                <p className="text-xl md:text-2xl text-white/70 leading-relaxed mb-8">
+                <p className="text-lg sm:text-xl md:text-2xl text-white/70 leading-relaxed mb-8">
                   Typography sets the foundation of any creative websites, period. Whether you're trying
                   to establish a strong first impression or communicating a message to a target audience,
                   your type has to be dialed in and align with your story and identity.
@@ -1925,25 +1839,24 @@ export default function CreativeManual() {
             </div>
           </div>
 
-          {/* Type hierarchy demo - CWM style with staggered reveal */}
-          <div className="mb-24">
+          <div className="mb-16 sm:mb-24">
             <FadeIn>
               <div className="text-sm text-white/40 mb-8">Type hierarchy demonstration</div>
             </FadeIn>
-            <div className="space-y-8">
+            <div className="space-y-6 sm:space-y-8">
               <div className="overflow-hidden">
                 <LineReveal>
-                  <div className="text-6xl md:text-8xl font-medium tracking-[-0.03em]">Display</div>
+                  <div className="text-4xl sm:text-6xl md:text-8xl font-medium tracking-[-0.03em]">Display</div>
                 </LineReveal>
               </div>
               <div className="overflow-hidden">
                 <LineReveal delay={0.15}>
-                  <div className="text-4xl md:text-5xl font-medium text-white/70 tracking-[-0.02em]">Headline</div>
+                  <div className="text-3xl sm:text-4xl md:text-5xl font-medium text-white/70 tracking-[-0.02em]">Headline</div>
                 </LineReveal>
               </div>
               <div className="overflow-hidden">
                 <LineReveal delay={0.3}>
-                  <div className="text-xl text-white/50">Body copy — The quick brown fox jumps over the lazy dog.</div>
+                  <div className="text-lg sm:text-xl text-white/50">Body copy — The quick brown fox jumps over the lazy dog.</div>
                 </LineReveal>
               </div>
               <div className="overflow-hidden">
@@ -1956,23 +1869,23 @@ export default function CreativeManual() {
         </div>
       </section>
 
-      {/* ==================== CHAPTER 2.3: COLORS ==================== */}
-      <section id="color" className="panel py-32 px-6 border-t border-white/10 bg-[#0a0a0a]">
+      {/* CHAPTER 2.3: SKILLS */}
+      <section id="skills" className="panel py-24 sm:py-32 px-4 sm:px-6 border-t border-white/10 bg-[#0a0a0a]">
         <div className="max-w-7xl mx-auto">
-          <ChapterHeader number="2.3" title="color theory" />
+          <ChapterHeader number="2.3" title="skills" />
 
-          <h3 className="text-[clamp(3rem,8vw,6rem)] font-medium leading-[0.9] tracking-[-0.03em] mb-8">
+          <h3 className="text-[clamp(2.5rem,8vw,6rem)] font-medium leading-[0.9] tracking-[-0.03em] mb-6 sm:mb-8">
             <LineReveal>Colors</LineReveal>
           </h3>
 
           <FadeIn delay={0.1}>
-            <p className="text-xl text-white/50 max-w-2xl mb-20 leading-relaxed">
+            <p className="text-lg sm:text-xl text-white/50 max-w-2xl mb-16 sm:mb-20 leading-relaxed">
               Every award-winning site shares one thing: intentional color. It's not picked from a palette—
               it's designed to evoke, to direct, and to tell a story.
             </p>
           </FadeIn>
 
-          <div className="grid md:grid-cols-2 gap-16 mb-24">
+          <div className="grid md:grid-cols-2 gap-12 sm:gap-16 mb-16 sm:mb-24">
             <FadeIn>
               <div>
                 <h4 className="text-sm text-white/40 mb-4">Cool tones</h4>
@@ -2007,14 +1920,14 @@ export default function CreativeManual() {
         </div>
       </section>
 
-      {/* ==================== CHAPTER 2.4: MOTION ==================== */}
-      <section id="motion" className="panel py-32 px-6 border-t border-white/10 bg-[#0a0a0a]">
+      {/* CHAPTER 2.4: INTEGRATIONS */}
+      <section id="integrations" className="panel py-24 sm:py-32 px-4 sm:px-6 border-t border-white/10 bg-[#0a0a0a]">
         <div className="max-w-7xl mx-auto">
-          <ChapterHeader number="2.4" title="motion & animation" />
+          <ChapterHeader number="2.4" title="integrations" />
 
-          <div className="grid md:grid-cols-2 gap-12 mb-24">
+          <div className="grid md:grid-cols-2 gap-8 sm:gap-12 mb-16 sm:mb-24">
             <div>
-              <h3 className="text-[clamp(2rem,6vw,4rem)] font-medium leading-[0.9] tracking-[-0.02em] mb-8">
+              <h3 className="text-[clamp(2rem,6vw,4rem)] font-medium leading-[0.9] tracking-[-0.02em] mb-6 sm:mb-8">
                 <LineReveal>Motion /</LineReveal>
                 <LineReveal delay={0.15}>Animation /</LineReveal>
                 <LineReveal delay={0.3}>Interaction</LineReveal>
@@ -2035,8 +1948,7 @@ export default function CreativeManual() {
             </FadeIn>
           </div>
 
-          {/* Animation methods - CWM style with hover states */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-24">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-16 sm:mb-24">
             {[
               { num: "01", label: "text", desc: "Split & stagger" },
               { num: "02", label: "hover", desc: "Overlap & follow" },
@@ -2045,8 +1957,11 @@ export default function CreativeManual() {
             ].map((method, i) => (
               <FadeIn key={method.num} delay={i * 0.1}>
                 <motion.div
-                  className="group relative p-6 border border-white/10 rounded overflow-hidden cursor-pointer"
+                  className="group relative p-4 sm:p-6 border border-white/10 rounded overflow-hidden cursor-pointer"
                   whileHover={{ borderColor: "rgba(255,255,255,0.3)" }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Animation method ${method.num}: ${method.label}`}
                 >
                   <motion.div
                     className="absolute inset-0 bg-white/5"
@@ -2063,16 +1978,14 @@ export default function CreativeManual() {
             ))}
           </div>
 
-          {/* Interactive demos - CWM style */}
           <FadeIn>
             <div className="text-sm text-white/40 mb-8">Use delays, staggers, and easings to make more organic animations</div>
           </FadeIn>
 
-          <div className="grid md:grid-cols-3 gap-6 mb-16">
-            {/* Text reveal demo */}
+          <div className="grid md:grid-cols-3 gap-4 sm:gap-6 mb-12 sm:mb-16">
             <FadeIn>
               <motion.div
-                className="border border-white/10 rounded-lg p-8 h-full"
+                className="border border-white/10 rounded-lg p-6 sm:p-8 h-full"
                 whileHover={{ borderColor: "rgba(255,255,255,0.2)" }}
               >
                 <div className="text-xs text-white/40 mb-4">Text reveal</div>
@@ -2085,16 +1998,18 @@ export default function CreativeManual() {
               </motion.div>
             </FadeIn>
 
-            {/* Scale demo */}
             <FadeIn delay={0.1}>
               <motion.div
-                className="border border-white/10 rounded-lg p-8 cursor-pointer h-full"
+                className="border border-white/10 rounded-lg p-6 sm:p-8 cursor-pointer h-full"
                 whileHover={{ scale: 1.02, borderColor: "rgba(255,255,255,0.3)" }}
                 transition={{ duration: 0.45, ease: EASE_BUTTON_HOVER }}
+                role="button"
+                tabIndex={0}
+                aria-label="Scale and follow through demo"
               >
                 <div className="text-xs text-white/40 mb-4">Scale + follow through</div>
                 <motion.div
-                  className="text-2xl font-medium mb-6"
+                  className="text-xl sm:text-2xl font-medium mb-6"
                   whileHover={{ letterSpacing: "0.05em" }}
                   transition={{ duration: 0.6, ease: EASE_SMOOTH }}
                 >
@@ -2108,7 +2023,6 @@ export default function CreativeManual() {
               </motion.div>
             </FadeIn>
 
-            {/* Stagger demo */}
             <FadeIn delay={0.2}>
               <StaggerDemo />
             </FadeIn>
@@ -2123,32 +2037,31 @@ export default function CreativeManual() {
         </div>
       </section>
 
-      {/* ==================== CHAPTER 3: RESOURCES ==================== */}
-      <section id="resources" className="panel py-32 border-t border-white/10 bg-[#0a0a0a] overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6">
+      {/* CHAPTER 3: RESOURCES */}
+      <section id="resources" className="panel py-24 sm:py-32 border-t border-white/10 bg-[#0a0a0a] overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <ChapterHeader number="03" title="final word" />
         </div>
 
-        {/* CWM-style large scrolling text */}
-        <div className="mb-24">
+        <div className="mb-16 sm:mb-24">
           <FadeIn>
             <p className="text-white/40 mb-8 text-center">And last but not least, it is important for you to constantly...</p>
           </FadeIn>
 
           <ScrollHorizontalText direction="right" speed={20}>
-            <h3 className="text-[clamp(4rem,15vw,12rem)] font-medium leading-[0.9] tracking-[-0.04em] text-white/10">
+            <h3 className="text-[clamp(3rem,15vw,12rem)] font-medium leading-[0.9] tracking-[-0.04em] text-white/10">
               Put in the reps. Put in the reps. Put in the reps.&nbsp;
             </h3>
           </ScrollHorizontalText>
           <ScrollHorizontalText direction="left" speed={25} className="mt-2">
-            <h3 className="text-[clamp(3rem,12vw,10rem)] font-medium leading-[0.9] tracking-[-0.04em]">
+            <h3 className="text-[clamp(2.5rem,12vw,10rem)] font-medium leading-[0.9] tracking-[-0.04em]">
               Put in the reps. Put in the reps. Put in the reps.&nbsp;
             </h3>
           </ScrollHorizontalText>
         </div>
 
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-16 sm:mb-24">
             <FadeIn delay={0.2}>
               <p className="text-white/50 max-w-2xl mx-auto leading-relaxed">
                 Create passion projects, experiment with animations, and explore new design ideas.
@@ -2163,7 +2076,6 @@ export default function CreativeManual() {
           </FadeIn>
 
           <div className="grid md:grid-cols-2 gap-12">
-            {/* Inspiration */}
             <FadeIn>
               <div>
                 <h4 className="text-sm text-white/60 mb-6">Inspiration</h4>
@@ -2175,7 +2087,6 @@ export default function CreativeManual() {
               </div>
             </FadeIn>
 
-            {/* Resources */}
             <FadeIn delay={0.1}>
               <div>
                 <h4 className="text-sm text-white/60 mb-6">Resources</h4>
@@ -2192,12 +2103,10 @@ export default function CreativeManual() {
         </div>
       </section>
 
-      {/* ==================== FOOTER ==================== */}
-      <footer className="panel pt-24 pb-32 px-6 border-t border-white/10 bg-[#0a0a0a]">
+      {/* FOOTER */}
+      <footer className="panel pt-16 sm:pt-24 pb-24 sm:pb-32 px-4 sm:px-6 border-t border-white/10 bg-[#0a0a0a]">
         <div className="max-w-7xl mx-auto">
-          {/* Footer content - CWM style */}
-          <div className="flex flex-wrap items-end justify-between gap-8 mb-16">
-            {/* Left side - Copyright and credits */}
+          <div className="flex flex-wrap items-end justify-between gap-8 mb-12 sm:mb-16">
             <div>
               <div className="font-mono text-xs text-white/40 mb-2">©AARTE — 2025</div>
               <div className="font-mono text-xs text-white/40">
@@ -2205,15 +2114,15 @@ export default function CreativeManual() {
               </div>
             </div>
 
-            {/* Right side - Barcode */}
             <motion.svg
-              className="h-16 w-auto text-white/20"
+              className="h-12 sm:h-16 w-auto text-white/20"
               viewBox="0 0 333 109"
               fill="none"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.4 }}
+              aria-label="AARTE barcode"
             >
               <path d="M0 109V0H5.54237V109H0ZM11.0847 109V0H16.6271V109H11.0847ZM22.1695 109V0H38.7966V109H22.1695ZM44.339 109V0H60.9661V109H44.339ZM77.5932 109V0H83.1356V109H77.5932Z" fill="currentColor" />
               <path d="M83.2222 109V0H99.8493V109H83.2222ZM105.392 109V0H110.934V109H105.392ZM116.476 109V0H122.019V109H116.476ZM138.646 109V0H155.273V109H138.646ZM160.815 109V0H166.358V109H160.815Z" fill="currentColor" />
@@ -2222,7 +2131,6 @@ export default function CreativeManual() {
             </motion.svg>
           </div>
 
-          {/* Bottom credits */}
           <motion.div
             className="flex flex-wrap items-center justify-between gap-4 pt-8 border-t border-white/10"
             initial={{ opacity: 0 }}
@@ -2240,36 +2148,35 @@ export default function CreativeManual() {
         </div>
       </footer>
 
-      </div>{/* End scroll-content */}
+      </div>
 
       {/* Duplicate content for seamless infinite scroll */}
       <div className="scroll-content-clone" aria-hidden="true">
-        {/* Clone of hero for seamless loop */}
         <section className="panel relative min-h-screen overflow-hidden bg-black">
-          <div className="absolute top-0 left-0 right-0 px-6 pt-4 pointer-events-none">
+          <div className="absolute top-0 left-0 right-0 px-4 sm:px-6 pt-3 sm:pt-4 pointer-events-none">
             <div
-              className="text-[clamp(3rem,12vw,9rem)] font-medium leading-[0.95] tracking-[-0.03em] text-transparent"
+              className="text-[clamp(2rem,12vw,9rem)] font-medium leading-[0.95] tracking-[-0.03em] text-transparent"
               style={{ WebkitTextStroke: '1px rgba(255,255,255,0.06)' }}
             >
               AARTE:<br />
               Applied Artificial Intelligence
             </div>
           </div>
-          <div className="absolute top-0 left-0 right-0 px-6 pt-4 h-[45vh]">
+          <div className="absolute top-0 left-0 right-0 px-4 sm:px-6 pt-3 sm:pt-4 h-[45vh]">
             <div className="relative w-full h-full">
-              <h1 className="text-[clamp(3rem,12vw,9rem)] font-medium leading-[0.95] tracking-[-0.03em] text-white">
+              <h1 className="text-[clamp(2rem,12vw,9rem)] font-medium leading-[0.95] tracking-[-0.03em] text-white">
                 AARTE:<br />
                 Applied Artificial Intelligence
               </h1>
             </div>
           </div>
-          <div className="absolute top-[56%] left-[48%] text-left">
-            <p className="text-[clamp(1.5rem,2.5vw,2.5rem)] font-medium text-white leading-[1.25] tracking-[-0.01em] mb-6">
+          <div className="absolute top-[56%] left-[48%] text-left pr-4 sm:pr-6">
+            <p className="text-[clamp(1.25rem,2.5vw,2.5rem)] font-medium text-white leading-[1.25] tracking-[-0.01em] mb-4 sm:mb-6">
               Create Your Personal AARTE Agent
             </p>
             <a
               href="/signup"
-              className="inline-block font-mono text-sm text-black bg-white px-6 py-3 hover:bg-white/90 transition-colors uppercase"
+              className="inline-block font-mono text-sm text-black bg-white px-4 sm:px-6 py-3 hover:bg-white/90 transition-colors uppercase min-h-[44px]"
             >
               Get Started →
             </a>
