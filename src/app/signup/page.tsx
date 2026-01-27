@@ -77,10 +77,10 @@ export default function SignUpPage() {
             {/* Plan Name */}
             <div className="mb-6">
               <h2 className="font-mono text-xs text-white/40 uppercase mb-2">
-                Pro Plan
+                Minimal Plan
               </h2>
               <div className="flex items-baseline gap-1">
-                <span className="text-5xl font-medium">$49</span>
+                <span className="text-5xl font-medium">$29</span>
                 <span className="text-2xl font-medium text-white/60">.99</span>
                 <span className="text-white/40 font-mono text-sm ml-2">
                   / month
