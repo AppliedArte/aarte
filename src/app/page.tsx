@@ -1150,14 +1150,23 @@ export default function CreativeManual() {
   }, [loading]);
 
   const navItems = [
-    { label: "About", href: "#about" },
+    {
+      label: "About",
+      href: "#about",
+      subItems: [
+        { label: "1.1 What is AARTE?", href: "#about" },
+        { label: "1.2 Channels", href: "#about" },
+      ]
+    },
     {
       label: "AARTE",
       href: "#design-dev",
-      subItems: ["How it works", "Tech Stack", "Skills", "Integrations"].map((title, i) => ({
-        label: `2.${i + 1} ${title}`,
-        href: `#${title.toLowerCase().replace(/\s+/g, "-")}`
-      }))
+      subItems: [
+        { label: "2.1 How it works", href: "#how-it-works" },
+        { label: "2.2 Tech Stack", href: "#tech-stack" },
+        { label: "2.3 Skills", href: "#skills" },
+        { label: "2.4 Integrations", href: "#integrations" },
+      ]
     },
     { label: "Get Started", href: "#resources" },
   ];
