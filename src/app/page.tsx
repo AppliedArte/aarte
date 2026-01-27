@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -714,7 +714,7 @@ function AboutSection() {
   const iconPathRef = useRef<SVGPathElement>(null);
   const creativityCharsRef = useRef<(HTMLDivElement | null)[]>([]);
   const techCharsRef = useRef<(HTMLSpanElement | null)[]>([]);
-  const creativityTextLine1 = "AARTE is your personal AI Agent.";
+  const creativityTextLine1 = "AARTE is your personal AI Assistant.";
 const creativityTextLine2 = "It reads your email, learns your workflow, texts you, and calls your clients.";
 const creativityTextLine3 = "It even learns new skills!";
   const techText = "</AARTE>";
@@ -931,70 +931,95 @@ const creativityTextLine3 = "It even learns new skills!";
   );
 }
 
-// Pixel transition effect - CWM style full-width dithered transition
+// Pixel transition effect - grid of squares that light up on scroll
 function PixelTransition() {
   const containerRef = useRef<HTMLDivElement>(null);
   const pixelsRef = useRef<(HTMLDivElement | null)[]>([]);
 
-  // Full width grid - responsive columns
-  const cols = 10;
-  const rows = 9;
+  // Grid dimensions - fixed size squares
+  const pixelSize = 24; // Fixed square size in pixels
+  const gap = 2;
+  const cols = 32;
+  const rows = 19; // Added 3 more rows to reach section 02
   const totalPixels = cols * rows;
 
-  // Pattern for which pixels are black (creates dithered look)
-  const blackPixels = new Set([1, 3, 6, 12, 24, 66, 79, 85]);
+  // Pre-calculate random values for each pixel
+  const pixelData = useMemo(() => {
+    return Array.from({ length: totalPixels }, () => ({
+      delay: Math.random(),
+      instant: Math.random() < 0.3, // 30% light up instantly
+    }));
+  }, [totalPixels]);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
     const ctx = gsap.context(() => {
-      // Animate each pixel with staggered timing based on row position
       pixelsRef.current.forEach((pixel, i) => {
         if (!pixel) return;
 
-        const row = Math.floor(i / cols);
-        // Bottom rows appear first (row 8 = 0 delay, row 0 = max delay)
-        // Add random offset for organic dithered feel
-        const rowDelay = ((rows - 1 - row) / rows) * 0.6 + Math.random() * 0.1;
+        const data = pixelData[i];
 
-        gsap.fromTo(
-          pixel,
-          { opacity: 0 },
-          {
-            opacity: 1,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: containerRef.current,
-              start: `top-=${50 - rowDelay * 100}% bottom`,
-              end: `center-=${rowDelay * 50}% center`,
-              scrub: 0.5,
-            },
-          }
-        );
+        if (data.instant) {
+          // Instant pixels - light up quickly at random points
+          gsap.fromTo(
+            pixel,
+            { backgroundColor: "#0a0a0a" },
+            {
+              backgroundColor: "#e8e8e8",
+              duration: 0.1,
+              scrollTrigger: {
+                trigger: containerRef.current,
+                start: `top ${80 - data.delay * 60}%`,
+                toggleActions: "play none none reverse",
+              },
+            }
+          );
+        } else {
+          // Gradual pixels - fade from black to white over scroll
+          const startPoint = 90 - data.delay * 40; // Start between 50-90%
+          const endPoint = 20 + data.delay * 30; // End between 20-50%
+
+          gsap.fromTo(
+            pixel,
+            { backgroundColor: "#0a0a0a" },
+            {
+              backgroundColor: "#e8e8e8",
+              ease: "none",
+              scrollTrigger: {
+                trigger: containerRef.current,
+                start: `top ${startPoint}%`,
+                end: `bottom ${endPoint}%`,
+                scrub: true,
+              },
+            }
+          );
+        }
       });
     }, containerRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [pixelData]);
 
   return (
     <div
       ref={containerRef}
-      className="w-full py-16 md:py-24 bg-[#0a0a0a]"
+      className="w-full pt-12 pb-0 bg-[#0a0a0a] overflow-hidden"
     >
       <div
-        className="w-full grid"
-        style={{
-          gridTemplateColumns: `repeat(${cols}, 1fr)`,
-          gap: "3px",
-        }}
+        className="flex flex-wrap justify-center"
+        style={{ gap: `${gap}px` }}
       >
         {Array.from({ length: totalPixels }, (_, i) => (
           <div
             key={i}
             ref={(el) => { pixelsRef.current[i] = el; }}
-            className={`aspect-[1.5] ${blackPixels.has(i) ? "bg-black" : "bg-[#e8e8e8]"}`}
-            style={{ opacity: 0 }}
+            style={{
+              width: pixelSize,
+              height: pixelSize,
+              backgroundColor: "#0a0a0a",
+              flexShrink: 0,
+            }}
           />
         ))}
       </div>
@@ -1262,20 +1287,26 @@ function IntersectionSection() {
       {/* Text content */}
       <div className="relative z-10 text-center px-6 max-w-5xl">
         <div ref={textRef}>
-          <p className="text-[clamp(1.5rem,4vw,3rem)] font-medium leading-[1.15] tracking-[-0.02em] text-white">
-            AARTE integrates with <span className="text-white/50">GMail</span>,
+          <p className="text-[clamp(1.2rem,3vw,2.2rem)] font-medium leading-[1.2] tracking-[-0.02em] text-white">
+            <span className="text-[#ffb700]">AARTE</span> is your personal AI assistant.
           </p>
-          <p className="text-[clamp(1.5rem,4vw,3rem)] font-medium leading-[1.15] tracking-[-0.02em] text-white">
-            <span className="text-white/50">Whatsapp</span>, <span className="text-white/50">Telegram</span>
+          <p className="text-[clamp(1.2rem,3vw,2.2rem)] font-medium leading-[1.2] tracking-[-0.02em] text-white mt-2">
+            It answers you on the channels you already use
           </p>
-          <p className="text-[clamp(1.5rem,4vw,3rem)] font-medium leading-[1.15] tracking-[-0.02em] text-white">
-            out of the box.
+          <p className="text-[clamp(1rem,2.5vw,1.8rem)] font-medium leading-[1.2] tracking-[-0.02em] text-white/50 mt-2">
+            WhatsApp, Telegram, Slack, Discord, Google Chat, Signal, iMessage, Microsoft Teams, WebChat
           </p>
-          <p className="text-[clamp(1.5rem,4vw,3rem)] font-medium leading-[1.15] tracking-[-0.02em] text-white">
-            Train your <span className="text-[#ffb700]">AARTE</span> on your
+          <p className="text-[clamp(1.2rem,3vw,2.2rem)] font-medium leading-[1.2] tracking-[-0.02em] text-white mt-4">
+            plus extension channels like
           </p>
-          <p className="text-[clamp(1.5rem,4vw,3rem)] font-medium leading-[1.15] tracking-[-0.02em] text-white">
-            workflow skills.
+          <p className="text-[clamp(1rem,2.5vw,1.8rem)] font-medium leading-[1.2] tracking-[-0.02em] text-white/50 mt-2">
+            BlueBubbles, Matrix, Zalo, and Zalo Personal
+          </p>
+          <p className="text-[clamp(1.2rem,3vw,2.2rem)] font-medium leading-[1.2] tracking-[-0.02em] text-white mt-4">
+            It can speak and listen on <span className="text-white/50">macOS/iOS/Android</span>
+          </p>
+          <p className="text-[clamp(1.2rem,3vw,2.2rem)] font-medium leading-[1.2] tracking-[-0.02em] text-white mt-2">
+            and render a live <span className="text-[#ffb700]">Canvas</span> you control.
           </p>
         </div>
 
@@ -1558,11 +1589,11 @@ export default function CreativeManual() {
             }}
           >
             AARTE:<br />
-            <span className="opacity-0">Applied ARTificial intelligencE</span>
+            Applied Artificial Intelligence
           </div>
         </div>
 
-        {/* Hero Main Title - AARTE with hover reveal */}
+        {/* Hero Main Title - AARTE with hover text swap */}
         <div className="absolute top-0 left-0 right-0 px-6 pt-4 h-[45vh]">
           <div className="relative w-full h-full">
             <motion.h1
@@ -1573,8 +1604,15 @@ export default function CreativeManual() {
             >
               <span className="inline-block">AARTE:</span>
               <br />
-              <span className="inline-block opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-out">
-                Applied ARTificial intelligencE
+              <span className="relative inline-block">
+                {/* Default text - visible when not hovered */}
+                <span className="inline-block group-hover:opacity-0 transition-opacity duration-300 ease-out">
+                  Applied Artificial Intelligence
+                </span>
+                {/* Hover text - visible on hover */}
+                <span className="absolute left-0 top-0 inline-block opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out">
+                  Applied ARTificial intelligencE
+                </span>
               </span>
             </motion.h1>
           </div>
