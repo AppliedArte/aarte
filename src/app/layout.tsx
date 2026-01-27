@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { IBM_Plex_Mono, Silkscreen, VT323, Press_Start_2P, Pixelify_Sans } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const ppNeueMontreal = localFont({
@@ -102,7 +103,7 @@ const jsonLd = {
   "operatingSystem": "Web",
   "offers": {
     "@type": "Offer",
-    "price": "49.99",
+    "price": "29.99",
     "priceCurrency": "USD",
   },
 };
@@ -115,6 +116,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-90GEC7MMJS"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-90GEC7MMJS');
+          `}
+        </Script>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

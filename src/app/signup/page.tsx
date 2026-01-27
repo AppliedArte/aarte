@@ -77,7 +77,7 @@ export default function SignUpPage() {
             {/* Plan Name */}
             <div className="mb-6">
               <h2 className="font-mono text-xs text-white/40 uppercase mb-2">
-                Minimal Plan
+                Minimum Plan
               </h2>
               <div className="flex items-baseline gap-1">
                 <span className="text-5xl font-medium">$29</span>
@@ -150,7 +150,7 @@ export default function SignUpPage() {
             <p className="text-white/40 font-mono text-xs">
               Questions?{" "}
               <a
-                href="mailto:support@aarte.ai"
+                href="mailto:aarte@aarte.co"
                 className="text-white/60 hover:text-white transition-colors underline underline-offset-4"
               >
                 Contact Support

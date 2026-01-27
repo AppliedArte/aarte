@@ -242,12 +242,12 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
 
       {/* Percentage */}
       <motion.div
-        className="absolute right-[52%] flex items-end gap-1"
+        className="absolute left-4 sm:left-6 max-w-[90vw]"
         style={{ bottom: `${progress * 0.5}%` }}
         aria-hidden="true"
       >
         <motion.span
-          className="font-mono text-5xl sm:text-6xl font-medium text-white"
+          className="font-mono text-[clamp(4rem,18vw,14rem)] font-medium text-white leading-none"
           animate={{ opacity: [0.85, 1, 0.85] }}
           transition={{ duration: 0.8, repeat: Infinity }}
         >
@@ -744,8 +744,9 @@ function AboutSection() {
           </div>
 
           {/* Main content */}
-          <div className="absolute inset-0 flex flex-col items-center justify-between px-3 sm:px-4 py-6 sm:py-8 z-20">
-            <div className="w-full">
+          <div className="absolute inset-0 flex flex-col items-center px-3 sm:px-4 py-6 sm:py-8 z-20">
+            {/* Top text - aligned to bottom */}
+            <div className="flex-1 w-full flex flex-col justify-end pb-4">
               <h2
                 ref={(el) => { creativityCharsRef.current[0] = el; }}
                 className="text-[clamp(1.5rem,5vw,4rem)] font-medium leading-[1.2] tracking-[-0.02em] text-black max-w-[90%]"
@@ -767,7 +768,7 @@ function AboutSection() {
             </div>
 
             {/* Rotating icon */}
-            <div className="flex justify-center">
+            <div className="flex justify-center shrink-0">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 95 95"
@@ -785,8 +786,8 @@ function AboutSection() {
               </svg>
             </div>
 
-            {/* Bottom text */}
-            <div className="w-full flex justify-center">
+            {/* Bottom text - aligned to top */}
+            <div className="flex-1 w-full flex justify-center items-start pt-4">
               <p className="text-[clamp(3rem,15vw,10rem)] font-pixel leading-[0.9] tracking-tight text-black">
                 {techText.split("").map((char, i) => (
                   <span
@@ -1010,15 +1011,18 @@ function IntersectionSection() {
         }
       );
 
+      gsap.set(dashesRef.current, { transformOrigin: "center center" });
       gsap.fromTo(dashesRef.current,
-        { scale: 0.8 },
+        { scale: 0.8, rotate: 0 },
         {
           scale: 1,
+          rotate: 360,
+          ease: "none",
           scrollTrigger: {
             trigger: sectionRef.current,
             start: "top bottom",
-            end: "center center",
-            scrub: 0.5,
+            end: "bottom top",
+            scrub: true,
           }
         }
       );
@@ -1034,19 +1038,20 @@ function IntersectionSection() {
     >
       {/* Radial dashes */}
       <div
-        ref={dashesRef}
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
         aria-hidden="true"
       >
-        {Array.from({ length: 48 }, (_, i) => (
-          <div
-            key={i}
-            className="absolute w-0.5 h-8 md:h-12 bg-linear-to-t from-white/20 to-transparent origin-bottom"
-            style={{
-              transform: `rotate(${i * 7.5}deg) translateY(-280px)`,
-            }}
-          />
-        ))}
+        <div ref={dashesRef}>
+          {Array.from({ length: 48 }, (_, i) => (
+            <div
+              key={i}
+              className="absolute w-0.5 h-8 md:h-12 bg-linear-to-t from-white/20 to-transparent origin-bottom"
+              style={{
+                transform: `rotate(${i * 7.5}deg) translateY(-280px)`,
+              }}
+            />
+          ))}
+        </div>
       </div>
 
       {/* Text content */}
@@ -1056,22 +1061,19 @@ function IntersectionSection() {
             <span className="text-[#ffb700]">AARTE</span> is your personal AI assistant.
           </p>
           <p className="text-[clamp(1rem,3vw,2.2rem)] font-medium leading-[1.2] tracking-[-0.02em] text-white mt-2">
-            It answers you on the channels you already use
+            It meets you on the channels you already use.
           </p>
           <p className="text-[clamp(0.875rem,2.5vw,1.8rem)] font-medium leading-[1.2] tracking-[-0.02em] text-white/50 mt-2">
-            WhatsApp, Telegram, Slack, Discord, Google Chat, Signal, iMessage, Microsoft Teams, WebChat
+            WhatsApp · Telegram · Slack · iMessage · Discord · Teams + more
           </p>
           <p className="text-[clamp(1rem,3vw,2.2rem)] font-medium leading-[1.2] tracking-[-0.02em] text-white mt-4">
-            plus extension channels like
-          </p>
-          <p className="text-[clamp(0.875rem,2.5vw,1.8rem)] font-medium leading-[1.2] tracking-[-0.02em] text-white/50 mt-2">
-            BlueBubbles, Matrix, Zalo, and Zalo Personal
-          </p>
-          <p className="text-[clamp(1rem,3vw,2.2rem)] font-medium leading-[1.2] tracking-[-0.02em] text-white mt-4">
-            It can speak and listen on <span className="text-white/50">macOS/iOS/Android</span>
+            Voice on <span className="text-white/50">macOS · iOS · Android</span>
           </p>
           <p className="text-[clamp(1rem,3vw,2.2rem)] font-medium leading-[1.2] tracking-[-0.02em] text-white mt-2">
-            and render a live <span className="text-[#ffb700]">Canvas</span> you control.
+            Draw on a live <span className="text-white">Canvas</span> you control.
+          </p>
+          <p className="text-[clamp(1rem,3vw,2.2rem)] font-medium leading-[1.2] tracking-[-0.02em] text-white mt-4">
+            Learns new skills. <span className="text-[#ffb700]">Train it yourself.</span>
           </p>
         </div>
       </div>
@@ -1321,7 +1323,7 @@ export default function CreativeManual() {
         <PixelTrailCanvas className="!h-screen" />
 
         {/* Ghost title */}
-        <div className="absolute top-0 left-0 right-0 px-4 sm:px-6 pt-3 sm:pt-4 pointer-events-none" aria-hidden="true">
+        <div className="absolute top-0 left-0 right-0 px-4 sm:px-6 pt-20 sm:pt-4 pointer-events-none" aria-hidden="true">
           <div
             className="text-[clamp(2rem,12vw,9rem)] font-medium leading-[0.95] tracking-[-0.03em] text-transparent"
             style={{
@@ -1334,7 +1336,7 @@ export default function CreativeManual() {
         </div>
 
         {/* Hero Title */}
-        <div className="absolute top-0 left-0 right-0 px-4 sm:px-6 pt-3 sm:pt-4 h-[45vh]">
+        <div className="absolute top-0 left-0 right-0 px-4 sm:px-6 pt-20 sm:pt-4 z-20">
           <div className="relative w-full h-full">
             <motion.h1
               className="text-[clamp(2rem,12vw,9rem)] font-medium leading-[0.95] tracking-[-0.03em] text-white cursor-pointer group"
@@ -1358,7 +1360,7 @@ export default function CreativeManual() {
 
         {/* Coordinates */}
         <motion.div
-          className="absolute left-4 sm:left-6 top-[45%] font-mono text-xs text-white/40 uppercase"
+          className="hidden sm:block absolute left-4 sm:left-6 top-[54%] font-mono text-xs text-white/40 uppercase"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.8 }}
@@ -1376,7 +1378,7 @@ export default function CreativeManual() {
 
         {/* Credits with Barcode */}
         <motion.div
-          className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6"
+          className="hidden sm:block absolute bottom-4 sm:bottom-6 left-4 sm:left-6"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1 }}
@@ -1396,15 +1398,15 @@ export default function CreativeManual() {
           transition={{ duration: 0.8, delay: 0.8 }}
           aria-hidden="true"
         >
-          <svg className="absolute top-[54%] left-[48%] w-3 h-3 text-white/30" viewBox="0 0 14 14" fill="none">
+          <svg className="absolute top-[31%] sm:top-[54%] left-4 sm:left-[48%] w-3 h-3 text-white/30" viewBox="0 0 14 14" fill="none">
             <rect width="14" height="1" fill="currentColor"/>
             <rect width="1" height="14" fill="currentColor"/>
           </svg>
-          <svg className="absolute top-[54%] right-4 sm:right-6 w-3 h-3 text-white/30" viewBox="0 0 14 14" fill="none">
+          <svg className="absolute top-[31%] sm:top-[54%] right-4 sm:right-6 w-3 h-3 text-white/30" viewBox="0 0 14 14" fill="none">
             <rect width="14" height="1" fill="currentColor"/>
             <rect x="13" width="1" height="14" fill="currentColor"/>
           </svg>
-          <svg className="absolute bottom-4 sm:bottom-6 left-[48%] w-3 h-3 text-white/30" viewBox="0 0 14 14" fill="none">
+          <svg className="absolute bottom-4 sm:bottom-6 left-4 sm:left-[48%] w-3 h-3 text-white/30" viewBox="0 0 14 14" fill="none">
             <rect y="13" width="14" height="1" fill="currentColor"/>
             <rect width="1" height="14" fill="currentColor"/>
           </svg>
@@ -1414,32 +1416,26 @@ export default function CreativeManual() {
           </svg>
         </motion.div>
 
-        {/* Subtitle */}
+        {/* Hero Content Box */}
         <motion.div
-          className="absolute top-[56%] left-4 right-4 sm:left-[48%] sm:right-auto text-left sm:pr-6"
+          className="absolute top-[32%] sm:top-[54%] bottom-4 sm:bottom-8 left-4 right-4 sm:left-[48%] sm:right-6 z-10 overflow-y-auto p-1"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
         >
+          {/* Subtitle & CTA */}
           <p className="text-[clamp(1.25rem,2.5vw,2.5rem)] font-medium text-white leading-[1.25] tracking-[-0.01em] mb-4 sm:mb-6">
             Create Your Personal AARTE Agent
           </p>
           <a
             href="/signup"
-            className="inline-block font-mono text-sm text-black bg-white px-4 sm:px-6 py-3 hover:bg-white/90 transition-colors uppercase min-h-[44px]"
+            className="inline-block font-mono text-sm text-black bg-white px-4 sm:px-6 py-3 hover:bg-white/90 transition-colors uppercase min-h-[44px] mb-6 sm:mb-8"
             aria-label="Get Started with AARTE"
           >
             Get Started →
           </a>
-        </motion.div>
 
-        {/* Info Section */}
-        <motion.div
-          className="absolute bottom-36 sm:bottom-8 left-4 right-4 sm:left-[48%] sm:right-6"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1.1 }}
-        >
+          {/* Info Lists */}
           {[
             { label: "active ingredients", items: [{ text: "Molt.bot", href: "https://molt.bot/", external: true }, "n8n", "VPS"], mb: 4 },
             { label: "chapters", items: [{ text: "01. What is AARTE?", href: "#about", external: false }, { text: "02. design + dev", href: "#design", external: false }], mb: 0 }
@@ -1869,7 +1865,7 @@ export default function CreativeManual() {
             <div className="bg-white/5 rounded-lg p-6 text-center">
               <p className="text-white/50 text-sm">
                 Need a custom integration?
-                <a href="mailto:support@aarte.ai" className="text-[#ffb700] hover:underline ml-1">Contact us →</a>
+                <a href="mailto:aarte@aarte.co" className="text-[#ffb700] hover:underline ml-1">Contact us →</a>
               </p>
             </div>
           </FadeIn>
@@ -1981,7 +1977,7 @@ export default function CreativeManual() {
       {/* Duplicate content for seamless infinite scroll */}
       <div className="scroll-content-clone" aria-hidden="true">
         <section className="panel relative min-h-screen overflow-hidden bg-black">
-          <div className="absolute top-0 left-0 right-0 px-4 sm:px-6 pt-3 sm:pt-4 pointer-events-none">
+          <div className="absolute top-0 left-0 right-0 px-4 sm:px-6 pt-20 sm:pt-4 pointer-events-none">
             <div
               className="text-[clamp(2rem,12vw,9rem)] font-medium leading-[0.95] tracking-[-0.03em] text-transparent"
               style={{ WebkitTextStroke: '1px rgba(255,255,255,0.06)' }}
@@ -1990,15 +1986,13 @@ export default function CreativeManual() {
               Applied Artificial Intelligence
             </div>
           </div>
-          <div className="absolute top-0 left-0 right-0 px-4 sm:px-6 pt-3 sm:pt-4 h-[45vh]">
-            <div className="relative w-full h-full">
-              <h1 className="text-[clamp(2rem,12vw,9rem)] font-medium leading-[0.95] tracking-[-0.03em] text-white">
-                AARTE:<br />
-                Applied Artificial Intelligence
-              </h1>
-            </div>
+          <div className="absolute top-0 left-0 right-0 px-4 sm:px-6 pt-20 sm:pt-4 z-20">
+            <h1 className="text-[clamp(2rem,12vw,9rem)] font-medium leading-[0.95] tracking-[-0.03em] text-white">
+              AARTE:<br />
+              Applied Artificial Intelligence
+            </h1>
           </div>
-          <div className="absolute top-[56%] left-4 right-4 sm:left-[48%] sm:right-auto text-left sm:pr-6">
+          <div className="absolute top-[32%] sm:top-[54%] bottom-4 sm:bottom-8 left-4 right-4 sm:left-[48%] sm:right-6 z-10 overflow-y-auto p-1">
             <p className="text-[clamp(1.25rem,2.5vw,2.5rem)] font-medium text-white leading-[1.25] tracking-[-0.01em] mb-4 sm:mb-6">
               Create Your Personal AARTE Agent
             </p>
