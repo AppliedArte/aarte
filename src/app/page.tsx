@@ -1699,10 +1699,61 @@ export default function CreativeManual() {
         </div>
       </section>
 
-      {/* CHAPTER 2.1: HOW IT WORKS */}
+      {/* CHAPTER 2.1: HOW IT WORKS - Business Case */}
       <section id="how-it-works" className="panel py-24 sm:py-32 px-4 sm:px-6 border-t border-white/10 bg-[#0a0a0a]">
         <div className="max-w-7xl mx-auto">
           <ChapterHeader number="2.1" title="how it works" />
+
+          <div className="grid md:grid-cols-2 gap-12 sm:gap-16 mb-16">
+            <div>
+              <h3 className="text-3xl sm:text-4xl md:text-5xl font-medium leading-[1.1] tracking-[-0.02em] mb-6 sm:mb-8 overflow-hidden">
+                <SplitTextReveal text="Your AI," className="block" />
+                <SplitTextReveal text="Your Way" className="block" delay={0.3} />
+              </h3>
+              <FadeIn delay={0.2}>
+                <p className="text-lg sm:text-xl text-white/60 leading-relaxed mb-6">
+                  AARTE connects to the apps you already use. Send a message on WhatsApp, get a reply from your AI. No new apps to learn. No complicated setup.
+                </p>
+              </FadeIn>
+            </div>
+            <div className="space-y-6">
+              <FadeIn delay={0.3}>
+                <div className="border border-white/10 rounded-lg p-6">
+                  <div className="text-[#ffb700] text-2xl mb-2">01</div>
+                  <h4 className="text-lg font-medium mb-2">You message AARTE</h4>
+                  <p className="text-white/50 text-sm">Use WhatsApp, Telegram, Slack, or any channel you prefer. Just text like you would a colleague.</p>
+                </div>
+              </FadeIn>
+              <FadeIn delay={0.4}>
+                <div className="border border-white/10 rounded-lg p-6">
+                  <div className="text-[#ffb700] text-2xl mb-2">02</div>
+                  <h4 className="text-lg font-medium mb-2">AARTE understands context</h4>
+                  <p className="text-white/50 text-sm">It remembers your preferences, knows your workflow, and learns what matters to your business.</p>
+                </div>
+              </FadeIn>
+              <FadeIn delay={0.5}>
+                <div className="border border-white/10 rounded-lg p-6">
+                  <div className="text-[#ffb700] text-2xl mb-2">03</div>
+                  <h4 className="text-lg font-medium mb-2">AARTE takes action</h4>
+                  <p className="text-white/50 text-sm">Draft emails, schedule meetings, answer customer questions, update spreadsheets — all automatically.</p>
+                </div>
+              </FadeIn>
+            </div>
+          </div>
+
+          <FadeIn>
+            <div className="bg-white/5 rounded-lg p-6 sm:p-8 text-center">
+              <p className="text-xl sm:text-2xl font-medium mb-4">No coding required. No IT department needed.</p>
+              <p className="text-white/50">AARTE works out of the box. Just connect your accounts and start chatting.</p>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
+      {/* CHAPTER 2.2: TECH STACK - Architecture */}
+      <section id="tech-stack" className="panel py-24 sm:py-32 border-t border-white/10 bg-[#0a0a0a] overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <ChapterHeader number="2.2" title="tech stack" />
 
           <div className="grid md:grid-cols-12 gap-8 sm:gap-12 mb-12 sm:mb-16">
             <div className="md:col-span-6">
@@ -1798,124 +1849,78 @@ export default function CreativeManual() {
         </div>
       </section>
 
-      {/* CHAPTER 2.2: TECH STACK */}
-      <section id="tech-stack" className="panel py-24 sm:py-32 border-t border-white/10 bg-[#0a0a0a] overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <ChapterHeader number="2.2" title="tech stack" />
-        </div>
-
-        <div className="mb-16 sm:mb-24">
-          <ScrollHorizontalText direction="left" speed={30}>
-            <h3 className="text-[clamp(4rem,20vw,16rem)] font-medium leading-[0.85] tracking-[-0.04em] text-white/10">
-              Typography. Typography. Typography. Typography.&nbsp;
-            </h3>
-          </ScrollHorizontalText>
-          <ScrollHorizontalText direction="right" speed={25} className="mt-4">
-            <h3 className="text-[clamp(3rem,15vw,12rem)] font-medium leading-[0.85] tracking-[-0.04em]">
-              Typography. Typography. Typography. Typography.&nbsp;
-            </h3>
-          </ScrollHorizontalText>
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="grid md:grid-cols-12 gap-8 sm:gap-12 mb-16 sm:mb-24">
-            <div className="md:col-span-6">
-              <FadeIn>
-                <p className="text-lg sm:text-xl md:text-2xl text-white/70 leading-relaxed mb-8">
-                  Typography sets the foundation of any creative websites, period. Whether you're trying
-                  to establish a strong first impression or communicating a message to a target audience,
-                  your type has to be dialed in and align with your story and identity.
-                </p>
-              </FadeIn>
-            </div>
-            <div className="md:col-span-6 md:col-start-7">
-              <FadeIn delay={0.1}>
-                <div className="font-mono text-xs text-white/40 space-y-2">
-                  <div>Typeface: PP Neue Montreal</div>
-                  <div>Letter Spacing: -3%</div>
-                  <div>Line Height: 1.1 em</div>
-                </div>
-              </FadeIn>
-            </div>
-          </div>
-
-          <div className="mb-16 sm:mb-24">
-            <FadeIn>
-              <div className="text-sm text-white/40 mb-8">Type hierarchy demonstration</div>
-            </FadeIn>
-            <div className="space-y-6 sm:space-y-8">
-              <div className="overflow-hidden">
-                <LineReveal>
-                  <div className="text-4xl sm:text-6xl md:text-8xl font-medium tracking-[-0.03em]">Display</div>
-                </LineReveal>
-              </div>
-              <div className="overflow-hidden">
-                <LineReveal delay={0.15}>
-                  <div className="text-3xl sm:text-4xl md:text-5xl font-medium text-white/70 tracking-[-0.02em]">Headline</div>
-                </LineReveal>
-              </div>
-              <div className="overflow-hidden">
-                <LineReveal delay={0.3}>
-                  <div className="text-lg sm:text-xl text-white/50">Body copy — The quick brown fox jumps over the lazy dog.</div>
-                </LineReveal>
-              </div>
-              <div className="overflow-hidden">
-                <LineReveal delay={0.45}>
-                  <div className="text-sm font-mono text-white/40">CAPTION / MONO — Supporting information and metadata</div>
-                </LineReveal>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* CHAPTER 2.3: SKILLS */}
       <section id="skills" className="panel py-24 sm:py-32 px-4 sm:px-6 border-t border-white/10 bg-[#0a0a0a]">
         <div className="max-w-7xl mx-auto">
           <ChapterHeader number="2.3" title="skills" />
 
-          <h3 className="text-[clamp(2.5rem,8vw,6rem)] font-medium leading-[0.9] tracking-[-0.03em] mb-6 sm:mb-8">
-            <LineReveal>Colors</LineReveal>
+          <h3 className="text-[clamp(2rem,6vw,4rem)] font-medium leading-[0.9] tracking-[-0.03em] mb-6 sm:mb-8">
+            <LineReveal>Teach AARTE</LineReveal>
+            <LineReveal delay={0.15}>New Skills</LineReveal>
           </h3>
 
           <FadeIn delay={0.1}>
-            <p className="text-lg sm:text-xl text-white/50 max-w-2xl mb-16 sm:mb-20 leading-relaxed">
-              Every award-winning site shares one thing: intentional color. It's not picked from a palette—
-              it's designed to evoke, to direct, and to tell a story.
+            <p className="text-lg sm:text-xl text-white/50 max-w-3xl mb-12 sm:mb-16 leading-relaxed">
+              AARTE learns how your business works. Show it once, and it handles it forever.
+              Skills are modular capabilities you can add, customize, or build from scratch.
             </p>
           </FadeIn>
 
-          <div className="grid md:grid-cols-2 gap-12 sm:gap-16 mb-16 sm:mb-24">
-            <FadeIn>
-              <div>
-                <h4 className="text-sm text-white/40 mb-4">Cool tones</h4>
-                <p className="text-white/50 mb-8">Evoke emotions such as calm, sophistication, and trust.</p>
-                <ColorSwatchGrid colors={[
-                  { color: "#1e3a5f", name: "Deep blue" },
-                  { color: "#2d4a3e", name: "Forest" },
-                  { color: "#4a4a6a", name: "Slate" },
-                ]} />
+          <div className="grid md:grid-cols-2 gap-8 sm:gap-12 mb-16">
+            <FadeIn delay={0.2}>
+              <div className="border border-white/10 rounded-lg p-6 sm:p-8">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-[#EA4335]/20 flex items-center justify-center">
+                    <svg className="w-5 h-5 text-[#EA4335]" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/>
+                    </svg>
+                  </div>
+                  <h4 className="text-lg font-medium">Gmail Skill</h4>
+                </div>
+                <p className="text-white/50 mb-6">
+                  &ldquo;When I get an email from a client asking for a quote, draft a response using our pricing template and flag it for my review.&rdquo;
+                </p>
+                <div className="font-mono text-xs text-white/40 space-y-1">
+                  <div>Trigger: New email from client domain</div>
+                  <div>Action: Draft reply + add label</div>
+                  <div>Review: Notify on WhatsApp</div>
+                </div>
               </div>
             </FadeIn>
 
-            <FadeIn delay={0.1}>
-              <div>
-                <h4 className="text-sm text-white/40 mb-4">Warm tones</h4>
-                <p className="text-white/50 mb-8">Evoke emotions such as energy, passion, and anger.</p>
-                <ColorSwatchGrid colors={[
-                  { color: "#c9562b", name: "Burnt orange" },
-                  { color: "#d4a574", name: "Sand" },
-                  { color: "#8b4557", name: "Wine" },
-                ]} />
+            <FadeIn delay={0.3}>
+              <div className="border border-white/10 rounded-lg p-6 sm:p-8">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-[#25D366]/20 flex items-center justify-center">
+                    <svg className="w-5 h-5 text-[#25D366]" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                    </svg>
+                  </div>
+                  <h4 className="text-lg font-medium">WhatsApp / Telegram Skill</h4>
+                </div>
+                <p className="text-white/50 mb-6">
+                  &ldquo;Answer customer questions about our business hours, pricing, and services. If they want to book, send them our calendar link.&rdquo;
+                </p>
+                <div className="font-mono text-xs text-white/40 space-y-1">
+                  <div>Trigger: Message containing question</div>
+                  <div>Action: AI response from knowledge base</div>
+                  <div>Escalate: Forward to human if unsure</div>
+                </div>
               </div>
             </FadeIn>
           </div>
 
-          <FadeIn>
-            <p className="text-white/40 text-center max-w-2xl mx-auto text-sm">
-              Colors on a website are rarely picked randomly. Rather, it's a combination of carefully
-              using accent colors to highlight specific elements and using secondary colors to support.
-            </p>
+          <FadeIn delay={0.4}>
+            <div className="bg-white/5 rounded-lg p-6 sm:p-8">
+              <h4 className="text-lg font-medium mb-4">Build Your Own Skills</h4>
+              <p className="text-white/50 mb-6">
+                Skills are just natural language instructions. Describe what you want, and AARTE figures out the rest.
+                No coding. No complex workflows. Just tell it what to do.
+              </p>
+              <div className="font-mono text-sm text-white/60 bg-black/30 p-4 rounded">
+                <span className="text-[#ffb700]">You:</span> &ldquo;When someone messages asking about project status, check our Notion board and summarize what&apos;s in progress.&rdquo;
+              </div>
+            </div>
           </FadeIn>
         </div>
       </section>
@@ -1925,114 +1930,96 @@ export default function CreativeManual() {
         <div className="max-w-7xl mx-auto">
           <ChapterHeader number="2.4" title="integrations" />
 
-          <div className="grid md:grid-cols-2 gap-8 sm:gap-12 mb-16 sm:mb-24">
+          <div className="grid md:grid-cols-2 gap-8 sm:gap-12 mb-16">
             <div>
               <h3 className="text-[clamp(2rem,6vw,4rem)] font-medium leading-[0.9] tracking-[-0.02em] mb-6 sm:mb-8">
-                <LineReveal>Motion /</LineReveal>
-                <LineReveal delay={0.15}>Animation /</LineReveal>
-                <LineReveal delay={0.3}>Interaction</LineReveal>
+                <LineReveal>Connect</LineReveal>
+                <LineReveal delay={0.15}>Everything</LineReveal>
               </h3>
               <FadeIn delay={0.4}>
                 <p className="text-white/50 leading-relaxed">
-                  Animations can truly make a website come to life. It can tastefully enhance the user
-                  experience by drawing attention and establishing a feeling of a website.
+                  AARTE works with the tools you already use. No migration needed.
+                  Just connect your accounts and start chatting.
                 </p>
               </FadeIn>
             </div>
-            <FadeIn delay={0.2}>
-              <div className="font-mono text-xs text-white/40 space-y-2">
-                <div>Duration: 1.5 sec</div>
-                <div>Easing: [0.23, 0.32, 0.23, 0.2]</div>
-                <div>Stagger: 0.025 sec</div>
-              </div>
-            </FadeIn>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-16 sm:mb-24">
-            {[
-              { num: "01", label: "text", desc: "Split & stagger" },
-              { num: "02", label: "hover", desc: "Overlap & follow" },
-              { num: "03", label: "icons", desc: "Scale & rotate" },
-              { num: "04", label: "scroll", desc: "Trigger & parallax" }
-            ].map((method, i) => (
-              <FadeIn key={method.num} delay={i * 0.1}>
-                <motion.div
-                  className="group relative p-4 sm:p-6 border border-white/10 rounded overflow-hidden cursor-pointer"
-                  whileHover={{ borderColor: "rgba(255,255,255,0.3)" }}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`Animation method ${method.num}: ${method.label}`}
-                >
-                  <motion.div
-                    className="absolute inset-0 bg-white/5"
-                    initial={{ x: "-100%" }}
-                    whileHover={{ x: "0%" }}
-                    transition={{ duration: 0.6, ease: EASE_SMOOTH }}
-                  />
-                  <div className="relative">
-                    <span className="font-mono text-xs text-white/60 block">{method.num}: {method.label}</span>
-                    <span className="font-mono text-[10px] text-white/30 mt-1 block opacity-0 group-hover:opacity-100 transition-opacity duration-300">{method.desc}</span>
-                  </div>
-                </motion.div>
-              </FadeIn>
-            ))}
-          </div>
-
+          {/* Messaging Channels */}
           <FadeIn>
-            <div className="text-sm text-white/40 mb-8">Use delays, staggers, and easings to make more organic animations</div>
+            <div className="mb-12">
+              <h4 className="font-mono text-xs text-white/40 uppercase mb-6">Messaging Channels</h4>
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
+                {[
+                  { name: "WhatsApp", color: "#25D366", icon: "M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" },
+                  { name: "Telegram", color: "#0088cc", icon: "M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" },
+                  { name: "Discord", color: "#5865F2", icon: "M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z" },
+                  { name: "Slack", color: "#4A154B", icon: "M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312zM18.956 8.834a2.528 2.528 0 0 1 2.522-2.521A2.528 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.522 2.521h-2.522V8.834zM17.688 8.834a2.528 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.165 0a2.528 2.528 0 0 1 2.523 2.522v6.312zM15.165 18.956a2.528 2.528 0 0 1 2.523 2.522A2.528 2.528 0 0 1 15.165 24a2.527 2.527 0 0 1-2.52-2.522v-2.522h2.52zM15.165 17.688a2.527 2.527 0 0 1-2.52-2.523 2.526 2.526 0 0 1 2.52-2.52h6.313A2.527 2.527 0 0 1 24 15.165a2.528 2.528 0 0 1-2.522 2.523h-6.313z" },
+                  { name: "iMessage", color: "#34C759", icon: "M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2.546 20.2A1.5 1.5 0 0 0 4 22h.2l3.032-.892A9.96 9.96 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2z" },
+                  { name: "Signal", color: "#3A76F0", icon: "M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" },
+                ].map((channel) => (
+                  <div key={channel.name} className="border border-white/10 rounded-lg p-4 flex flex-col items-center justify-center hover:border-white/30 transition-colors">
+                    <svg className="w-8 h-8 mb-2" style={{ color: channel.color }} viewBox="0 0 24 24" fill="currentColor">
+                      <path d={channel.icon} />
+                    </svg>
+                    <span className="font-mono text-[10px] text-white/60">{channel.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </FadeIn>
 
-          <div className="grid md:grid-cols-3 gap-4 sm:gap-6 mb-12 sm:mb-16">
-            <FadeIn>
-              <motion.div
-                className="border border-white/10 rounded-lg p-6 sm:p-8 h-full"
-                whileHover={{ borderColor: "rgba(255,255,255,0.2)" }}
-              >
-                <div className="text-xs text-white/40 mb-4">Text reveal</div>
-                <HoverButton>HOVER ME</HoverButton>
-                <div className="font-mono text-xs text-white/30 mt-6 space-y-1">
-                  <div>Duration: .45 sec</div>
-                  <div>Easing: 0.16, 1, 0.3, 1</div>
-                  <div>Method: translateY swap</div>
-                </div>
-              </motion.div>
-            </FadeIn>
+          {/* Business Tools */}
+          <FadeIn delay={0.2}>
+            <div className="mb-12">
+              <h4 className="font-mono text-xs text-white/40 uppercase mb-6">Business Tools</h4>
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
+                {[
+                  { name: "Gmail", color: "#EA4335" },
+                  { name: "Calendar", color: "#4285F4" },
+                  { name: "Notion", color: "#FFFFFF" },
+                  { name: "Sheets", color: "#34A853" },
+                  { name: "Drive", color: "#FBBC04" },
+                  { name: "GitHub", color: "#FFFFFF" },
+                ].map((tool) => (
+                  <div key={tool.name} className="border border-white/10 rounded-lg p-4 flex flex-col items-center justify-center hover:border-white/30 transition-colors">
+                    <div className="w-8 h-8 mb-2 rounded flex items-center justify-center text-lg font-bold" style={{ color: tool.color }}>
+                      {tool.name.charAt(0)}
+                    </div>
+                    <span className="font-mono text-[10px] text-white/60">{tool.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </FadeIn>
 
-            <FadeIn delay={0.1}>
-              <motion.div
-                className="border border-white/10 rounded-lg p-6 sm:p-8 cursor-pointer h-full"
-                whileHover={{ scale: 1.02, borderColor: "rgba(255,255,255,0.3)" }}
-                transition={{ duration: 0.45, ease: EASE_BUTTON_HOVER }}
-                role="button"
-                tabIndex={0}
-                aria-label="Scale and follow through demo"
-              >
-                <div className="text-xs text-white/40 mb-4">Scale + follow through</div>
-                <motion.div
-                  className="text-xl sm:text-2xl font-medium mb-6"
-                  whileHover={{ letterSpacing: "0.05em" }}
-                  transition={{ duration: 0.6, ease: EASE_SMOOTH }}
-                >
-                  TRANSFORM
-                </motion.div>
-                <div className="font-mono text-xs text-white/30 space-y-1">
-                  <div>Duration: .45 sec</div>
-                  <div>Easing: 0.16, 1, 0.3, 1</div>
-                  <div>Method: scale + spacing</div>
-                </div>
-              </motion.div>
-            </FadeIn>
+          {/* Extension Channels */}
+          <FadeIn delay={0.3}>
+            <div className="mb-12">
+              <h4 className="font-mono text-xs text-white/40 uppercase mb-6">Extension Channels</h4>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {[
+                  { name: "Matrix", desc: "Decentralized chat" },
+                  { name: "BlueBubbles", desc: "iMessage bridge" },
+                  { name: "Zalo", desc: "Vietnam messaging" },
+                  { name: "Mattermost", desc: "Self-hosted chat" },
+                ].map((ext) => (
+                  <div key={ext.name} className="border border-white/10 rounded-lg p-4 hover:border-white/30 transition-colors">
+                    <span className="font-mono text-sm text-white block">{ext.name}</span>
+                    <span className="font-mono text-[10px] text-white/40">{ext.desc}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </FadeIn>
 
-            <FadeIn delay={0.2}>
-              <StaggerDemo />
-            </FadeIn>
-          </div>
-
-          <FadeIn>
-            <p className="text-white/40 text-center max-w-2xl mx-auto text-sm">
-              Just like in nature, nothing moves in straight lines. Every motion influences the next.
-              Delays and easings create that organic rhythm, turning motion into flow.
-            </p>
+          <FadeIn delay={0.4}>
+            <div className="bg-white/5 rounded-lg p-6 text-center">
+              <p className="text-white/50 text-sm">
+                Need a custom integration? AARTE&apos;s plugin system lets you connect to any API.
+                <a href="https://docs.molt.bot" target="_blank" rel="noopener noreferrer" className="text-[#ffb700] hover:underline ml-1">View documentation →</a>
+              </p>
+            </div>
           </FadeIn>
         </div>
       </section>
