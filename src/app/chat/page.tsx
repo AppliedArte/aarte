@@ -26,16 +26,7 @@ export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [sessionId] = useState(() => {
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("aarte-session-id");
-      if (stored) return stored;
-      const newId = `web-${Math.random().toString(36).substring(2, 15)}`;
-      localStorage.setItem("aarte-session-id", newId);
-      return newId;
-    }
-    return `web-${Math.random().toString(36).substring(2, 15)}`;
-  });
+  const [sessionId, setSessionId] = useState("");
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -45,12 +36,23 @@ export default function ChatPage() {
   };
 
   useEffect(() => {
+    const stored = localStorage.getItem("aarte-session-id");
+    if (stored) {
+      setSessionId(stored);
+    } else {
+      const newId = `web-${Math.random().toString(36).substring(2, 15)}`;
+      localStorage.setItem("aarte-session-id", newId);
+      setSessionId(newId);
+    }
+  }, []);
+
+  useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
-    if (!input.trim() || isLoading) return;
+    if (!input.trim() || isLoading || !sessionId) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
