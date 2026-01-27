@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useState } from "react";
 
 const EASE_OUT_EXPO = [0.19, 1, 0.22, 1] as const;
 
@@ -17,8 +18,45 @@ const features = [
 ];
 
 export default function SignUpPage() {
-  const handleCheckout = () => {
-    window.location.href = WHOP_CHECKOUT_URL;
+  const [email, setEmail] = useState("");
+  const [telegram, setTelegram] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleCheckout = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    if (!email.trim()) {
+      setError("Email is required");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Store signup data before redirecting to checkout
+      const response = await fetch("/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email.trim(),
+          telegram: telegram.trim() || null,
+          whatsapp: whatsapp.trim() || null,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save signup info");
+      }
+
+      // Redirect to Whop checkout
+      window.location.href = WHOP_CHECKOUT_URL;
+    } catch {
+      setError("Something went wrong. Please try again.");
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -111,28 +149,93 @@ export default function SignUpPage() {
               ))}
             </ul>
 
-            {/* CTA Button */}
-            <motion.button
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1, duration: 0.5, ease: EASE_OUT_EXPO }}
-              onClick={handleCheckout}
-              className="w-full bg-white text-black font-mono text-sm uppercase py-4 hover:bg-white/90 transition-colors flex items-center justify-center gap-2"
-            >
-              <span>Subscribe Now</span>
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+            {/* Divider */}
+            <div className="border-t border-white/10 my-6" />
+
+            {/* Signup Form */}
+            <form onSubmit={handleCheckout} className="space-y-4 mb-6">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9, duration: 0.5, ease: EASE_OUT_EXPO }}
               >
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </motion.button>
+                <label className="block font-mono text-[10px] text-white/40 uppercase mb-2">
+                  Email <span className="text-white/60">*</span>
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  required
+                  className="w-full bg-transparent border border-white/20 px-4 py-3 font-mono text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-white/40 transition-colors"
+                />
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.95, duration: 0.5, ease: EASE_OUT_EXPO }}
+              >
+                <label className="block font-mono text-[10px] text-white/40 uppercase mb-2">
+                  Telegram <span className="text-white/30">(optional)</span>
+                </label>
+                <input
+                  type="text"
+                  value={telegram}
+                  onChange={(e) => setTelegram(e.target.value)}
+                  placeholder="@username"
+                  className="w-full bg-transparent border border-white/20 px-4 py-3 font-mono text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-white/40 transition-colors"
+                />
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1, duration: 0.5, ease: EASE_OUT_EXPO }}
+              >
+                <label className="block font-mono text-[10px] text-white/40 uppercase mb-2">
+                  WhatsApp <span className="text-white/30">(optional)</span>
+                </label>
+                <input
+                  type="tel"
+                  value={whatsapp}
+                  onChange={(e) => setWhatsapp(e.target.value)}
+                  placeholder="+1 234 567 8900"
+                  className="w-full bg-transparent border border-white/20 px-4 py-3 font-mono text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-white/40 transition-colors"
+                />
+              </motion.div>
+
+              {error && (
+                <p className="text-red-400 font-mono text-xs">{error}</p>
+              )}
+
+              {/* CTA Button */}
+              <motion.button
+                type="submit"
+                disabled={isSubmitting}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.05, duration: 0.5, ease: EASE_OUT_EXPO }}
+                className="w-full bg-white text-black font-mono text-sm uppercase py-4 hover:bg-white/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <span>{isSubmitting ? "Processing..." : "Subscribe Now"}</span>
+                {!isSubmitting && (
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                )}
+              </motion.button>
+            </form>
 
             {/* Secure Payment Note */}
             <p className="text-center text-white/30 font-mono text-[10px] mt-4 uppercase">
