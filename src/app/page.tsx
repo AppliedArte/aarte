@@ -270,12 +270,12 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
         </div>
 
         {/* Copyright */}
-        <p className="font-mono text-xs text-white/40">©CWM — FW25</p>
+        <p className="font-mono text-xs text-white/40">©AARTE — 2025</p>
 
         {/* Credits */}
         <div className="font-mono text-xs text-white/30 space-y-0.5">
           <p className="text-white/40">prjct by</p>
-          <p className="text-white/60">huy + ivor</p>
+          <p className="text-white/60">AARTE</p>
         </div>
 
         {/* Code */}
@@ -1285,8 +1285,62 @@ export default function CreativeManual() {
     };
   }, []);
 
-  // Disabled infinite scroll - causes issues with initial positioning
-  // The infinite scroll was causing the page to start at the footer instead of hero
+  // GSAP Infinite vertical scroll - seamless loop
+  useEffect(() => {
+    if (loading) return;
+
+    const content = document.querySelector('.scroll-content') as HTMLElement;
+    if (!content) return;
+
+    // Get the original content height
+    const getContentHeight = () => content.scrollHeight / 2; // Divided by 2 because content is duplicated
+
+    let contentHeight = getContentHeight();
+    let isAdjusting = false;
+    let lastScrollY = window.scrollY;
+
+    // Start at the hero (top of page)
+    window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+
+    const handleScroll = () => {
+      if (isAdjusting) return;
+
+      const currentScrollY = window.scrollY;
+      lastScrollY = currentScrollY;
+
+      contentHeight = getContentHeight();
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+
+      // Scrolling down - near the end, jump back to top
+      if (currentScrollY >= maxScroll - 5) {
+        isAdjusting = true;
+        window.scrollTo({ top: 1, behavior: 'instant' as ScrollBehavior });
+        lastScrollY = 1;
+        requestAnimationFrame(() => { isAdjusting = false; });
+      }
+      // Scrolling up - at the very top, jump to end of content
+      else if (currentScrollY <= 5) {
+        isAdjusting = true;
+        const jumpTo = maxScroll - 1;
+        window.scrollTo({ top: jumpTo, behavior: 'instant' as ScrollBehavior });
+        lastScrollY = jumpTo;
+        requestAnimationFrame(() => { isAdjusting = false; });
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    // Refresh on resize
+    const handleResize = () => {
+      contentHeight = getContentHeight();
+    };
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [loading]);
 
   const navItems = [
     { label: "About", href: "#about" },
@@ -1309,24 +1363,38 @@ export default function CreativeManual() {
         {loading && <Preloader onComplete={() => setLoading(false)} />}
       </AnimatePresence>
 
-      <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-[#ffb700] selection:text-black">
+      <div className="min-h-screen bg-black text-white selection:bg-[#ffb700] selection:text-black">
       {/* Header - CWM exact style */}
       <header
-        className="fixed top-0 left-0 right-0 z-40 px-6 py-4 flex items-center justify-end mix-blend-difference"
+        className="fixed top-0 left-0 right-0 z-40 px-6 py-4 flex items-center justify-between mix-blend-difference"
       >
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
+        <a
+          href="/"
           className="font-mono text-xs text-white hover:text-white/60 transition-colors uppercase"
         >
-          {menuOpen ? "Close [×]" : "Menu [+]"}
-        </button>
+          AARTE
+        </a>
+        <div className="flex items-center gap-6">
+          <a
+            href="/signup"
+            className="font-mono text-xs text-black bg-white px-4 py-2 hover:bg-white/90 transition-colors uppercase"
+          >
+            Get Started
+          </a>
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="font-mono text-xs text-white hover:text-white/60 transition-colors uppercase"
+          >
+            {menuOpen ? "Close [×]" : "Menu [+]"}
+          </button>
+        </div>
       </header>
 
       {/* Fixed bottom status bar - CWM style with infinite marquee */}
       <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/10 bg-[#0a0a0a]/90 backdrop-blur-sm py-2">
         <InfiniteMarquee speed={40} direction="left">
           <span className="font-mono text-[10px] text-white/30 px-8">
-            ©CWM — FW25 · prjct by huy + ivor · [l] vn.us · // site.loaded · [X].{mousePos.x.toFixed(0)}px [Y].{mousePos.y.toFixed(0)}px ·
+            ©AARTE — 2025 · Applied Artificial Intelligence · // site.loaded · [X].{mousePos.x.toFixed(0)}px [Y].{mousePos.y.toFixed(0)}px ·
           </span>
         </InfiniteMarquee>
       </div>
@@ -1351,7 +1419,7 @@ export default function CreativeManual() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.1 }}
               >
-                ©CWM
+                AARTE
               </motion.a>
               <motion.button
                 onClick={() => setMenuOpen(false)}
@@ -1412,13 +1480,7 @@ export default function CreativeManual() {
               <div className="flex flex-col gap-1">
                 <p className="font-mono text-xs text-white/40">project by</p>
                 <div className="flex items-center gap-2">
-                  <a href="https://bymonolog.com/" target="_blank" rel="noopener noreferrer" className="font-mono text-xs text-white/60 hover:text-white transition-colors">
-                    huy
-                  </a>
-                  <span className="font-mono text-xs text-white/40">+</span>
-                  <a href="https://www.ivorjian.com/" target="_blank" rel="noopener noreferrer" className="font-mono text-xs text-white/60 hover:text-white transition-colors">
-                    ivor
-                  </a>
+                  <span className="font-mono text-xs text-white/60">AARTE</span>
                 </div>
               </div>
               {/* Barcode SVG */}
@@ -1433,15 +1495,11 @@ export default function CreativeManual() {
         )}
       </AnimatePresence>
 
+      {/* Scroll content wrapper for infinite loop */}
+      <div className="scroll-content">
+
       {/* ==================== HERO ==================== */}
-      <section id="home" className="panel relative min-h-screen overflow-hidden bg-[#070707]">
-        {/* CWM-style warm gradient border/vignette */}
-        <div
-          className="absolute inset-0 pointer-events-none z-10"
-          style={{
-            boxShadow: 'inset 0 0 200px 80px rgba(139, 69, 19, 0.2), inset 0 0 100px 40px rgba(101, 67, 33, 0.15), inset 0 -100px 150px -50px rgba(60, 30, 10, 0.3)',
-          }}
-        />
+      <section id="home" className="panel relative min-h-screen overflow-hidden bg-black">
 
         {/* Ghost/outline title behind main text - CWM style */}
         <div className="absolute top-0 left-0 right-0 px-6 pt-4 pointer-events-none">
@@ -1451,8 +1509,8 @@ export default function CreativeManual() {
               WebkitTextStroke: '1px rgba(255,255,255,0.06)',
             }}
           >
-            AARTE<br />
-            Applied AI<span className="text-[0.5em] align-super">™</span>
+            AARTE:<br />
+            Applied Artificial Intelligence
           </div>
         </div>
 
@@ -1465,8 +1523,8 @@ export default function CreativeManual() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.3, ease: EASE_OUT_EXPO }}
             >
-              AARTE<br />
-              Applied AI<span className="text-[0.5em] align-super">™</span>
+              AARTE:<br />
+              Applied Artificial Intelligence
             </motion.h1>
             {/* Pixelated cursor trail overlay - covers title area with inverse blend */}
             <PixelTrailCanvas />
@@ -1499,9 +1557,7 @@ export default function CreativeManual() {
         >
           <div className="font-mono text-[10px] text-white/30 uppercase mb-1">project by</div>
           <div className="flex items-center gap-2 mb-4">
-            <a href="https://bymonolog.com/" target="_blank" rel="noopener noreferrer" className="font-mono text-xs text-white/60 hover:text-white transition-colors uppercase">huy</a>
-            <span className="font-mono text-xs text-white/30">+</span>
-            <a href="https://www.ivorjian.com/" target="_blank" rel="noopener noreferrer" className="font-mono text-xs text-white/60 hover:text-white transition-colors uppercase">ivor</a>
+            <span className="font-mono text-xs text-white/60 uppercase">AARTE</span>
           </div>
           {/* Barcode SVG - CWM exact style */}
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 333 109" fill="none" className="h-20 w-auto text-white">
@@ -1548,10 +1604,15 @@ export default function CreativeManual() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
         >
-          <p className="text-[clamp(1.5rem,2.5vw,2.5rem)] font-medium text-white leading-[1.25] tracking-[-0.01em]">
-            The creative process of<br />
-            crafting stand-out websites
+          <p className="text-[clamp(1.5rem,2.5vw,2.5rem)] font-medium text-white leading-[1.25] tracking-[-0.01em] mb-6">
+            Create Your Personal AARTE
           </p>
+          <a
+            href="/signup"
+            className="inline-block font-mono text-sm text-black bg-white px-6 py-3 hover:bg-white/90 transition-colors uppercase"
+          >
+            Get Started →
+          </a>
         </motion.div>
 
         {/* Right side - Info Section - CWM exact layout */}
@@ -1564,13 +1625,19 @@ export default function CreativeManual() {
           {/* Active Ingredients row */}
           <div className="flex justify-between items-baseline mb-2">
             <span className="font-mono text-xs text-white/40 uppercase tracking-wider">active ingredients</span>
-            <span className="font-mono text-xs text-white uppercase tracking-wider">webflow</span>
+            <a href="https://clawd.bot/" target="_blank" rel="noopener noreferrer" className="font-mono text-xs text-white uppercase tracking-wider hover:text-white/60 transition-colors">Clawd.bot</a>
           </div>
           <div className="border-b border-white/20 mb-2" />
 
-          {/* GSAP row */}
+          {/* n8n row */}
           <div className="flex justify-end mb-2">
-            <span className="font-mono text-xs text-white uppercase tracking-wider">gsap</span>
+            <span className="font-mono text-xs text-white uppercase tracking-wider">n8n</span>
+          </div>
+          <div className="border-b border-white/20 mb-2" />
+
+          {/* VPS row */}
+          <div className="flex justify-end mb-2">
+            <span className="font-mono text-xs text-white uppercase tracking-wider">VPS</span>
           </div>
           <div className="border-b border-white/20 mb-4" />
 
@@ -2005,7 +2072,7 @@ export default function CreativeManual() {
           </div>
 
           <FadeIn>
-            <div className="font-mono text-xs text-white/40 mb-12">RESOURCES CURATED BY HUY AND IVOR</div>
+            <div className="font-mono text-xs text-white/40 mb-12">RESOURCES CURATED BY AARTE</div>
           </FadeIn>
 
           <div className="grid md:grid-cols-2 gap-12">
@@ -2055,12 +2122,9 @@ export default function CreativeManual() {
           <div className="flex flex-wrap items-end justify-between gap-8 mb-16">
             {/* Left side - Copyright and credits */}
             <div>
-              <div className="font-mono text-xs text-white/40 mb-2">©CWM — FW25</div>
+              <div className="font-mono text-xs text-white/40 mb-2">©AARTE — 2025</div>
               <div className="font-mono text-xs text-white/40">
-                prjct by{" "}
-                <a href="https://bymonolog.com/" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors">huy</a>
-                {" + "}
-                <a href="https://www.ivorjian.com/" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors">ivor</a>
+                Applied Artificial Intelligence
               </div>
             </div>
 
@@ -2098,6 +2162,44 @@ export default function CreativeManual() {
           </motion.div>
         </div>
       </footer>
+
+      </div>{/* End scroll-content */}
+
+      {/* Duplicate content for seamless infinite scroll */}
+      <div className="scroll-content-clone" aria-hidden="true">
+        {/* Clone of hero for seamless loop */}
+        <section className="panel relative min-h-screen overflow-hidden bg-black">
+          <div className="absolute top-0 left-0 right-0 px-6 pt-4 pointer-events-none">
+            <div
+              className="text-[clamp(3rem,12vw,9rem)] font-medium leading-[0.95] tracking-[-0.03em] text-transparent"
+              style={{ WebkitTextStroke: '1px rgba(255,255,255,0.06)' }}
+            >
+              AARTE:<br />
+              Applied Artificial Intelligence
+            </div>
+          </div>
+          <div className="absolute top-0 left-0 right-0 px-6 pt-4 h-[45vh]">
+            <div className="relative w-full h-full">
+              <h1 className="text-[clamp(3rem,12vw,9rem)] font-medium leading-[0.95] tracking-[-0.03em] text-white">
+                AARTE:<br />
+                Applied Artificial Intelligence
+              </h1>
+            </div>
+          </div>
+          <div className="absolute top-[56%] left-[48%] text-left">
+            <p className="text-[clamp(1.5rem,2.5vw,2.5rem)] font-medium text-white leading-[1.25] tracking-[-0.01em] mb-6">
+              Create Your Personal AARTE
+            </p>
+            <a
+              href="/signup"
+              className="inline-block font-mono text-sm text-black bg-white px-6 py-3 hover:bg-white/90 transition-colors uppercase"
+            >
+              Get Started →
+            </a>
+          </div>
+        </section>
+      </div>
+
     </div>
     </>
   );
