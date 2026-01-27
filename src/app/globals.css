@@ -1,0 +1,157 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-border: var(--border);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+}
+
+:root {
+  --background: #0a0a0a;
+  --foreground: #fafafa;
+  --border: #1a1a1a;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans), system-ui, sans-serif;
+    font-size: 16px;
+    letter-spacing: -0.02em;
+    line-height: 1.4;
+  }
+
+  ::selection {
+    background: #ffb700;
+    color: #0a0a0a;
+  }
+
+  /* Hide scrollbar but keep functionality */
+  ::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+  }
+
+  /* Custom cursor styles */
+  a, button {
+    cursor: pointer;
+  }
+}
+
+@layer utilities {
+  .font-mono {
+    font-family: var(--font-mono), "IBM Plex Mono", monospace;
+    letter-spacing: 0;
+  }
+
+  .font-pixel {
+    font-family: var(--font-pixel), "Silkscreen", monospace;
+    letter-spacing: 0;
+  }
+
+  .font-vt323 {
+    font-family: var(--font-vt323), "VT323", monospace;
+    letter-spacing: 0;
+  }
+
+  .font-press-start {
+    font-family: var(--font-press-start), "Press Start 2P", monospace;
+    letter-spacing: 0;
+  }
+
+  .font-pixelify {
+    font-family: var(--font-pixelify), "Pixelify Sans", monospace;
+    letter-spacing: 0;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Loader specific */
+  .loader-percent {
+    font-size: clamp(2rem, 13vw, 12rem);
+    letter-spacing: -0.035em;
+    line-height: 1;
+  }
+
+  /* CWM perspective utilities */
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
+  .perspective-500 {
+    perspective: 500px;
+  }
+
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+
+  /* CWM text animation utilities */
+  .text-reveal {
+    overflow: hidden;
+  }
+
+  .text-reveal > * {
+    display: inline-block;
+    transform-origin: center bottom;
+  }
+
+  /* CWM line clamp utilities */
+  .line-clamp-1 { -webkit-line-clamp: 1; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
+  .line-clamp-2 { -webkit-line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
+  .line-clamp-3 { -webkit-line-clamp: 3; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
+
+  /* CWM arrow animation */
+  .arrow-slide {
+    transition: transform 0.9s cubic-bezier(0.055, 0.72, 0.165, 1);
+  }
+
+  .arrow-slide:hover {
+    transform: translateX(100%);
+  }
+
+  /* CWM focus states */
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.5);
+    outline-offset: 2px;
+  }
+}
+
+/* Smooth scroll behavior */
+html.lenis {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
