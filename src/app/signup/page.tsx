@@ -3,6 +3,8 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useState } from "react";
+import { useSession, signOut } from "next-auth/react";
+import { redirect } from "next/navigation";
 
 const EASE = [0.19, 1, 0.22, 1] as const;
 const WHOP_CHECKOUT_URL = "https://whop.com/aarte/aarte-agent/";
@@ -16,7 +18,13 @@ const FEATURES = [
 ];
 
 export default function SignUpPage() {
-  const [email, setEmail] = useState("");
+  const { data: session, status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect("/auth/signin?callbackUrl=/signup");
+    },
+  });
+
   const [telegram, setTelegram] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -26,8 +34,8 @@ export default function SignUpPage() {
     e.preventDefault();
     setError("");
 
-    if (!email.trim()) {
-      setError("Email is required");
+    if (!session?.user?.email) {
+      setError("Session error. Please sign in again.");
       return;
     }
 
@@ -38,7 +46,7 @@ export default function SignUpPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: email.trim(),
+          email: session.user.email,
           telegram: telegram.trim() || null,
           whatsapp: whatsapp.trim() || null,
         }),
@@ -57,11 +65,19 @@ export default function SignUpPage() {
   const inputClass = "w-full bg-transparent border border-white/20 px-4 py-3 font-mono text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-white/40 transition-colors";
   const labelClass = "block font-mono text-[10px] text-white/40 uppercase mb-2";
 
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] text-white flex items-center justify-center">
+        <div className="font-mono text-sm text-white/60">Loading...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-[#ffb700] selection:text-black">
       <header className="fixed top-0 left-0 right-0 z-40 px-6 py-4 flex items-center justify-between">
         <Link href="/" className={navLinkClass}>AARTE</Link>
-        <Link href="/" className={navLinkClass}>Back [←]</Link>
+        <Link href="/" className={navLinkClass}>Back [&larr;]</Link>
       </header>
 
       <main className="min-h-screen flex items-center justify-center px-6 py-24">
@@ -95,6 +111,32 @@ export default function SignUpPage() {
               Most Popular
             </div>
 
+            {/* User Profile */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.5, ease: EASE }}
+              className="flex items-center gap-3 mb-6 pb-6 border-b border-white/10"
+            >
+              {session?.user?.image && (
+                <img
+                  src={session.user.image}
+                  alt=""
+                  className="w-10 h-10 rounded-full"
+                />
+              )}
+              <div className="flex-1 min-w-0">
+                <p className="text-white font-medium truncate">{session?.user?.name}</p>
+                <p className="text-white/50 font-mono text-xs truncate">{session?.user?.email}</p>
+              </div>
+              <button
+                onClick={() => signOut({ callbackUrl: "/" })}
+                className="font-mono text-[10px] text-white/40 hover:text-white transition-colors uppercase"
+              >
+                Switch
+              </button>
+            </motion.div>
+
             <div className="mb-6">
               <h2 className="font-mono text-xs text-white/40 uppercase mb-2">
                 Minimum Plan
@@ -121,7 +163,7 @@ export default function SignUpPage() {
                   }}
                   className="flex items-center gap-3 font-mono text-sm"
                 >
-                  <span className="text-white/60">→</span>
+                  <span className="text-white/60">&rarr;</span>
                   <span>{feature}</span>
                 </motion.li>
               ))}
@@ -134,24 +176,6 @@ export default function SignUpPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.9, duration: 0.5, ease: EASE }}
-              >
-                <label className={labelClass}>
-                  Email <span className="text-white/60">*</span>
-                </label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
-                  required
-                  className={inputClass}
-                />
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.95, duration: 0.5, ease: EASE }}
               >
                 <label className={labelClass}>
                   Telegram <span className="text-white/30">(optional)</span>
@@ -168,7 +192,7 @@ export default function SignUpPage() {
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1, duration: 0.5, ease: EASE }}
+                transition={{ delay: 0.95, duration: 0.5, ease: EASE }}
               >
                 <label className={labelClass}>
                   WhatsApp <span className="text-white/30">(optional)</span>
@@ -189,7 +213,7 @@ export default function SignUpPage() {
                 disabled={isSubmitting}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.05, duration: 0.5, ease: EASE }}
+                transition={{ delay: 1, duration: 0.5, ease: EASE }}
                 className="w-full bg-white text-black font-mono text-sm uppercase py-4 hover:bg-white/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span>{isSubmitting ? "Processing..." : "Subscribe Now"}</span>
@@ -236,7 +260,7 @@ export default function SignUpPage() {
 
       <footer className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/10 bg-[#0a0a0a]/90 backdrop-blur-sm py-3 px-6">
         <div className="flex items-center justify-between font-mono text-[10px] text-white/30">
-          <span>© AARTE — Applied Artificial Intelligence</span>
+          <span>&copy; AARTE &mdash; Applied Artificial Intelligence</span>
           <span>Subscribe</span>
         </div>
       </footer>

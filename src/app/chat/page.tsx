@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 
 const EASE_OUT_EXPO = [0.19, 1, 0.22, 1] as const;
 
@@ -32,6 +34,13 @@ function createMessage(role: Message["role"], content: string): Message {
 }
 
 export default function ChatPage() {
+  const { data: session, status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect("/auth/signin?callbackUrl=/chat");
+    },
+  });
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -80,6 +89,14 @@ export default function ChatPage() {
 
   const isUserMessage = (role: Message["role"]) => role === "user";
 
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] text-white flex items-center justify-center">
+        <div className="font-mono text-sm text-white/60">Loading...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col">
       <header className="fixed top-0 left-0 right-0 z-40 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between border-b border-white/10 bg-[#0a0a0a]/90 backdrop-blur-sm">
@@ -89,9 +106,25 @@ export default function ChatPage() {
         >
           AARTE
         </a>
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-          <span className="font-mono text-xs text-white/60 uppercase">Online</span>
+        <div className="flex items-center gap-4">
+          {session?.user && (
+            <div className="flex items-center gap-2">
+              {session.user.image && (
+                <img
+                  src={session.user.image}
+                  alt=""
+                  className="w-6 h-6 rounded-full"
+                />
+              )}
+              <span className="font-mono text-xs text-white/60 hidden sm:block">
+                {session.user.name || session.user.email}
+              </span>
+            </div>
+          )}
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            <span className="font-mono text-xs text-white/60 uppercase">Online</span>
+          </div>
         </div>
       </header>
 
@@ -109,7 +142,7 @@ export default function ChatPage() {
                   Chat with AARTE
                 </h1>
                 <p className="font-mono text-sm text-white/50 max-w-md mx-auto">
-                  Your AI assistant. Ask me anything — I&apos;m here to help.
+                  Your AI assistant. Ask me anything &mdash; I&apos;m here to help.
                 </p>
               </motion.div>
             )}
@@ -138,7 +171,7 @@ export default function ChatPage() {
                       </div>
                       <div className={`px-4 py-2 border-t ${isUser ? "border-black/10" : "border-white/10"}`}>
                         <span className={`font-mono text-[10px] uppercase ${isUser ? "text-black/40" : "text-white/40"}`}>
-                          {isUser ? "You" : "AARTE"} · {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                          {isUser ? "You" : "AARTE"} &middot; {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                         </span>
                       </div>
                     </div>
@@ -193,7 +226,7 @@ export default function ChatPage() {
             </button>
           </div>
           <p className="font-mono text-[10px] text-white/30 mt-2 text-center">
-            Press Enter to send · Shift+Enter for new line
+            Press Enter to send &middot; Shift+Enter for new line
           </p>
         </form>
       </div>

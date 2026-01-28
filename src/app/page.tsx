@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSession, signIn, signOut } from "next-auth/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -42,6 +43,7 @@ export default function CreativeManual() {
   useSmoothScroll(!loading);
   const [menuOpen, setMenuOpen] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const { data: session } = useSession();
 
   useEffect(() => {
     let lastX = 0, lastY = 0;
@@ -94,7 +96,11 @@ export default function CreativeManual() {
           <a href="/" className="font-mono text-xs text-white hover:text-white/60 transition-colors uppercase min-h-[44px] flex items-center" aria-label="AARTE Home">AARTE</a>
           <div className="flex items-center gap-3 sm:gap-6">
             <a href="/chat" className="font-mono text-xs text-white border border-white px-3 sm:px-4 py-2 hover:bg-white hover:text-black transition-colors uppercase min-h-[44px] flex items-center" aria-label="Chat with AARTE">Chat with AARTE</a>
-            <a href="/signup" className="font-mono text-xs text-black bg-white px-3 sm:px-4 py-2 hover:bg-white/90 transition-colors uppercase min-h-[44px] flex items-center" aria-label="Get Started with AARTE">Get Started</a>
+            {session ? (
+              <a href="/signup" className="font-mono text-xs text-black bg-white px-3 sm:px-4 py-2 hover:bg-white/90 transition-colors uppercase min-h-[44px] flex items-center" aria-label="Get Started with AARTE">Get Started</a>
+            ) : (
+              <button onClick={() => signIn("google", { callbackUrl: "/signup" })} className="font-mono text-xs text-black bg-white px-3 sm:px-4 py-2 hover:bg-white/90 transition-colors uppercase min-h-[44px] flex items-center" aria-label="Sign in to get started">Get Started</button>
+            )}
             <button onClick={() => setMenuOpen(!menuOpen)} className="font-mono text-xs text-white hover:text-white/60 transition-colors uppercase min-h-[44px] flex items-center" aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen}>
               {menuOpen ? "Close [×]" : "Menu [+]"}
             </button>
@@ -170,6 +176,14 @@ export default function CreativeManual() {
                 <div className="flex flex-col gap-1">
                   <p className="font-mono text-xs text-white/40">project by</p>
                   <span className="font-mono text-xs text-white/60">AARTE</span>
+                  {session && (
+                    <button
+                      onClick={() => signOut()}
+                      className="font-mono text-xs text-white/40 hover:text-white transition-colors text-left mt-2"
+                    >
+                      Sign out ({session.user?.email})
+                    </button>
+                  )}
                 </div>
                 <BarcodeSVG className="h-12 w-auto text-white/20" aria-hidden="true" />
               </motion.div>

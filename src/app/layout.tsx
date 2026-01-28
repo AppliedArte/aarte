@@ -3,6 +3,8 @@ import localFont from "next/font/local";
 import { IBM_Plex_Mono, Silkscreen, VT323, Press_Start_2P, Pixelify_Sans } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
+import { auth } from "@/lib/auth";
+import { SessionProvider } from "@/components/providers/session-provider";
 
 const ppNeueMontreal = localFont({
   src: [
@@ -100,7 +102,9 @@ const jsonLd = {
 
 const GA_ID = "G-90GEC7MMJS";
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const session = await auth();
+
   return (
     <html lang="en">
       <head>
@@ -116,7 +120,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </head>
       <body className={`${fontVariables} antialiased`}>
-        {children}
+        <SessionProvider session={session}>
+          {children}
+        </SessionProvider>
       </body>
     </html>
   );
