@@ -77,7 +77,10 @@ export default function SignUpPage() {
     <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-[#ffb700] selection:text-black">
       <header className="fixed top-0 left-0 right-0 z-40 px-6 py-4 flex items-center justify-between">
         <Link href="/" className={navLinkClass}>AARTE</Link>
-        <Link href="/" className={navLinkClass}>Back [&larr;]</Link>
+        <div className="flex items-center gap-4">
+          <Link href="/chat" className="font-mono text-xs text-white border border-white px-3 py-2 hover:bg-white hover:text-black transition-colors uppercase">Chat with AARTE</Link>
+          <Link href="/" className={navLinkClass}>Back [&larr;]</Link>
+        </div>
       </header>
 
       <main className="min-h-screen flex items-center justify-center px-6 py-24">
