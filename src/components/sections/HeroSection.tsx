@@ -113,9 +113,6 @@ export function HeroSection({ mousePos }: HeroSectionProps) {
           <a href="/signup" className="inline-block font-mono text-sm text-black bg-white px-4 sm:px-6 py-3 hover:bg-white/90 transition-colors uppercase min-h-[44px]" aria-label="Get Started with AARTE">
             Get Started →
           </a>
-          <a href="/chat" className="inline-block font-mono text-sm text-white border border-white/40 px-4 sm:px-6 py-3 hover:bg-white/10 transition-colors uppercase min-h-[44px]" aria-label="Chat with AARTE">
-            Chat with AARTE
-          </a>
         </div>
 
         {/* Info Lists */}

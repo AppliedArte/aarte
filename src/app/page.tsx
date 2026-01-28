@@ -95,7 +95,6 @@ export default function CreativeManual() {
         <header className="fixed top-0 left-0 right-0 z-40 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between mix-blend-difference" role="banner">
           <a href="/" className="font-mono text-xs text-white hover:text-white/60 transition-colors uppercase min-h-[44px] flex items-center" aria-label="AARTE Home">AARTE</a>
           <div className="flex items-center gap-3 sm:gap-6">
-            <a href="/chat" className="font-mono text-xs text-white border border-white px-3 sm:px-4 py-2 hover:bg-white hover:text-black transition-colors uppercase min-h-[44px] flex items-center" aria-label="Chat with AARTE">Chat with AARTE</a>
             {session ? (
               <a href="/signup" className="font-mono text-xs text-black bg-white px-3 sm:px-4 py-2 hover:bg-white/90 transition-colors uppercase min-h-[44px] flex items-center" aria-label="Get Started with AARTE">Get Started</a>
             ) : (

@@ -60,7 +60,6 @@ export const NAV_ITEMS = [
       { label: "2.4 Integrations", href: "#integrations" },
     ]
   },
-  { label: "Chat with AARTE", href: "/chat" },
   { label: "Get Started", href: "/signup" },
 ];
 
