@@ -94,7 +94,7 @@ export const EXTENSION_CHANNELS = [
 // Tech stack items
 export const TECH_STACK_ITEMS = [
   { label: "Runtime", value: "Node.js ≥ 22" },
-  { label: "Config", value: "~/.moltbot/moltbot.json" },
+  { label: "Config", value: "~/.clawdbot/clawdbot.json" },
   { label: "Service", value: "launchd / systemd" },
   { label: "Network", value: "Loopback + Tailscale" },
 ];

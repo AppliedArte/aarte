@@ -57,14 +57,14 @@ const fontVariables = [
   pixelifySans.variable,
 ].join(" ");
 
-const title = "AARTE: Create Your Personal Moltbot (formerly Clawdbot) AI Agent";
-const description = "Build your personal Moltbot (formerly Clawdbot) AI assistant with AARTE. Integrates with WhatsApp, Telegram, Slack, and more. 100% private, self-hosted, your data never leaves your infrastructure.";
-const shortDescription = "Build your personal Moltbot AI assistant. 100% private, self-hosted.";
+const title = "AARTE: Create Your Personal @openclawd AI Agent";
+const description = "Build your personal @openclawd AI assistant with AARTE. Integrates with WhatsApp, Telegram, Slack, and more. 100% private, self-hosted, your data never leaves your infrastructure.";
+const shortDescription = "Build your personal @openclawd AI assistant. 100% private, self-hosted.";
 
 export const metadata: Metadata = {
   title,
   description,
-  keywords: ["Moltbot", "Clawdbot", "AI assistant", "AI agent", "artificial intelligence", "WhatsApp bot", "Telegram bot", "Slack integration", "private AI", "self-hosted AI", "personal AI assistant", "AARTE"],
+  keywords: ["@openclawd", "AI assistant", "AI agent", "artificial intelligence", "WhatsApp bot", "Telegram bot", "Slack integration", "private AI", "self-hosted AI", "personal AI assistant", "AARTE"],
   authors: [{ name: "AARTE" }],
   openGraph: {
     title,
@@ -88,11 +88,11 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  name: "AARTE - Moltbot (Clawdbot) AI Agent Creator",
+  name: "AARTE - @openclawd AI Agent Creator",
   applicationCategory: "BusinessApplication",
   description,
   operatingSystem: "Web",
-  alternateName: ["Moltbot", "Clawdbot", "AARTE Agent"],
+  alternateName: ["@openclawd", "AARTE Agent"],
   offers: {
     "@type": "Offer",
     price: "29.99",

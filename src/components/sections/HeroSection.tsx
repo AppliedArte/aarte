@@ -107,7 +107,7 @@ export function HeroSection({ mousePos }: HeroSectionProps) {
         transition={{ duration: 0.8, delay: 0.6 }}
       >
         <p className="text-[clamp(1.25rem,2.5vw,2.5rem)] font-medium text-white leading-[1.25] tracking-[-0.01em] mb-4 sm:mb-6">
-          Create Your Personal Moltbot <span className="text-white/60">(formerly Clawdbot)</span>
+          Create Your Personal @openclawd
         </p>
         <div className="flex flex-wrap gap-3 mb-6 sm:mb-8">
           <a href="/signup" className="inline-block font-mono text-sm text-black bg-white px-4 sm:px-6 py-3 hover:bg-white/90 transition-colors uppercase min-h-[44px]" aria-label="Get Started with AARTE">
