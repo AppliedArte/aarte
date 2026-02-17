@@ -191,7 +191,7 @@ export default function CreativeManual() {
         </AnimatePresence>
 
         {/* Scroll content wrapper */}
-        <div className="scroll-content">
+        <main className="scroll-content">
           <HeroSection mousePos={mousePos} />
           <AboutSection />
           <IntersectionSection />
@@ -581,7 +581,7 @@ export default function CreativeManual() {
               </motion.div>
             </div>
           </footer>
-        </div>
+        </main>
 
         {/* Duplicate content for seamless infinite scroll */}
         <div className="scroll-content-clone" aria-hidden="true">

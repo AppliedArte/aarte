@@ -58,14 +58,16 @@ const fontVariables = [
 ].join(" ");
 
 const title = "AARTE: Create Your Personal @openclawd AI Agent";
-const description = "Build your personal @openclawd AI assistant with AARTE. Integrates with WhatsApp, Telegram, Slack, and more. 100% private, self-hosted, your data never leaves your infrastructure.";
+const description = "Build your personal @openclawd AI assistant with AARTE. Create intelligent agents that integrate with WhatsApp, Telegram, Slack, and more. 100% private, self-hosted AI - your data never leaves your infrastructure. Start building your AI agent today.";
 const shortDescription = "Build your personal @openclawd AI assistant. 100% private, self-hosted.";
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://aarte.co'),
   title,
   description,
-  keywords: ["@openclawd", "AI assistant", "AI agent", "artificial intelligence", "WhatsApp bot", "Telegram bot", "Slack integration", "private AI", "self-hosted AI", "personal AI assistant", "AARTE"],
+  keywords: ["@openclawd", "AI assistant", "AI agent", "artificial intelligence", "WhatsApp bot", "Telegram bot", "Slack integration", "private AI", "self-hosted AI", "personal AI assistant", "AARTE", "AI automation", "chatbot builder", "intelligent agents"],
   authors: [{ name: "AARTE" }],
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
   openGraph: {
     title,
     description: shortDescription,
@@ -73,19 +75,54 @@ export const metadata: Metadata = {
     siteName: "AARTE",
     locale: "en_US",
     type: "website",
+    // TODO: Add OG image when created (1200x630)
+    // images: [{ url: "/og-image.jpg", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
     title,
     description: shortDescription,
+    // TODO: Add Twitter creator handle if available
+    // creator: "@aarteai",
   },
+  alternates: {
+    canonical: "https://aarte.co",
+  },
+  manifest: "/manifest.json",
   robots: {
     index: true,
     follow: true,
   },
 };
 
-const jsonLd = {
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "AARTE",
+  url: "https://aarte.co",
+  logo: "https://aarte.co/logo.svg", // TODO: Update with actual logo path
+  sameAs: [
+    // TODO: Add social media profiles when available
+    // "https://twitter.com/aarteai",
+    // "https://linkedin.com/company/aarte"
+  ],
+  description: "AARTE creates personal AI agents powered by OpenClaw technology for WhatsApp, Telegram, Slack and more."
+};
+
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "AARTE",
+  url: "https://aarte.co",
+  description: description,
+  potentialAction: {
+    "@type": "SearchAction",
+    target: "https://aarte.co/search?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+};
+
+const softwareAppSchema = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   name: "AARTE - @openclawd AI Agent Creator",
@@ -97,7 +134,12 @@ const jsonLd = {
     "@type": "Offer",
     price: "29.99",
     priceCurrency: "USD",
+    availability: "https://schema.org/InStock"
   },
+  publisher: {
+    "@type": "Organization",
+    name: "AARTE"
+  }
 };
 
 const GA_ID = "G-90GEC7MMJS";
@@ -117,7 +159,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             gtag('config', '${GA_ID}');
           `}
         </Script>
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([organizationSchema, websiteSchema, softwareAppSchema]) }} />
       </head>
       <body className={`${fontVariables} antialiased`}>
         <SessionProvider session={session}>

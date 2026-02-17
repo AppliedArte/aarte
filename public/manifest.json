@@ -1,0 +1,21 @@
+{
+  "name": "AARTE - Personal AI Agent Creator",
+  "short_name": "AARTE",
+  "description": "Create your personal AI agent with AARTE. Connect to WhatsApp, Telegram, Slack and more. 100% private, self-hosted AI assistant.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#ffb700",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png", 
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
