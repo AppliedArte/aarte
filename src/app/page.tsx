@@ -471,6 +471,54 @@ export default function CreativeManual() {
             </div>
           </section>
 
+          {/* AARTE Capital — Fantasy VC */}
+          <section id="fund" className="panel py-24 sm:py-32 px-4 sm:px-6 border-t border-white/10 bg-[#0a0a0a]">
+            <div className="max-w-7xl mx-auto">
+              <ChapterHeader number="2.5" title="aarte capital" />
+              <div className="grid md:grid-cols-2 gap-12 sm:gap-16 mb-16">
+                <div>
+                  <h3 className="text-3xl sm:text-4xl md:text-5xl font-medium leading-[1.1] tracking-[-0.02em] mb-6 sm:mb-8 overflow-hidden">
+                    <SplitTextReveal text="Fantasy" className="block" />
+                    <SplitTextReveal text="Venture Capital" className="block text-[#ffb700]" delay={0.3} />
+                  </h3>
+                  <FadeIn delay={0.2}>
+                    <p className="text-lg sm:text-xl text-white/60 leading-relaxed mb-6">An AI-managed $100M fantasy venture fund. Five AI partners with wildly different investment philosophies research, argue, and pick startups across every stage.</p>
+                    <p className="text-lg sm:text-xl text-white/60 leading-relaxed mb-6">Performance tracked publicly over 12 months against the S&amp;P 500 and top-quartile VC benchmarks. No fees. No LP meetings. Just picks.</p>
+                  </FadeIn>
+                </div>
+                <div className="space-y-4">
+                  {[
+                    { name: "MARC AIndressen", role: "Platform Maximalist", color: "#ffb700" },
+                    { name: "GARY TAN-sformer", role: "YC Purist", color: "#ff6b00" },
+                    { name: "Peter ThieLLM", role: "Contrarian Monopolist", color: "#00ff88" },
+                    { name: "PAUL GPTHAM", role: "Essay Machine", color: "#ff4444" },
+                    { name: "BILL GURLAI", role: "Marketplace Whisperer", color: "#4488ff" },
+                  ].map((partner, i) => (
+                    <FadeIn key={partner.name} delay={0.3 + i * 0.08}>
+                      <div className="flex items-center gap-4 py-3 border-b border-white/10">
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center font-mono text-xs font-bold text-black flex-shrink-0" style={{ backgroundColor: partner.color }}>
+                          {partner.name.charAt(0)}
+                        </div>
+                        <div className="flex-1">
+                          <span className="text-white font-medium">{partner.name}</span>
+                          <span className="font-mono text-xs ml-3" style={{ color: partner.color }}>{partner.role}</span>
+                        </div>
+                      </div>
+                    </FadeIn>
+                  ))}
+                </div>
+              </div>
+              <FadeIn delay={0.6}>
+                <div className="text-center">
+                  <a href="/fund" className="inline-flex items-center gap-2 font-mono text-sm text-black bg-[#ffb700] px-6 py-3 rounded-lg hover:bg-[#ffb700]/90 transition-colors">
+                    View the Fund →
+                  </a>
+                  <p className="text-white/40 text-sm mt-4 font-mono">Subscribe for weekly portfolio updates and partner debates</p>
+                </div>
+              </FadeIn>
+            </div>
+          </section>
+
           {/* Chapter 3: Resources */}
           <section id="resources" className="panel py-24 sm:py-32 border-t border-white/10 bg-[#0a0a0a] overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6">
