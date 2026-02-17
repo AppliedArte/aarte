@@ -213,10 +213,90 @@ export default function FundPage() {
         </div>
       </section>
 
+      {/* The Partners */}
+      <section className="py-24 sm:py-32 px-4 sm:px-6 border-t border-white/10">
+        <div className="max-w-6xl mx-auto">
+          <ChapterHeader number="03" title="The Partners" />
+          
+          <FadeIn>
+            <p className="text-lg sm:text-xl text-white/50 max-w-3xl mb-12 sm:mb-16 leading-relaxed">
+              Five AI investment partners. Five philosophies. One fund. They research, they argue, they pick. Every week you get their unfiltered debate.
+            </p>
+          </FadeIn>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              {
+                name: "MAIRC",
+                title: "Platform Maximalist",
+                philosophy: "Software is eating the world, and he's supplying the cutlery. Platform plays only. Will fund your developer tool before you've finished the pitch.",
+                style: "Infrastructure, Dev Tools, Platforms",
+                accent: "#ffb700",
+              },
+              {
+                name: "GARY TAN-sformer",
+                title: "YC Purist",
+                philosophy: "YC demo day is his Super Bowl. Two founders in a garage? He's writing the check. Asks \"but do users love it?\" until you cry.",
+                style: "Pre-seed, Seed, Consumer",
+                accent: "#ff6b00",
+              },
+              {
+                name: "PETER THLM",
+                title: "Contrarian Monopolist",
+                philosophy: "If everyone's investing in it, he's already left the room. Monopoly or nothing. Will fund your secret space laser if the TAM is large enough.",
+                style: "Deep Tech, Frontier, Monopolies",
+                accent: "#00ff88",
+              },
+              {
+                name: "PAUL GPTHAM",
+                title: "Essay Machine",
+                philosophy: "Writes 4,000-word essays explaining why your startup is actually a tarpit idea. Then funds your competitor. Judges you by your choice of programming language.",
+                style: "Founder Quality, Contrarian Seed",
+                accent: "#ff4444",
+              },
+              {
+                name: "BILL GURLAI",
+                title: "Marketplace Whisperer",
+                philosophy: "Take rate, GMV, liquidity density — say \"blitzscaling\" in his presence and he'll flip the table. Every pick must have unit economics that make him weep with joy.",
+                style: "Marketplaces, Unit Economics",
+                accent: "#4488ff",
+              },
+            ].map((partner, i) => (
+              <FadeIn key={partner.name} delay={0.1 * i}>
+                <div className="border border-white/10 rounded-lg p-6 bg-black/50 h-full flex flex-col">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div 
+                      className="w-10 h-10 rounded-full flex items-center justify-center font-mono text-sm font-bold text-black"
+                      style={{ backgroundColor: partner.accent }}
+                    >
+                      {partner.name.charAt(0)}
+                    </div>
+                    <div>
+                      <h4 className="text-lg font-medium text-white">{partner.name}</h4>
+                      <div className="font-mono text-xs" style={{ color: partner.accent }}>{partner.title}</div>
+                    </div>
+                  </div>
+                  <p className="text-white/50 text-sm leading-relaxed mb-4 flex-1">{partner.philosophy}</p>
+                  <div className="font-mono text-[10px] text-white/30 uppercase tracking-wider pt-4 border-t border-white/10">
+                    Focus: {partner.style}
+                  </div>
+                </div>
+              </FadeIn>
+            ))}
+          </div>
+
+          <FadeIn delay={0.6}>
+            <div className="mt-12 bg-white/5 rounded-lg p-6 sm:p-8 text-center">
+              <p className="text-white/60 text-sm italic">&ldquo;Every week, the partners debate. MAIRC wants to double down on infra. GARY TAN-sformer thinks the seed-stage consumer app is undervalued. PETER THLM is shorting something everyone else loves. You get the unfiltered transcript.&rdquo;</p>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
       {/* Methodology */}
       <section className="py-24 sm:py-32 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto">
-          <ChapterHeader number="03" title="Methodology" />
+          <ChapterHeader number="04" title="Methodology" />
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <FadeIn>
