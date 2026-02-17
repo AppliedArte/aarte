@@ -5,13 +5,15 @@ import Link from "next/link";
 import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { redirect } from "next/navigation";
-
-const EASE = [0.19, 1, 0.22, 1] as const;
+import { EASE_OUT_EXPO } from "@/lib/constants";
+import { BarcodeSVG } from "@/components/ui";
+import { FadeIn } from "@/components/animations";
 
 const PLANS = [
   {
     id: "minimum",
-    label: "Minimum Plan",
+    num: "01",
+    label: "Minimum",
     badge: "Most Popular",
     price: 79,
     cents: ".99",
@@ -27,7 +29,8 @@ const PLANS = [
   },
   {
     id: "premium",
-    label: "Premium Plan",
+    num: "02",
+    label: "Premium",
     badge: "Best Value",
     price: 159,
     cents: ".99",
@@ -43,7 +46,8 @@ const PLANS = [
   },
   {
     id: "maximum",
-    label: "Maximum Plan",
+    num: "03",
+    label: "Maximum",
     badge: "Unlimited",
     price: 199,
     cents: ".99",
@@ -104,233 +108,240 @@ export default function SignUpPage() {
     }
   };
 
-  const navLinkClass = "font-mono text-xs text-white hover:text-white/60 transition-colors uppercase";
-  const inputClass = "w-full bg-transparent border border-white/20 px-4 py-3 font-mono text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-white/40 transition-colors";
-  const labelClass = "block font-mono text-[10px] text-white/40 uppercase mb-2";
-
   if (status === "loading") {
     return (
       <div className="min-h-screen bg-[#0a0a0a] text-white flex items-center justify-center">
-        <div className="font-mono text-sm text-white/60">Loading...</div>
+        <div className="font-mono text-[10px] text-white/40 uppercase tracking-wider">Loading...</div>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-[#ffb700] selection:text-black">
-      <header className="fixed top-0 left-0 right-0 z-40 px-6 py-4 flex items-center justify-between">
-        <Link href="/" className={navLinkClass}>AARTE</Link>
-        <div className="flex items-center gap-4">
-          <Link href="/chat" className="font-mono text-xs text-white border border-white px-3 py-2 hover:bg-white hover:text-black transition-colors uppercase">Chat with AARTE</Link>
-          <Link href="/" className={navLinkClass}>Back [&larr;]</Link>
+      {/* Header — matches main site */}
+      <header className="fixed top-0 left-0 right-0 z-40 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between mix-blend-difference">
+        <Link href="/" className="font-mono text-xs text-white hover:text-white/60 transition-colors uppercase min-h-[44px] flex items-center">
+          AARTE
+        </Link>
+        <div className="flex items-center gap-3 sm:gap-6">
+          <Link href="/chat" className="font-mono text-xs text-black bg-white px-3 sm:px-4 py-2 hover:bg-white/90 transition-colors uppercase min-h-[44px] flex items-center">
+            Chat with AARTE
+          </Link>
+          <Link href="/" className="font-mono text-xs text-white hover:text-white/60 transition-colors uppercase min-h-[44px] flex items-center">
+            Back [&larr;]
+          </Link>
         </div>
       </header>
 
-      <main className="min-h-screen flex items-center justify-center px-6 py-24">
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: EASE }}
-          className="w-full max-w-5xl"
-        >
+      {/* Hero */}
+      <section className="pt-32 sm:pt-40 pb-16 sm:pb-24 px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto">
+          {/* Chapter header */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.8, ease: EASE }}
-            className="text-center mb-10"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="flex items-center gap-4 mb-12 sm:mb-16"
           >
-            <h1 className="text-[clamp(2rem,6vw,3.5rem)] font-medium leading-[1.1] mb-4">
-              Get AARTE
-            </h1>
-            <p className="text-white/60 font-mono text-sm">
-              Create Your Personal AARTE Agent to Create your Moltbot (Formerly Clawdbot) assistant
-            </p>
+            <span className="font-mono text-xs text-white/40">03</span>
+            <div className="flex-1 h-px bg-white/10" />
+            <span className="font-mono text-xs text-white/40">get started</span>
           </motion.div>
 
-          {/* User Profile */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.5, ease: EASE }}
-            className="flex items-center gap-3 mb-8 pb-6 border-b border-white/10 max-w-md mx-auto"
-          >
-            {session?.user?.image && (
-              <img
-                src={session.user.image}
-                alt=""
-                className="w-10 h-10 rounded-full"
-              />
-            )}
-            <div className="flex-1 min-w-0">
-              <p className="text-white font-medium truncate">{session?.user?.name}</p>
-              <p className="text-white/50 font-mono text-xs truncate">{session?.user?.email}</p>
+          <div className="grid md:grid-cols-12 gap-8 sm:gap-12">
+            {/* Left — Title */}
+            <div className="md:col-span-7">
+              <motion.h1
+                className="text-[clamp(2.5rem,8vw,7rem)] font-medium leading-[0.9] tracking-[-0.03em] mb-6 sm:mb-8"
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1, delay: 0.3, ease: EASE_OUT_EXPO }}
+              >
+                <span className="block">Get</span>
+                <span className="block">AARTE</span>
+              </motion.h1>
+              <motion.p
+                className="text-lg sm:text-xl text-white/50 leading-relaxed max-w-lg"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.5, ease: EASE_OUT_EXPO }}
+              >
+                Create your personal Moltbot AI assistant. Select a plan, connect your channels, and start automating.
+              </motion.p>
             </div>
-            <button
-              onClick={() => signOut({ callbackUrl: "/" })}
-              className="font-mono text-[10px] text-white/40 hover:text-white transition-colors uppercase"
-            >
-              Switch
-            </button>
-          </motion.div>
 
-          {/* Plan Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            {PLANS.map((plan, planIndex) => {
+            {/* Right — User + Barcode */}
+            <div className="md:col-span-5 flex flex-col justify-between">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.6, ease: EASE_OUT_EXPO }}
+              >
+                <div className="font-mono text-[10px] text-white/30 uppercase tracking-wider mb-3">Signed in as</div>
+                <div className="flex items-center gap-3 pb-4 border-b border-white/10">
+                  {session?.user?.image && (
+                    <img src={session.user.image} alt="" className="w-8 h-8 rounded-full" />
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{session?.user?.name}</p>
+                    <p className="text-white/40 font-mono text-[10px] truncate">{session?.user?.email}</p>
+                  </div>
+                  <button
+                    onClick={() => signOut({ callbackUrl: "/" })}
+                    className="font-mono text-[10px] text-white/30 hover:text-white transition-colors uppercase min-h-[44px] flex items-center"
+                  >
+                    Switch
+                  </button>
+                </div>
+              </motion.div>
+
+              <motion.div
+                className="hidden md:block mt-auto pt-8"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8, delay: 1 }}
+              >
+                <BarcodeSVG className="h-16 w-auto text-white/10" />
+              </motion.div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Plans */}
+      <section className="py-16 sm:py-24 px-4 sm:px-6 border-t border-white/10">
+        <div className="max-w-7xl mx-auto">
+          <FadeIn>
+            <div className="font-mono text-[10px] text-white/40 uppercase tracking-wider mb-8">Select your plan</div>
+          </FadeIn>
+
+          <div className="grid md:grid-cols-3 gap-px bg-white/10 mb-16">
+            {PLANS.map((plan, i) => {
               const isSelected = selectedPlan.id === plan.id;
               return (
-                <motion.button
-                  key={plan.id}
-                  type="button"
-                  onClick={() => setSelectedPlan(plan)}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 + planIndex * 0.1, duration: 0.8, ease: EASE }}
-                  className={`border p-8 relative overflow-hidden text-left transition-colors ${
-                    isSelected
-                      ? "border-white bg-white/5"
-                      : "border-white/20 hover:border-white/40"
-                  }`}
-                >
-                  <div className={`absolute top-0 right-0 font-mono text-[10px] uppercase px-3 py-1 ${
-                    isSelected ? "bg-white text-black" : "bg-white/20 text-white"
-                  }`}>
-                    {plan.badge}
-                  </div>
+                <FadeIn key={plan.id} delay={i * 0.1}>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPlan(plan)}
+                    className={`w-full text-left p-6 sm:p-8 transition-colors relative ${
+                      isSelected ? "bg-white/6" : "bg-[#0a0a0a] hover:bg-white/3"
+                    }`}
+                  >
+                    {/* Selection indicator */}
+                    {isSelected && (
+                      <div className="absolute top-6 sm:top-8 right-6 sm:right-8 w-2 h-2 rounded-full bg-white" />
+                    )}
 
-                  <div className="mb-6">
-                    <h2 className="font-mono text-xs text-white/40 uppercase mb-2">
-                      {plan.label}
-                    </h2>
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-5xl font-medium">${plan.price}</span>
-                      <span className="text-2xl font-medium text-white/60">{plan.cents}</span>
-                      <span className="text-white/40 font-mono text-sm ml-2">/ month</span>
+                    {/* Plan number + badge */}
+                    <div className="flex items-center gap-3 mb-6">
+                      <span className="font-mono text-xs text-white/30">{plan.num}</span>
+                      <div className="flex-1 h-px bg-white/10" />
+                      <span className="font-mono text-[10px] text-white/40 uppercase tracking-wider">{plan.badge}</span>
                     </div>
-                  </div>
 
-                  <div className="border-t border-white/10 my-6" />
+                    {/* Plan name */}
+                    <h3 className="text-2xl sm:text-3xl font-medium leading-[1.1] tracking-[-0.02em] mb-4">
+                      {plan.label}
+                    </h3>
 
-                  <ul className="space-y-3">
-                    {plan.features.map((feature, index) => (
-                      <motion.li
-                        key={feature}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{
-                          delay: 0.5 + planIndex * 0.1 + index * 0.05,
-                          duration: 0.5,
-                          ease: EASE,
-                        }}
-                        className="flex items-center gap-3 font-mono text-sm"
-                      >
-                        <span className="text-white/60">&rarr;</span>
-                        <span>{feature}</span>
-                      </motion.li>
-                    ))}
-                  </ul>
-                </motion.button>
+                    {/* Price */}
+                    <div className="flex items-baseline gap-1 mb-8">
+                      <span className="text-[clamp(2.5rem,5vw,3.5rem)] font-medium leading-none tracking-[-0.03em]">
+                        ${plan.price}
+                      </span>
+                      <span className="text-xl font-medium text-white/50">{plan.cents}</span>
+                      <span className="text-white/30 font-mono text-xs ml-2">/ mo</span>
+                    </div>
+
+                    {/* Features */}
+                    <div className="space-y-0">
+                      {plan.features.map((feature) => (
+                        <div key={feature} className="flex items-center py-2 border-t border-white/6">
+                          <span className="font-mono text-xs text-white/50">{feature}</span>
+                        </div>
+                      ))}
+                      <div className="border-t border-white/6" />
+                    </div>
+                  </button>
+                </FadeIn>
               );
             })}
           </div>
 
-          {/* Checkout Form */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 0.8, ease: EASE }}
-            className="max-w-md mx-auto"
-          >
-            <form onSubmit={handleCheckout} className="space-y-4 mb-6">
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9, duration: 0.5, ease: EASE }}
-              >
-                <label className={labelClass}>
-                  Telegram <span className="text-white/30">(optional)</span>
-                </label>
-                <input
-                  type="text"
-                  value={telegram}
-                  onChange={(e) => setTelegram(e.target.value)}
-                  placeholder="@username"
-                  className={inputClass}
-                />
-              </motion.div>
+          {/* Checkout form */}
+          <FadeIn delay={0.3}>
+            <div className="max-w-lg mx-auto">
+              <div className="font-mono text-[10px] text-white/40 uppercase tracking-wider mb-6">Contact details</div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.95, duration: 0.5, ease: EASE }}
-              >
-                <label className={labelClass}>
-                  WhatsApp <span className="text-white/30">(optional)</span>
-                </label>
-                <input
-                  type="tel"
-                  value={whatsapp}
-                  onChange={(e) => setWhatsapp(e.target.value)}
-                  placeholder="+1 234 567 8900"
-                  className={inputClass}
-                />
-              </motion.div>
+              <form onSubmit={handleCheckout}>
+                <div className="grid sm:grid-cols-2 gap-4 mb-6">
+                  <div>
+                    <label className="block font-mono text-[10px] text-white/30 uppercase tracking-wider mb-2">
+                      Telegram <span className="text-white/20">(optional)</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={telegram}
+                      onChange={(e) => setTelegram(e.target.value)}
+                      placeholder="@username"
+                      className="w-full bg-transparent border-b border-white/20 px-0 py-3 font-mono text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-white/50 transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-mono text-[10px] text-white/30 uppercase tracking-wider mb-2">
+                      WhatsApp <span className="text-white/20">(optional)</span>
+                    </label>
+                    <input
+                      type="tel"
+                      value={whatsapp}
+                      onChange={(e) => setWhatsapp(e.target.value)}
+                      placeholder="+1 234 567 8900"
+                      className="w-full bg-transparent border-b border-white/20 px-0 py-3 font-mono text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-white/50 transition-colors"
+                    />
+                  </div>
+                </div>
 
-              {error && <p className="text-red-400 font-mono text-xs">{error}</p>}
+                {error && <p className="text-red-400 font-mono text-[10px] uppercase tracking-wider mb-4">{error}</p>}
 
-              <motion.button
-                type="submit"
-                disabled={isSubmitting}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1, duration: 0.5, ease: EASE }}
-                className="w-full bg-white text-black font-mono text-sm uppercase py-4 hover:bg-white/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <span>{isSubmitting ? "Processing..." : `Subscribe — $${selectedPlan.price}${selectedPlan.cents}/mo`}</span>
-                {!isSubmitting && (
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M5 12h14M12 5l7 7-7 7" />
-                  </svg>
-                )}
-              </motion.button>
-            </form>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="font-mono text-sm text-black bg-white px-6 py-3 hover:bg-white/90 transition-colors uppercase min-h-[44px] flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? "Processing..." : `Subscribe — $${selectedPlan.price}${selectedPlan.cents}/mo`}
+                  {!isSubmitting && <span>&rarr;</span>}
+                </button>
 
-            <p className="text-center text-white/30 font-mono text-[10px] mt-4 uppercase">
-              Secure payment via Whop
-            </p>
-          </motion.div>
+                <div className="flex items-center gap-4 mt-4">
+                  <span className="font-mono text-[10px] text-white/20 uppercase tracking-wider">Secure payment via Whop</span>
+                  <div className="flex-1 h-px bg-white/6" />
+                  <a href="mailto:aarte@aarte.co" className="font-mono text-[10px] text-white/30 hover:text-white/60 transition-colors uppercase tracking-wider min-h-[44px] flex items-center">
+                    Contact Support
+                  </a>
+                </div>
+              </form>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.2, duration: 0.8, ease: EASE }}
-            className="mt-8 text-center"
-          >
-            <p className="text-white/40 font-mono text-xs">
-              Questions?{" "}
-              <a
-                href="mailto:aarte@aarte.co"
-                className="text-white/60 hover:text-white transition-colors underline underline-offset-4"
-              >
-                Contact Support
-              </a>
-            </p>
-          </motion.div>
-        </motion.div>
-      </main>
+      {/* Corner brackets — decorative */}
+      <div className="fixed inset-0 pointer-events-none z-30" aria-hidden="true">
+        <svg className="absolute bottom-16 left-4 sm:left-6 w-3 h-3 text-white/20" viewBox="0 0 14 14" fill="none">
+          <rect y="13" width="14" height="1" fill="currentColor" />
+          <rect width="1" height="14" fill="currentColor" />
+        </svg>
+        <svg className="absolute bottom-16 right-4 sm:right-6 w-3 h-3 text-white/20" viewBox="0 0 14 14" fill="none">
+          <rect y="13" width="14" height="1" fill="currentColor" />
+          <rect x="13" width="1" height="14" fill="currentColor" />
+        </svg>
+      </div>
 
-      <footer className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/10 bg-[#0a0a0a]/90 backdrop-blur-sm py-3 px-6">
+      {/* Footer */}
+      <footer className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/10 bg-[#0a0a0a]/90 backdrop-blur-sm py-2 px-4 sm:px-6">
         <div className="flex items-center justify-between font-mono text-[10px] text-white/30">
           <span>&copy; AARTE &mdash; Applied Artificial Intelligence</span>
-          <span>Subscribe</span>
+          <span>// get-started.loaded</span>
         </div>
       </footer>
     </div>
