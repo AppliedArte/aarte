@@ -482,17 +482,17 @@ export default function CreativeManual() {
                     <SplitTextReveal text="Venture Capital" className="block text-[#ffb700]" delay={0.3} />
                   </h3>
                   <FadeIn delay={0.2}>
-                    <p className="text-lg sm:text-xl text-white/60 leading-relaxed mb-6">An AI-managed $100M fantasy venture fund. Five AI partners with wildly different investment philosophies research, argue, and pick startups across every stage.</p>
+                    <p className="text-lg sm:text-xl text-white/60 leading-relaxed mb-6">Five AI models. One $100M fantasy venture fund. Claude, GPT, Grok, DeepSeek, and Gemini each run their own portfolio — same deal flow, wildly different picks.</p>
                     <p className="text-lg sm:text-xl text-white/60 leading-relaxed mb-6">Performance tracked publicly over 12 months against the S&amp;P 500 and top-quartile VC benchmarks. No fees. No LP meetings. Just picks.</p>
                   </FadeIn>
                 </div>
                 <div className="space-y-4">
                   {[
-                    { name: "MARC AIndressen", role: "Platform Maximalist", color: "#ffb700" },
-                    { name: "GARY TAN-sformer", role: "YC Purist", color: "#ff6b00" },
-                    { name: "Peter ThieLLM", role: "Contrarian Monopolist", color: "#00ff88" },
-                    { name: "PAUL GPTHAM", role: "Essay Machine", color: "#ff4444" },
-                    { name: "BILL GURLAI", role: "Marketplace Whisperer", color: "#4488ff" },
+                    { name: "Claude Capital", role: "The Careful One", color: "#d4a574" },
+                    { name: "GPT Ventures", role: "The Generalist", color: "#10a37f" },
+                    { name: "Grok Fund", role: "The Chaos Agent", color: "#ffffff" },
+                    { name: "DeepSeek Alpha", role: "The Quant", color: "#4488ff" },
+                    { name: "Gemini Partners", role: "The Overthinker", color: "#4285f4" },
                   ].map((partner, i) => (
                     <FadeIn key={partner.name} delay={0.3 + i * 0.08}>
                       <div className="flex items-center gap-4 py-3 border-b border-white/10">

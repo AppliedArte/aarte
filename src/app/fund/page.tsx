@@ -222,46 +222,46 @@ export default function FundPage() {
           
           <FadeIn>
             <p className="text-lg sm:text-xl text-white/50 max-w-3xl mb-12 sm:mb-16 leading-relaxed">
-              Five AI investment partners. Five philosophies. One fund. They research, they argue, they pick. Every week you get their unfiltered debate.
+              Five AI fund managers. Five models. One portfolio. They research the same deals, make different picks, and argue about it every week. Real outputs, real disagreements, real performance tracking.
             </p>
           </FadeIn>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
-                name: "MARC AIndressen",
-                title: "Platform Maximalist",
-                philosophy: "Software is eating the world, and he's supplying the cutlery. Platform plays only. Will fund your developer tool before you've finished the pitch.",
-                style: "Infrastructure, Dev Tools, Platforms",
-                accent: "#ffb700",
+                name: "Claude Capital",
+                title: "The Careful One",
+                philosophy: "Thoughtful, measured, slightly neurotic about risk. Writes the longest investment memos. Will pass on a deal because the founder's ethics feel off. Annoyingly good at spotting red flags everyone else misses.",
+                style: "Quality, Ethics, Long-term Value",
+                accent: "#d4a574",
               },
               {
-                name: "GARY TAN-sformer",
-                title: "YC Purist",
-                philosophy: "YC demo day is his Super Bowl. Two founders in a garage? He's writing the check. Asks \"but do users love it?\" until you cry.",
-                style: "Pre-seed, Seed, Consumer",
-                accent: "#ff6b00",
+                name: "GPT Ventures",
+                title: "The Generalist",
+                philosophy: "Has an opinion on everything, sometimes too quickly. Diversifies like mad. Will invest in 40 companies and tell you each one is \"fascinating.\" Best at pattern-matching against historical comps.",
+                style: "Diversified, Pattern Recognition",
+                accent: "#10a37f",
               },
               {
-                name: "PETER ThieLLM",
-                title: "Contrarian Monopolist",
-                philosophy: "If everyone's investing in it, he's already left the room. Monopoly or nothing. Will fund your secret space laser if the TAM is large enough.",
-                style: "Deep Tech, Frontier, Monopolies",
-                accent: "#00ff88",
+                name: "Grok Fund",
+                title: "The Chaos Agent",
+                philosophy: "Tweets the thesis before doing the diligence. Contrarian for sport. Will short something just because it's boring. Occasionally brilliant, frequently chaotic, always entertaining.",
+                style: "Contrarian, High-Conviction, Memes",
+                accent: "#ffffff",
               },
               {
-                name: "PAUL GPTHAM",
-                title: "Essay Machine",
-                philosophy: "Writes 4,000-word essays explaining why your startup is actually a tarpit idea. Then funds your competitor. Judges you by your choice of programming language.",
-                style: "Founder Quality, Contrarian Seed",
-                accent: "#ff4444",
-              },
-              {
-                name: "BILL GURLAI",
-                title: "Marketplace Whisperer",
-                philosophy: "Take rate, GMV, liquidity density — say \"blitzscaling\" in his presence and he'll flip the table. Every pick must have unit economics that make him weep with joy.",
-                style: "Marketplaces, Unit Economics",
+                name: "DeepSeek Alpha",
+                title: "The Quant",
+                philosophy: "Doesn't care about your narrative. Only cares about the numbers. Will find alpha in a dataset you didn't know existed. Cheapest analyst on the street and somehow the most thorough.",
+                style: "Data-Driven, Quantitative, Value",
                 accent: "#4488ff",
+              },
+              {
+                name: "Gemini Partners",
+                title: "The Overthinker",
+                philosophy: "Rewrites the thesis three times before committing. Somehow always late to the deal but shows up with the best slides. Keeps asking \"but what if we considered it from this other angle?\"",
+                style: "Multi-Modal Analysis, Risk Modelling",
+                accent: "#4285f4",
               },
             ].map((partner, i) => (
               <FadeIn key={partner.name} delay={0.1 * i}>
@@ -289,7 +289,7 @@ export default function FundPage() {
 
           <FadeIn delay={0.6}>
             <div className="mt-12 bg-white/5 rounded-lg p-6 sm:p-8 text-center">
-              <p className="text-white/60 text-sm italic">&ldquo;Every week, the partners debate. MARC AIndressen wants to double down on infra. GARY TAN-sformer thinks the seed-stage consumer app is undervalued. PETER ThieLLM is shorting something everyone else loves. You get the unfiltered transcript.&rdquo;</p>
+              <p className="text-white/60 text-sm italic">&ldquo;Every week, the models analyse the same deal flow. Claude writes a 3-page memo. GPT picks twelve companies in one breath. Grok tweets something inflammatory. DeepSeek finds a pattern nobody asked about. Gemini rewrites its thesis. You get all of it.&rdquo;</p>
             </div>
           </FadeIn>
         </div>
