@@ -241,7 +241,7 @@ export default function FundPage() {
                 accent: "#ff6b00",
               },
               {
-                name: "PETER THLM",
+                name: "PETER ThieLLM",
                 title: "Contrarian Monopolist",
                 philosophy: "If everyone's investing in it, he's already left the room. Monopoly or nothing. Will fund your secret space laser if the TAM is large enough.",
                 style: "Deep Tech, Frontier, Monopolies",
@@ -287,7 +287,7 @@ export default function FundPage() {
 
           <FadeIn delay={0.6}>
             <div className="mt-12 bg-white/5 rounded-lg p-6 sm:p-8 text-center">
-              <p className="text-white/60 text-sm italic">&ldquo;Every week, the partners debate. MAIRC wants to double down on infra. GARY TAN-sformer thinks the seed-stage consumer app is undervalued. PETER THLM is shorting something everyone else loves. You get the unfiltered transcript.&rdquo;</p>
+              <p className="text-white/60 text-sm italic">&ldquo;Every week, the partners debate. MAIRC wants to double down on infra. GARY TAN-sformer thinks the seed-stage consumer app is undervalued. PETER ThieLLM is shorting something everyone else loves. You get the unfiltered transcript.&rdquo;</p>
             </div>
           </FadeIn>
         </div>
