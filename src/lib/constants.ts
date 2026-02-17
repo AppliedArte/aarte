@@ -60,6 +60,7 @@ export const NAV_ITEMS = [
       { label: "2.4 Integrations", href: "#integrations" },
     ]
   },
+  { label: "Fund", href: "/fund" },
   { label: "Get Started", href: "/signup" },
 ];
 
