@@ -227,7 +227,7 @@ export default function FundPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
-                name: "MAIRC",
+                name: "MARC AIndressen",
                 title: "Platform Maximalist",
                 philosophy: "Software is eating the world, and he's supplying the cutlery. Platform plays only. Will fund your developer tool before you've finished the pitch.",
                 style: "Infrastructure, Dev Tools, Platforms",
@@ -287,7 +287,7 @@ export default function FundPage() {
 
           <FadeIn delay={0.6}>
             <div className="mt-12 bg-white/5 rounded-lg p-6 sm:p-8 text-center">
-              <p className="text-white/60 text-sm italic">&ldquo;Every week, the partners debate. MAIRC wants to double down on infra. GARY TAN-sformer thinks the seed-stage consumer app is undervalued. PETER ThieLLM is shorting something everyone else loves. You get the unfiltered transcript.&rdquo;</p>
+              <p className="text-white/60 text-sm italic">&ldquo;Every week, the partners debate. MARC AIndressen wants to double down on infra. GARY TAN-sformer thinks the seed-stage consumer app is undervalued. PETER ThieLLM is shorting something everyone else loves. You get the unfiltered transcript.&rdquo;</p>
             </div>
           </FadeIn>
         </div>
