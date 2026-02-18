@@ -41,36 +41,76 @@ export function HeroSection({ mousePos }: HeroSectionProps) {
         </div>
       </div>
 
-      {/* Coordinates */}
+      {/* Left column — Coordinates + VC Fund CTA + Barcode */}
       <motion.div
-        className="hidden sm:block absolute left-4 sm:left-6 top-[54%] font-mono text-xs text-white/40 uppercase"
+        className="hidden sm:flex absolute left-4 sm:left-6 top-[54%] bottom-4 sm:bottom-6 z-10 flex-col"
+        style={{ maxWidth: "calc(48% - 2rem)" }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.8 }}
-        aria-label={`Mouse position X: ${mousePos.x} pixels, Y: ${mousePos.y} pixels`}
       >
-        <div className="flex items-center gap-1">
-          <span className="text-white/30">[X]</span>
-          <span>.{mousePos.x.toFixed(0)}PX</span>
+        {/* Coordinates */}
+        <div className="font-mono text-xs text-white/40 uppercase" aria-label={`Mouse position X: ${mousePos.x} pixels, Y: ${mousePos.y} pixels`}>
+          <div className="flex items-center gap-1">
+            <span className="text-white/30">[X]</span>
+            <span>.{mousePos.x.toFixed(0)}PX</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="text-white/30">[Y]</span>
+            <span>.{mousePos.y.toFixed(0)}PX</span>
+          </div>
         </div>
-        <div className="flex items-center gap-1">
-          <span className="text-white/30">[Y]</span>
-          <span>.{mousePos.y.toFixed(0)}PX</span>
-        </div>
-      </motion.div>
 
-      {/* Credits with Barcode */}
-      <motion.div
-        className="hidden sm:block absolute bottom-4 sm:bottom-6 left-4 sm:left-6"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 1 }}
-      >
-        <div className="font-mono text-[10px] text-white/30 uppercase mb-1">project by</div>
-        <div className="flex items-center gap-2 mb-4">
-          <span className="font-mono text-xs text-white/60 uppercase">AARTE</span>
+        {/* VC Fund CTA */}
+        <div className="mt-6">
+          <a href="/fund" className="block group">
+            <span className="font-mono text-[10px] text-white/30 uppercase tracking-wider">AARTE Capital</span>
+            <p className="text-[clamp(0.9rem,1.5vw,1.25rem)] font-medium text-[#ffb700] leading-[1.3] tracking-[-0.01em] mt-1 group-hover:text-[#ffb700]/70 transition-colors">
+              Can AI outperform real venture capitalists? &rarr;
+            </p>
+          </a>
+          <form
+            className="mt-4 flex gap-2"
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const form = e.currentTarget;
+              const input = form.querySelector("input") as HTMLInputElement;
+              const btn = form.querySelector("button") as HTMLButtonElement;
+              if (!input.value) return;
+              btn.textContent = "...";
+              try {
+                await fetch("/api/fund/subscribe", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ email: input.value }),
+                });
+                input.value = "";
+                btn.textContent = "Sent";
+                setTimeout(() => { btn.textContent = "\u2192"; }, 2000);
+              } catch {
+                btn.textContent = "\u2192";
+              }
+            }}
+          >
+            <input
+              type="email"
+              placeholder="your@email.com"
+              required
+              className="flex-1 bg-transparent border-b border-white/20 px-0 py-2 font-mono text-xs text-white placeholder:text-white/20 focus:outline-none focus:border-[#ffb700]/50 transition-colors"
+            />
+            <button type="submit" className="font-mono text-xs text-[#ffb700] hover:text-[#ffb700]/70 transition-colors min-h-[44px] flex items-center">&rarr;</button>
+          </form>
+          <p className="font-mono text-[10px] text-white/20 uppercase tracking-wider mt-2">Weekly portfolio updates</p>
         </div>
-        <BarcodeSVG className="h-16 sm:h-20 w-auto text-white" />
+
+        {/* Credits with Barcode */}
+        <div className="mt-auto">
+          <div className="font-mono text-[10px] text-white/30 uppercase mb-1">project by</div>
+          <div className="flex items-center gap-2 mb-4">
+            <span className="font-mono text-xs text-white/60 uppercase">AARTE</span>
+          </div>
+          <BarcodeSVG className="h-16 sm:h-20 w-auto text-white" />
+        </div>
       </motion.div>
 
       {/* Corner brackets */}
@@ -106,11 +146,8 @@ export function HeroSection({ mousePos }: HeroSectionProps) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.6 }}
       >
-        <p className="text-[clamp(1.25rem,2.5vw,2.5rem)] font-medium text-white leading-[1.25] tracking-[-0.01em] mb-3 sm:mb-4">
+        <p className="text-[clamp(1.25rem,2.5vw,2.5rem)] font-medium text-white leading-[1.25] tracking-[-0.01em] mb-4 sm:mb-6">
           Create Your Personal @openclawd
-        </p>
-        <p className="text-sm sm:text-base text-[#ffb700] font-mono mb-4 sm:mb-6">
-          <a href="/fund" className="hover:text-[#ffb700]/80 transition-colors">Can AARTE VC Fund outperform real venture capitalists? →</a>
         </p>
         <div className="flex flex-wrap gap-3 mb-6 sm:mb-8">
           <a href="/signup" className="inline-block font-mono text-sm text-black bg-white px-4 sm:px-6 py-3 hover:bg-white/90 transition-colors uppercase min-h-[44px]" aria-label="Get Started with AARTE">
