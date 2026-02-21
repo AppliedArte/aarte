@@ -52,11 +52,19 @@ export function HeroSection({ mousePos }: HeroSectionProps) {
             <br />
             <span 
               className="inline-block transition-opacity duration-300 ease-out"
-              style={{ opacity: hideSubtitle ? 0 : 1 }}
+              style={{ opacity: hideSubtitle && !isHovered ? 0 : 1 }}
             >
               <span>
                 Applied Artificial Intelligence
               </span>
+            </span>
+            <span 
+              className="absolute left-0 top-0 inline-block transition-opacity duration-300 ease-out whitespace-nowrap"
+              style={{ opacity: hideSubtitle && !isHovered ? 1 : 0 }}
+            >
+              <span className="text-[#ffb700] text-xl">AARTE CAPITAL</span>
+              <span className="text-white/60 mx-2">|</span>
+              <span>Can AI outperform real VCs? →</span>
             </span>
             <span 
               className="absolute left-0 top-0 inline-block transition-opacity duration-300 ease-out"
