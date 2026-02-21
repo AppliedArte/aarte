@@ -4,22 +4,37 @@ import { motion } from "framer-motion";
 import { PixelTrailCanvas } from "@/components/ui/PixelTrailCanvas";
 import { BarcodeSVG } from "@/components/ui/BarcodeSVG";
 import { EASE_OUT_EXPO } from "@/lib/constants";
+import { useState, useEffect } from "react";
 
 interface HeroSectionProps {
   mousePos: { x: number; y: number };
 }
 
 export function HeroSection({ mousePos }: HeroSectionProps) {
+  const [hideSubtitle, setHideSubtitle] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setHideSubtitle(true);
+    }, 4000);
+    return () => clearTimeout(timer);
+  }, []);
   return (
     <section id="home" className="panel relative min-h-screen overflow-hidden bg-black">
       <PixelTrailCanvas className="!h-screen" />
 
       {/* Ghost title */}
       <div className="absolute top-0 left-0 right-0 px-4 sm:px-6 pt-20 sm:pt-4 pointer-events-none" aria-hidden="true">
-        <div className="text-[clamp(2rem,12vw,9rem)] font-medium leading-[0.95] tracking-[-0.03em] text-transparent" style={{ WebkitTextStroke: '1px rgba(255,255,255,0.06)' }}>
+        <motion.div 
+          className="text-[clamp(2rem,12vw,9rem)] font-medium leading-[0.95] tracking-[-0.03em] text-transparent" 
+          style={{ WebkitTextStroke: '1px rgba(255,255,255,0.06)' }}
+          animate={{ opacity: hideSubtitle ? 0 : 1 }}
+          transition={{ duration: 1, delay: hideSubtitle ? 0 : 4 }}
+        >
           AARTE:<br />
           Applied Artificial Intelligence
-        </div>
+        </motion.div>
       </div>
 
       {/* Hero Title */}
@@ -30,13 +45,23 @@ export function HeroSection({ mousePos }: HeroSectionProps) {
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.3, ease: EASE_OUT_EXPO }}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
           >
             <span className="inline-block">AARTE:</span>
             <br />
-            <span className="relative inline-block">
-              <span className="inline-block group-hover:opacity-0 transition-opacity duration-300 ease-out">Applied Artificial Intelligence</span>
-              <span className="absolute left-0 top-0 inline-block opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out">Applied ARTificial intelligencE</span>
+            <span 
+              className="inline-block transition-opacity duration-300 ease-out"
+              style={{ opacity: hideSubtitle ? 0 : 1 }}
+            >
+              <span>
+                Applied Artificial Intelligence
+              </span>
             </span>
+            <span 
+              className="absolute left-0 top-0 inline-block transition-opacity duration-300 ease-out"
+              style={{ opacity: isHovered ? 1 : 0 }}
+            >Applied ARTificial intelligencE</span>
           </motion.h1>
         </div>
       </div>
