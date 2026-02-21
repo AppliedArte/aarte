@@ -52,7 +52,7 @@ export function HeroSection({ mousePos }: HeroSectionProps) {
             <br />
             <span 
               className="inline-block transition-opacity duration-300 ease-out"
-              style={{ opacity: hideSubtitle && !isHovered ? 0 : 1 }}
+              style={{ opacity: hideSubtitle ? 0 : 1 }}
             >
               <span>
                 Applied Artificial Intelligence
