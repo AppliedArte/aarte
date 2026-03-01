@@ -16,7 +16,7 @@ export function HeroSection({ mousePos }: HeroSectionProps) {
 
       {/* Ghost title */}
       <div className="absolute top-0 left-0 right-0 px-4 sm:px-6 pt-20 sm:pt-4 pointer-events-none" aria-hidden="true">
-        <div className="text-[clamp(2rem,12vw,9rem)] font-medium leading-[0.95] tracking-[-0.03em] text-transparent" style={{ WebkitTextStroke: '1px rgba(255,255,255,0.06)' }}>
+        <div className="text-[clamp(1.75rem,10vw,9rem)] font-medium leading-[0.95] tracking-[-0.03em] text-transparent" style={{ WebkitTextStroke: '1px rgba(255,255,255,0.06)' }}>
           AARTE:<br />
           Applied Artificial Intelligence
         </div>
@@ -26,7 +26,7 @@ export function HeroSection({ mousePos }: HeroSectionProps) {
       <div className="absolute top-0 left-0 right-0 px-4 sm:px-6 pt-20 sm:pt-4 z-20">
         <div className="relative w-full h-full">
           <motion.h1
-            className="text-[clamp(2rem,12vw,9rem)] font-medium leading-[0.95] tracking-[-0.03em] text-white cursor-pointer group"
+            className="text-[clamp(1.75rem,10vw,9rem)] font-medium leading-[0.95] tracking-[-0.03em] text-white cursor-pointer group"
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.3, ease: EASE_OUT_EXPO }}
@@ -101,7 +101,7 @@ export function HeroSection({ mousePos }: HeroSectionProps) {
 
       {/* Hero Content Box */}
       <motion.div
-        className="absolute top-[32%] sm:top-[54%] bottom-4 sm:bottom-8 left-4 right-4 sm:left-[48%] sm:right-6 z-10 overflow-y-auto p-1"
+        className="absolute top-[48%] sm:top-[54%] bottom-4 sm:bottom-8 left-4 right-4 sm:left-[48%] sm:right-6 z-10 overflow-y-auto p-1"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.6 }}
