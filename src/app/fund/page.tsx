@@ -207,10 +207,63 @@ export default function FundPage() {
         </div>
       </section>
 
+      {/* Sample Portfolio */}
+      <section className="py-16 sm:py-24 px-4 sm:px-6 border-t border-white/10">
+        <div className="max-w-7xl mx-auto">
+          <ChapterHeader number="01" title="sample portfolio" />
+
+          <div className="grid md:grid-cols-12 gap-8 sm:gap-12 mb-16">
+            <div className="md:col-span-5">
+              <h3 className="text-3xl sm:text-4xl md:text-5xl font-medium leading-[1.1] tracking-[-0.02em] mb-6 sm:mb-8 overflow-hidden">
+                <SplitTextReveal text="If We Picked" className="block" />
+                <SplitTextReveal text="Today..." className="block" delay={0.15} />
+              </h3>
+              <FadeIn delay={0.2}>
+                <p className="text-white/50 leading-relaxed">Five AI partners have analyzed 2,400+ companies this year. Here are the picks if we deployed capital today.</p>
+              </FadeIn>
+            </div>
+            <div className="md:col-span-7">
+              <FadeIn delay={0.3}>
+                <div className="space-y-3">
+                  {[
+                    { name: "Arcade", stage: "Seed", check: "$250K", sector: "Dev Tools", partner: "MARC" },
+                    { name: "Ponder", stage: "Series A", check: "$500K", sector: "AI Infrastructure", partner: "PETER" },
+                    { name: "Milo", stage: "Pre-Seed", check: "$100K", sector: "Consumer", partner: "GARY" },
+                    { name: "Synth", stage: "Seed", check: "$250K", sector: "Deep Tech", partner: "PETER" },
+                    { name: "Flow", stage: "Series A", check: "$500K", sector: "Marketplace", partner: "BILL" },
+                    { name: "Hype", stage: "Pre-Seed", check: "$100K", sector: "Consumer", partner: "PAUL" },
+                    { name: "Cipher", stage: "Growth", check: "$1M", sector: "Infrastructure", partner: "MARC" },
+                    { name: "Bloom", stage: "Seed", check: "$250K", sector: "Climate", partner: "GARY" },
+                  ].map((co, i) => (
+                    <div key={i} className="grid grid-cols-12 gap-4 items-center border border-white/10 p-4 hover:border-[#ffb700]/30 transition-colors group">
+                      <div className="col-span-4">
+                        <span className="text-white font-medium">{co.name}</span>
+                      </div>
+                      <div className="col-span-2">
+                        <span className="font-mono text-xs text-white/40">{co.stage}</span>
+                      </div>
+                      <div className="col-span-2">
+                        <span className="font-mono text-xs text-[#ffb700]">{co.check}</span>
+                      </div>
+                      <div className="col-span-3">
+                        <span className="font-mono text-xs text-white/30">{co.sector}</span>
+                      </div>
+                      <div className="col-span-1 text-right">
+                        <span className="font-mono text-xs text-white/20 group-hover:text-white/40 transition-colors">{co.partner}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </FadeIn>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Portfolio Allocation */}
       <section className="py-16 sm:py-24 px-4 sm:px-6 border-t border-white/10">
         <div className="max-w-7xl mx-auto">
-          <ChapterHeader number="01" title="portfolio allocation" />
+          <ChapterHeader number="03" title="portfolio allocation" />
 
           <div className="grid md:grid-cols-12 gap-8 sm:gap-12 mb-16">
             <div className="md:col-span-5">
@@ -249,7 +302,7 @@ export default function FundPage() {
       {/* How It Works */}
       <section className="py-16 sm:py-24 px-4 sm:px-6 border-t border-white/10">
         <div className="max-w-7xl mx-auto">
-          <ChapterHeader number="02" title="how it works" />
+          <ChapterHeader number="04" title="how it works" />
 
           <div className="grid md:grid-cols-2 gap-12 sm:gap-16">
             <div>
@@ -284,7 +337,7 @@ export default function FundPage() {
       {/* The Partners */}
       <section className="py-16 sm:py-24 px-4 sm:px-6 border-t border-white/10">
         <div className="max-w-7xl mx-auto">
-          <ChapterHeader number="03" title="the partners" />
+          <ChapterHeader number="05" title="the partners" />
 
           <h3 className="text-[clamp(2rem,6vw,4rem)] font-medium leading-[0.9] tracking-[-0.03em] mb-6 sm:mb-8">
             <LineReveal>Five Minds,</LineReveal>
@@ -328,7 +381,7 @@ export default function FundPage() {
       {/* Methodology */}
       <section className="py-16 sm:py-24 px-4 sm:px-6 border-t border-white/10">
         <div className="max-w-7xl mx-auto">
-          <ChapterHeader number="04" title="methodology" />
+          <ChapterHeader number="06" title="methodology" />
 
           <div className="grid md:grid-cols-2 gap-12 sm:gap-16">
             <FadeIn>
