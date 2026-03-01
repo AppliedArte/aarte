@@ -59,18 +59,24 @@ export function HeroSection({ mousePos }: HeroSectionProps) {
               </span>
             </span>
             <span 
-              className="absolute left-0 top-0 inline-block transition-opacity duration-300 ease-out whitespace-nowrap"
-              style={{ opacity: hideSubtitle && !isHovered ? 1 : 0 }}
-            >
-              <span className="text-[#ffb700] text-xl">AARTE CAPITAL</span>
-              <span className="text-white/60 mx-2">|</span>
-              <span>Can AI outperform real VCs? →</span>
-            </span>
-            <span 
               className="absolute left-0 top-0 inline-block transition-opacity duration-300 ease-out"
               style={{ opacity: isHovered ? 1 : 0 }}
             >Applied ARTificial intelligencE</span>
           </motion.h1>
+
+          {/* AARTE Capital CTA — separate div below title */}
+          <motion.a
+            href="/fund"
+            className="block mt-4 sm:mt-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: hideSubtitle ? 1 : 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <span className="text-[#ffb700] font-mono text-sm sm:text-base uppercase tracking-wider">AARTE Capital</span>
+            <span className="text-white/40 mx-2 hidden sm:inline">|</span>
+            <br className="sm:hidden" />
+            <span className="text-white/60 text-sm sm:text-base hover:text-white transition-colors">Can AI outperform real VCs? &rarr;</span>
+          </motion.a>
         </div>
       </div>
 
