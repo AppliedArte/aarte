@@ -64,19 +64,6 @@ export function HeroSection({ mousePos }: HeroSectionProps) {
             >Applied ARTificial intelligencE</span>
           </motion.h1>
 
-          {/* AARTE Capital CTA — separate div below title */}
-          <motion.a
-            href="/fund"
-            className="block mt-4 sm:mt-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: hideSubtitle ? 1 : 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <span className="text-[#ffb700] font-mono text-sm sm:text-base uppercase tracking-wider">AARTE Capital</span>
-            <span className="text-white/40 mx-2 hidden sm:inline">|</span>
-            <br className="sm:hidden" />
-            <span className="text-white/60 text-sm sm:text-base hover:text-white transition-colors">Can AI outperform real VCs? &rarr;</span>
-          </motion.a>
         </div>
       </div>
 
@@ -188,14 +175,14 @@ export function HeroSection({ mousePos }: HeroSectionProps) {
         <p className="text-[clamp(1.25rem,2.5vw,2.5rem)] font-medium text-white leading-[1.25] tracking-[-0.01em] mb-3">
           Create Your Personal @openclawd
         </p>
-        <p className="text-sm sm:text-base text-[#ffb700] font-mono mb-4 sm:mb-6">
-          <a href="/fund" className="hover:text-[#ffb700]/80 transition-colors">Can AI outperform real venture capitalists? →</a>
-        </p>
-        <div className="flex flex-wrap gap-3 mb-6 sm:mb-8">
+        <div className="flex flex-wrap gap-3 mb-4">
           <a href="/signup" className="inline-block font-mono text-sm text-black bg-white px-4 sm:px-6 py-3 hover:bg-white/90 transition-colors uppercase min-h-[44px]" aria-label="Get Started with AARTE">
             Get Started →
           </a>
         </div>
+        <p className="text-sm sm:text-base text-[#ffb700] font-mono mb-6 sm:mb-8">
+          <a href="/fund" className="hover:text-[#ffb700]/80 transition-colors">Can AI outperform real venture capitalists? →</a>
+        </p>
 
         {/* Info Lists */}
         {[
